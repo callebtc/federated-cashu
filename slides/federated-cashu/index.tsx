@@ -1607,7 +1607,8 @@ const Keysets: Page = () => (
     <At x={120} y={808} w={1680}>
       <Note>
         <div>
-          v3 ID: the v2 commitment over compressed G₂ keys, unit, fee and expiry, with version byte <Code>02</Code>.
+          v3 ID: <Code>02</Code> ‖ SHA256(len32(keys) ‖ keys ‖ len32(unit) ‖ unit ‖ len32(fee) ‖ fee), keys = amounts and
+          96-byte G₂ keys, length-framed. Expiry is not committed.
         </div>
         <div>
           Existing secp keysets remain active; a v3 keyset needs an explicit{' '}
@@ -1936,7 +1937,7 @@ const ThresholdSign: Page = () => {
       </At>
       <At x={1066} y={570} w={300}>
         <Fade show={s >= 4}>
-          <span style={{ fontSize: 20, color: c.dim }}>offline, not needed</span>
+          <span style={{ fontSize: 20, color: c.dim }}>no response, not needed</span>
         </Fade>
       </At>
       <At x={1066} y={718} w={300}>
@@ -2330,7 +2331,7 @@ const Consensus: Page = () => {
       </Canvas>
       <At x={880} y={300} w={420}>
         <LogRow n="#41" op={ha} verdict="applied: quote issued" ok show={s >= 2} />
-        <LogRow n="#42" op={hb} verdict="rejected: quote already issued" ok={false} show={s >= 3} />
+        <LogRow n="#42" op={hb} verdict="fails at apply: quote already issued" ok={false} show={s >= 3} />
       </At>
       <At x={120} y={600} w={1180}>
         <Fade show={s >= 4}>
@@ -2344,7 +2345,7 @@ const Consensus: Page = () => {
       <At x={120} y={720} w={1180}>
         <Fade show={s >= 5}>
           <Note>
-            <div>Conflicts: mint and melt on the quote ID; swaps on their input proofs.</div>
+            <div>Conflict keys: mint and melt quote IDs. Swaps have none; the proof store at apply is the spend lock.</div>
             <div>Replay is idempotent: the same operation yields the same state and the same shares.</div>
             <div>
               A signing threshold <M>t</M> below the consensus threshold <M>c</M> is safe only because signing follows
@@ -2361,7 +2362,7 @@ const Consensus: Page = () => {
           Consensus emits one order. #41 is applied.
         </StepItem>
         <StepItem n={3} step={s}>
-          #42 targets the same quote and is rejected.
+          #42 targets the same quote and fails when applied.
         </StepItem>
         <StepItem n={4} step={s}>
           Members sign only the outputs of accepted operations; shares are bound to the operation ID.
@@ -2450,10 +2451,10 @@ const Swap: Page = () => {
         <div>identical body</div>
       </PipeStage>
       <PipeStage x={PIPE_X[1]} n={2} title="Admission" step={s}>
-        <div>inputs non-empty, no duplicates</div>
-        <div>outputs v3, no duplicates</div>
-        <div>amounts balance incl. fees</div>
-        <div>proof and witness size limits</div>
+        <div>unique inputs</div>
+        <div>v3 outputs, unique</div>
+        <div>content bounds</div>
+        <div>proofs and spending conditions verify</div>
       </PipeStage>
       <PipeStage x={PIPE_X[2]} n={3} title="Consensus" step={s}>
         <div>
@@ -2463,7 +2464,7 @@ const Swap: Page = () => {
         <div>first swap spending the inputs wins</div>
       </PipeStage>
       <PipeStage x={PIPE_X[3]} n={4} title="Apply" step={s}>
-        <div>verify input proofs</div>
+        <div>check the balance incl. fees</div>
         <div>mark inputs spent</div>
         <div>
           sign outputs: <M>C′ᵢ = kᵢ·B′</M>
@@ -2487,7 +2488,7 @@ const Swap: Page = () => {
             output set for spent inputs.
           </div>
           <div>Restore returns the stored shares of the accepted operation, never new ones.</div>
-          <div>Swaps lock on their inputs: a second envelope over the same inputs is rejected as spent.</div>
+          <div>Swaps carry no conflict key: a second swap over the same inputs fails at apply with <Code>TokenAlreadySpent</Code>.</div>
         </Note>
       </At>
     </Shell>
@@ -2511,57 +2512,58 @@ const MintQuote: Page = () => {
         <Lifeline x={M3} label="m3" />
         <Lifeline x={LN} label="Lightning" color={c.muted} />
 
-        <Arrow x1={W} y1={320} x2={M1 - 6} y2={320} show={s >= 1} color={c.cool} font="mono" label="POST /v1/mint/quote/bolt11" />
-        <Packet x1={W} y1={320} x2={M1} y2={320} run={proc.anim && s === 1} delay={200} />
+        <Arrow x1={W} y1={314} x2={M1 - 6} y2={314} show={s >= 1} color={c.cool} font="mono" label="POST /v1/mint/quote/bolt11" />
+        <Packet x1={W} y1={314} x2={M1} y2={314} run={proc.anim && s === 1} delay={200} />
 
-        <Band x1={M1 - 40} x2={M3 + 40} y={396} label="consensus: MintQuote" show={s >= 2} />
+        <Band x1={M1 - 40} x2={M3 + 40} y={382} label="consensus: MintQuote" show={s >= 2} />
+        <Arrow x1={W} y1={446} x2={M3 - 6} y2={446} show={s >= 2} color={c.cool} font="mono" label="poll until t members return the quote" delay={400} dashed />
 
-        <Arrow x1={LN} y1={476} x2={M1 + 6} y2={476} show={s >= 3} color={c.muted} font="mono" label="payment settles" dashed />
-        <Dot x={M3} y={476} r={7} color={c.muted} show={s >= 3} delay={200} />
-        <Dot x={M2} y={476} r={7} color={c.muted} show={s >= 3} delay={300} />
-        <Dot x={M1} y={476} r={7} color={c.muted} show={s >= 3} delay={400} />
+        <Arrow x1={LN} y1={516} x2={M1 + 6} y2={516} show={s >= 3} color={c.muted} font="mono" label="payment settles" dashed />
+        <Dot x={M3} y={516} r={7} color={c.muted} show={s >= 3} delay={200} />
+        <Dot x={M2} y={516} r={7} color={c.muted} show={s >= 3} delay={300} />
+        <Dot x={M1} y={516} r={7} color={c.muted} show={s >= 3} delay={400} />
 
-        <Band x1={M1 - 40} x2={M3 + 40} y={552} label="MintQuotePayment × 3 → paid (q = 3)" show={s >= 4} />
+        <Band x1={M1 - 40} x2={M3 + 40} y={584} label="MintQuotePayment × 3 → paid (q = 3)" show={s >= 4} />
 
-        <Arrow x1={W} y1={632} x2={M3 - 6} y2={632} show={s >= 5} color={c.cool} font="mono" label="GET quote status, all members" />
-        <Dot x={M1} y={632} r={7} color={c.cool} show={s >= 5} delay={300} />
-        <Dot x={M2} y={632} r={7} color={c.cool} show={s >= 5} delay={400} />
+        <Arrow x1={W} y1={652} x2={M3 - 6} y2={652} show={s >= 5} color={c.cool} font="mono" label="GET quote status, all members" />
+        <Dot x={M1} y={652} r={7} color={c.cool} show={s >= 5} delay={300} />
+        <Dot x={M2} y={652} r={7} color={c.cool} show={s >= 5} delay={400} />
 
-        <Arrow x1={W} y1={712} x2={M3 - 6} y2={712} show={s >= 6} color={c.cool} font="mono" label="POST /v1/mint (blinded outputs)" />
-        <Dot x={M1} y={712} r={7} color={c.cool} show={s >= 6} delay={300} />
-        <Dot x={M2} y={712} r={7} color={c.cool} show={s >= 6} delay={400} />
-        <Band x1={M1 - 40} x2={M3 + 40} y={790} label="consensus: Mint" show={s >= 6} tone="clay" />
+        <Arrow x1={W} y1={722} x2={M3 - 6} y2={722} show={s >= 6} color={c.cool} font="mono" label="POST /v1/mint (blinded outputs)" />
+        <Dot x={M1} y={722} r={7} color={c.cool} show={s >= 6} delay={300} />
+        <Dot x={M2} y={722} r={7} color={c.cool} show={s >= 6} delay={400} />
+        <Band x1={M1 - 40} x2={M3 + 40} y={794} label="consensus: Mint" show={s >= 6} tone="clay" />
         <Arrow
           x1={M3}
-          y1={866}
+          y1={864}
           x2={W + 6}
-          y2={866}
+          y2={864}
           show={s >= 6}
           color={c.clayHex}
           font="mono"
           label="signature shares from each member"
           delay={500}
         />
-        <Packet x1={M3} y1={866} x2={W} y2={866} run={proc.anim && s === 6} color={c.clayHex} delay={900} />
+        <Packet x1={M3} y1={864} x2={W} y2={864} run={proc.anim && s === 6} color={c.clayHex} delay={900} />
       </Canvas>
       <StepList>
         <StepItem n={1} step={s}>
           Wallet creates the quote on the first healthy member.
         </StepItem>
         <StepItem n={2} step={s}>
-          The quote is ordered through consensus; every member stores it.
+          The quote is ordered through consensus. The wallet polls until <M>t</M> members return it.
         </StepItem>
         <StepItem n={3} step={s}>
-          Members observe the payment independently.
+          A member probes its backend on a status request, on a payment event, or on a scan.
         </StepItem>
         <StepItem n={4} step={s}>
           Each observation is a consensus item. The quote is paid after <M>q</M> of them.
         </StepItem>
         <StepItem n={5} step={s}>
-          Wallet polls status from all members; one member's "paid" is not trusted.
+          The wallet accepts a status once <M>t</M> members return identical responses.
         </StepItem>
         <StepItem n={6} step={s}>
-          Mint request to all members, ordered as an operation, then signed.
+          Each member waits until the quote is paid in its own state, then the Mint operation is ordered and signed.
         </StepItem>
       </StepList>
     </Shell>
@@ -2727,7 +2729,8 @@ const Dkg: Page = () => {
           <M>k = f(0) = Σⱼ fⱼ(0)</M> is never computed. <M>K = k·G₂</M> is published.
         </StepItem>
         <Note style={{ marginTop: 26, fontSize: 22 }}>
-          Dealer-free Pedersen DKG, once per amount. The trusted-dealer setup used in tests ends in the same state.
+          Dealer-free DKG (<Code>PedersenDkg</Code> in code) with Feldman-style commitments <M>aⱼ,ₗ·G₂</M>, once per
+          amount. The trusted-dealer setup used in tests ends in the same state.
           <div style={{ marginTop: 6 }}>
             <Code>cdk-common/src/federation/dkg.rs</Code>
           </div>
@@ -2742,7 +2745,7 @@ const P2P = ({ x1, x2, y, show, delay, color }: { x1: number; x2: number; y: num
 );
 
 const DkgRounds: Page = () => {
-  const proc = useProcess(6, 2000);
+  const proc = useProcess(7, 2000);
   const s = proc.step;
   const A = 300;
   const B = 680;
@@ -2753,39 +2756,49 @@ const DkgRounds: Page = () => {
         <Lifeline x={A} label="m1" color={c.cool} />
         <Lifeline x={B} label="m2" color={c.violet} />
         <Lifeline x={C} label="m3" color={c.good} />
-        <Band x1={A - 60} x2={C + 60} y={322} label="broadcast H(Aⱼ,₀ … Aⱼ,ₜ₋₁)" show={s >= 1} />
-        <Band x1={A - 60} x2={C + 60} y={400} label="broadcast Aⱼ,ₗ = aⱼ,ₗ·G₂" show={s >= 2} />
-        <P2P x1={A} x2={B} y={472} show={s >= 3} delay={0} color={c.cool} />
-        <P2P x1={A} x2={C} y={498} show={s >= 3} delay={60} color={c.cool} />
-        <P2P x1={B} x2={A} y={524} show={s >= 3} delay={120} color={c.violet} />
-        <P2P x1={B} x2={C} y={550} show={s >= 3} delay={180} color={c.violet} />
-        <P2P x1={C} x2={A} y={576} show={s >= 3} delay={240} color={c.good} />
-        <P2P x1={C} x2={B} y={602} show={s >= 3} delay={300} color={c.good} />
-        <T x={C + 90} y={545} size={22} font="mono" anchor="start" color={c.muted} show={s >= 3}>
+        <Band x1={A - 60} x2={C + 60} y={314} label="readiness: same ceremony ID and keyset policy" show={s >= 1} />
+        <Band x1={A - 60} x2={C + 60} y={378} label="commitment: SHA-256 of the member's reveal" show={s >= 2} />
+        <Band x1={A - 60} x2={C + 60} y={442} label="reveal: Aⱼ,ₗ = aⱼ,ₗ·G₂ for every amount" show={s >= 3} />
+        <P2P x1={A} x2={B} y={494} show={s >= 4} delay={0} color={c.cool} />
+        <P2P x1={A} x2={C} y={516} show={s >= 4} delay={60} color={c.cool} />
+        <P2P x1={B} x2={A} y={538} show={s >= 4} delay={120} color={c.violet} />
+        <P2P x1={B} x2={C} y={560} show={s >= 4} delay={180} color={c.violet} />
+        <P2P x1={C} x2={A} y={582} show={s >= 4} delay={240} color={c.good} />
+        <P2P x1={C} x2={B} y={604} show={s >= 4} delay={300} color={c.good} />
+        <T x={C + 90} y={556} size={22} font="mono" anchor="start" color={c.muted} show={s >= 4}>
           fⱼ(i)
         </T>
-        <Band x1={A - 60} x2={C + 60} y={680} label="check fⱼ(i)·G₂ = Σₗ iˡ·Aⱼ,ₗ" show={s >= 4} />
-        <Band x1={A - 60} x2={C + 60} y={758} label="kᵢ = Σⱼ fⱼ(i)      K = Σⱼ Aⱼ,₀" show={s >= 5} tone="clay" />
-        <Band x1={A - 60} x2={C + 60} y={836} label="sign transcript → activate keyset" show={s >= 6} tone="cool" />
+        <Band x1={A - 60} x2={C + 60} y={660} label="check fⱼ(i)·G₂ = Σₗ iˡ·Aⱼ,ₗ · kᵢ = Σⱼ fⱼ(i) · K = Σⱼ Aⱼ,₀" show={s >= 5} tone="clay" />
+        <Band x1={A - 60} x2={C + 60} y={726} label="transcript signature by each identity key" show={s >= 6} />
+        <Band x1={A - 60} x2={C + 60} y={792} label="activation: same transcript hash and final config digest" show={s >= 7} tone="cool" />
+        <T x={(A + C) / 2} y={862} size={22} color={c.muted} show={s >= 7}>
+          then FROST rounds 1, 2 and confirmation for the treasury root
+        </T>
+        <T x={(A + C) / 2} y={900} size={21} color={c.muted} show={s >= 1}>
+          Every message is a signed request to every member; there is no broadcast channel.
+        </T>
       </Canvas>
       <StepList>
         <StepItem n={1} step={s}>
-          Each member commits to its coefficients by hash, so no member can pick its polynomial after seeing others.
+          Each member confirms it runs the exact ceremony and keyset policy.
         </StepItem>
         <StepItem n={2} step={s}>
-          Members reveal public commitments in G₂.
+          Each member sends a hash of its reveal first, so no member can choose its polynomial after seeing others.
         </StepItem>
         <StepItem n={3} step={s}>
-          Point-to-point delivery of <M>fⱼ(i)</M> on the private plane.
+          After all commitments arrive, members reveal their G₂ commitments.
         </StepItem>
         <StepItem n={4} step={s}>
-          Each value is checked against the sender's commitments. A wrong value is attributable.
+          Point-to-point delivery of <M>fⱼ(i)</M> on the private plane.
         </StepItem>
         <StepItem n={5} step={s}>
-          Shares and aggregate key.
+          Each value is checked against the sender's commitments; each member stores its share.
         </StepItem>
         <StepItem n={6} step={s}>
-          Members sign the transcript. No eCash is signed before activation.
+          Members sign the public transcript hash.
+        </StepItem>
+        <StepItem n={7} step={s}>
+          All members confirm the finalized config. No eCash is signed before activation.
         </StepItem>
       </StepList>
     </Shell>
@@ -3355,7 +3368,7 @@ const Melt: Page = () => {
             observation quorum and confirmation depth.
           </div>
           <div>A reorg before issuance withdraws the observation; after issuance it raises an alarm and does not unmint.</div>
-          <div>Nonce lifecycle: vacant → reserved → published → consumed.</div>
+          <div>Nonce lifecycle (cdk-frost): Generated → Reserved → CommitmentSent → Signing → ShareProduced → Consumed; failures burn the nonce.</div>
         </Note>
       </At>
     </Shell>
@@ -5522,6 +5535,74 @@ const End: Page = () => (
   </div>
 );
 
+
+// ─── Variation decks (temporary) ─────────────────────────────────────────────
+// Shared by the slides/fcv-* variation decks, which import from this file.
+
+const VarShell = ({
+  of,
+  lens,
+  title,
+  proc,
+  children,
+}: {
+  of: string;
+  lens: string;
+  title?: ReactNode;
+  proc?: Proc;
+  children?: ReactNode;
+}) => (
+  <div style={pageStyle}>
+    <div style={{ fontSize: 22, letterSpacing: '0.1em', textTransform: 'uppercase', color: c.muted }}>
+      <span
+        style={{
+          color: c.violet,
+          border: `1.5px solid ${c.violet}`,
+          borderRadius: 6,
+          padding: '1px 10px',
+          marginRight: 14,
+          letterSpacing: '0.08em',
+        }}
+      >
+        Variation
+      </span>
+      {of}
+      <span style={{ color: c.violet }}> · {lens}</span>
+    </div>
+    {title && <Heading>{title}</Heading>}
+    {children}
+    <Footer proc={proc} />
+  </div>
+);
+
+const VarCover = ({
+  section,
+  title,
+  sources,
+}: {
+  section: string;
+  title: string;
+  sources: { n: string; title: string; count: number }[];
+}) => (
+  <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+    <Label color={c.violet}>Variations · temporary · section {section}</Label>
+    <div style={{ fontFamily: SERIF, fontSize: 96, fontWeight: 500, letterSpacing: '-0.02em', margin: '20px 0 40px' }}>
+      {title}
+    </div>
+    <div style={{ fontSize: 26, color: c.muted, marginBottom: 28 }}>
+      Each group starts with the original slide, followed by its variations.
+    </div>
+    {sources.map((src) => (
+      <div key={src.n + src.title} style={{ display: 'flex', gap: 24, fontSize: 30, lineHeight: 1.7 }}>
+        <span style={{ fontFamily: MONO, fontSize: 24, color: ACCENT, width: 70 }}>{src.n}</span>
+        <span style={{ width: 900 }}>{src.title}</span>
+        <span style={{ color: c.muted, fontSize: 24 }}>{src.count} variations</span>
+      </div>
+    ))}
+    <Footer />
+  </div>
+);
+
 // ─── Export ──────────────────────────────────────────────────────────────────
 
 export const meta: SlideMeta = {
@@ -5630,7 +5711,7 @@ export const notes: (string | undefined)[] = [
   // Swap
   `End-to-end swap. Admission checks run before consensus.`,
   // MintQuote
-  `Quote creation on one member, replication through consensus, independent payment observation, quorum, status fan-out, then the mint operation.`,
+  `Quote created on one member and ordered through consensus; the wallet waits until t members return it. Members probe the backend on status requests, payment events or scans; observations reach quorum q. The wallet accepts a status from t identical responses. Each member mints only once the quote is paid in its own state.`,
   // Topology
   `Two planes. Liveness: t for signatures, c for ordering.`,
   // Section4
@@ -5638,7 +5719,7 @@ export const notes: (string | undefined)[] = [
   // Dkg
   `Pedersen DKG. The aggregate secret is the sum of the constant terms and is never computed.`,
   // DkgRounds
-  `Hash commitments first, then reveal, then private delivery and verification against the commitments. Activation after transcript signatures.`,
+  `Readiness, then a hash of each member's reveal, then the reveal, private deliveries checked against commitments, transcript signatures, and activation by all members. The FROST treasury ceremony runs after activation.`,
   // FederationId
   `The federation ID is a hash over the setup transcript. Membership changes produce a new federation. Open design questions at the bottom.`,
   // Recovery
@@ -5708,3 +5789,195 @@ export const notes: (string | undefined)[] = [
   // End
   undefined,
 ];
+
+// Named exports for the temporary variation decks (slides/fcv-*).
+export {
+  c,
+  ACCENT,
+  SERIF,
+  SANS,
+  MONO,
+  MATH,
+  EASE_OUT,
+  EASE_IO,
+  REDUCED,
+  useBeats,
+  useProcess,
+  useEntered,
+  useSha256,
+  pageStyle,
+  Eyebrow,
+  Heading,
+  ProcControls,
+  Footer,
+  Shell,
+  Canvas,
+  Fade,
+  GFade,
+  At,
+  M,
+  Up,
+  Hi,
+  Code,
+  Note,
+  Label,
+  StepList,
+  StepItem,
+  toneStroke,
+  Member,
+  WalletNode,
+  Line,
+  Draw,
+  fontOf,
+  Arrow,
+  Packet,
+  Dot,
+  T,
+  Band,
+  Lifeline,
+  ring,
+  CoverFigure,
+  Cover,
+  SECTION_TITLES,
+  OUTLINE_TOP,
+  OUTLINE_ROW,
+  OUTLINE_COL,
+  OutlineRow,
+  ChapterHead,
+  Outline,
+  OutlineAll,
+  Section1,
+  Section2,
+  Section3,
+  Section4,
+  Section5,
+  Section6,
+  SectionN1,
+  SectionN2,
+  SectionN3,
+  SectionN4,
+  ChapterTitle,
+  Chapter1,
+  Chapter2,
+  Fact,
+  Model,
+  EQ,
+  Lanes,
+  Bdhke,
+  BlsFlow,
+  DerivLine,
+  Pairing,
+  Cell,
+  Row,
+  KW,
+  Keysets,
+  XW,
+  Multisig,
+  Shamir,
+  SUBSETS,
+  ShareCard,
+  Lagrange,
+  ThresholdSign,
+  GridCell,
+  ColumnStatus,
+  RequestRow,
+  MixMatch,
+  ENV_A,
+  ENV_B,
+  Envelope,
+  OpId,
+  OperationId,
+  LogRow,
+  EnvChip,
+  ShareTag,
+  Consensus,
+  PipeStage,
+  PIPE_X,
+  PipeArrows,
+  Swap,
+  MintQuote,
+  Topology,
+  Dkg,
+  P2P,
+  DkgRounds,
+  ROSTER_A,
+  ROSTER_B,
+  RosterLine,
+  FederationId,
+  JOURNAL_X,
+  Block,
+  Journal,
+  Recovery,
+  Funding,
+  Badge,
+  CHAIN_X,
+  ChainChip,
+  KeyMaterial,
+  Melt,
+  Rewrite,
+  Seg,
+  OutputSegs,
+  Transcript,
+  DBox,
+  InputDigest,
+  RuleCard,
+  InputsSign,
+  SW,
+  Summary,
+  Fig,
+  FigSvg,
+  nodeBorder,
+  nodeBg,
+  TNode,
+  Edge,
+  Pre,
+  P2PK_ESCAPED,
+  JsonSecret,
+  Limit,
+  JsonLimits,
+  TapTree,
+  TaprootTree,
+  TaprootSpend,
+  PointSecret,
+  NX,
+  LeafCard,
+  NutTree,
+  NutrootTree,
+  LeafEncoding,
+  foldLayout,
+  FoldShapes,
+  NutrootSpends,
+  JLine,
+  Check,
+  ScriptVerify,
+  KeyCard,
+  InternalKey,
+  FlowBox,
+  SIW,
+  SpendInfo,
+  NoteBox,
+  ReceiverKeyed,
+  CW,
+  Capabilities,
+  BW,
+  VsBip341,
+  QW,
+  Comparison,
+  End,
+  VarShell,
+  VarCover,
+};
+export type {
+  StepRegistration,
+  StepHost,
+  Proc,
+  Tone,
+  LabelFont,
+  SectionRef,
+  Subset,
+  NodeTone,
+  TapMode,
+  NutMode,
+  FoldNode,
+  FoldEdge,
+};
