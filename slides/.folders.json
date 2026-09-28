@@ -1,4 +1,24 @@
 {
-  "folders": [],
-  "assignments": {}
+  "folders": [
+    {
+      "id": "f-32297e73",
+      "name": "Federated Cashu · variations (temporary)",
+      "icon": {
+        "type": "color",
+        "value": "#7a5fa6"
+      }
+    }
+  ],
+  "assignments": {
+    "fcv-a-bls": "f-32297e73",
+    "fcv-b-threshold": "f-32297e73",
+    "fcv-c-ordering": "f-32297e73",
+    "fcv-d-flows-dkg": "f-32297e73",
+    "fcv-e-membership-custody": "f-32297e73",
+    "fcv-f-client-intent": "f-32297e73",
+    "fcv-g-json-taproot": "f-32297e73",
+    "fcv-h-nutroot-tree": "f-32297e73",
+    "fcv-i-nutroot-spend": "f-32297e73",
+    "fcv-j-nutroot-use": "f-32297e73"
+  }
 }
