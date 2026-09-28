@@ -3033,7 +3033,7 @@ const Recovery: Page = () => {
           Replay accepted operations deterministically: same operation, same state, same shares.
         </StepItem>
         <StepItem n={4} step={s}>
-          Compare order and state digests with a catch-up certificate.
+          Check log positions and digests against a checkpoint signed by at least <M>c</M> members.
         </StepItem>
         <StepItem n={5} step={s}>
           Readiness gate passes. Until then the member does not sign.
@@ -5302,7 +5302,7 @@ const ReceiverKeyed: Page = () => {
         <Packet x1={PR} y1={710} x2={PE} y2={710} run={proc.anim && s === 4} color={c.clayHex} delay={700} />
       </Canvas>
       <NoteBox x={PR - 250} y={360} w={500} show={s >= 2}>
-        fresh <M>(e, E)</M> per output · <M>Zx = x(e·k)</M>
+        fresh <M>(e, E)</M> per output · per key <M>P</M>: <M>Zx = x(e·P)</M>
         <br />
         <Code>rᵢ = SHA256("Cashu_P2BK_v1" ‖ Zx ‖ i)</Code>
       </NoteBox>
@@ -5321,7 +5321,7 @@ const ReceiverKeyed: Page = () => {
           blind-me keys <Code>b</Code>.
         </StepItem>
         <StepItem n={2} step={s}>
-          ECDH with a fresh ephemeral gives one blinding scalar per slot.
+          A fresh ephemeral and one ECDH per blinded key give one blinding scalar per slot.
         </StepItem>
         <StepItem n={3} step={s}>
           Slot 0 blinds the internal key. The tree is the requested one, no more leaves and no fewer.
