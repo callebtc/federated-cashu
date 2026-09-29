@@ -1,6 +1,6 @@
-# 04.02 · Threshold parameters: validation rules
+# 07.02 · Threshold parameters: validation rules
 
-Variation 2 of slide 04 (What is a federation) · lens: Advanced · deck `fcv-a-bls` page 4 · 4 steps · script 139 words, about 60 s
+Variation 2 of slide 07 (What is a federation) · lens: Advanced · deck `fcv-a-bls` page 4 · 4 steps · script 139 words, about 60 s
 
 ## Script
 

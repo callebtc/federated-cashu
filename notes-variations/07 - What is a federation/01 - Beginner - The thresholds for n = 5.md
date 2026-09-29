@@ -1,6 +1,6 @@
-# 04.01 · The thresholds for n = 5
+# 07.01 · The thresholds for n = 5
 
-Variation 1 of slide 04 (What is a federation) · lens: Beginner · deck `fcv-a-bls` page 3 · 5 steps · script 140 words, about 60 s
+Variation 1 of slide 07 (What is a federation) · lens: Beginner · deck `fcv-a-bls` page 3 · 5 steps · script 140 words, about 60 s
 
 ## Script
 

@@ -1,6 +1,6 @@
-# 04.06 · Offline and Byzantine members at n = 5
+# 07.06 · Offline and Byzantine members at n = 5
 
-Variation 6 of slide 04 (What is a federation) · lens: Framing: failure mode · deck `fcv-a-bls` page 8 · 5 steps · script 128 words, about 55 s
+Variation 6 of slide 07 (What is a federation) · lens: Framing: failure mode · deck `fcv-a-bls` page 8 · 5 steps · script 128 words, about 55 s
 
 ## Script
 

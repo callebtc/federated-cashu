@@ -1,4 +1,6 @@
-# 04 · What is a federation
+# 07 · What is a federation
+
+Original slide, deck `fcv-a-bls` page 2 (main deck slide 07). Same text as `notes/07 - What is a federation/notes.md`.
 
 Setting · 2 steps · script 104 words, about 45 s
 

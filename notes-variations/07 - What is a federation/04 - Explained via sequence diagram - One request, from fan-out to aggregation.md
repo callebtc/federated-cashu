@@ -1,6 +1,6 @@
-# 04.04 · One request, from fan-out to aggregation
+# 07.04 · One request, from fan-out to aggregation
 
-Variation 4 of slide 04 (What is a federation) · lens: Explained via sequence diagram · deck `fcv-a-bls` page 6 · 6 steps · script 114 words, about 50 s
+Variation 4 of slide 07 (What is a federation) · lens: Explained via sequence diagram · deck `fcv-a-bls` page 6 · 6 steps · script 114 words, about 50 s
 
 ## Script
 

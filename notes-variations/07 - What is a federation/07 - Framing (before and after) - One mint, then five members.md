@@ -1,6 +1,6 @@
-# 04.07 · One mint, then five members
+# 07.07 · One mint, then five members
 
-Variation 7 of slide 04 (What is a federation) · lens: Framing: before and after · deck `fcv-a-bls` page 9 · 3 steps · script 131 words, about 55 s
+Variation 7 of slide 07 (What is a federation) · lens: Framing: before and after · deck `fcv-a-bls` page 9 · 3 steps · script 131 words, about 55 s
 
 ## Script
 

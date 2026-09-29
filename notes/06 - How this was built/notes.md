@@ -1,4 +1,4 @@
-# 07 · How this was built
+# 06 · How this was built
 
 Authorship · 5 steps · script 89 words, about 40 s
 

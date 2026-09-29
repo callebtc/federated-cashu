@@ -1277,32 +1277,164 @@ const PartCard = ({ show, label, title, lines, tone }: { show: boolean; label: s
   </Fade>
 );
 
-const FedParts: Page = () => {
-  const proc = useProcess(2, 2200);
-  const s = proc.step;
+// Ouroboros: two strands braided around a ring, r(θ) = R ± A·sin(kθ).
+const OURO = { cx: 960, cy: 575, R: 290, A: 42, k: 6, steps: 480, segs: 40, body: 0.965, period: 18 };
+
+const ouroPath = (sign: 1 | -1) => {
+  const { cx, cy, R, A, k, steps } = OURO;
+  let d = '';
+  for (let i = 0; i <= steps; i++) {
+    const th = (i / steps) * Math.PI * 2 - Math.PI / 2;
+    const r = R + sign * A * Math.sin(k * th);
+    const x = cx + r * Math.cos(th);
+    const y = cy + r * Math.sin(th);
+    d += `${i === 0 ? 'M' : 'L'} ${x.toFixed(2)} ${y.toFixed(2)} `;
+  }
+  return `${d}Z`;
+};
+const OURO_ECASH = ouroPath(1);
+const OURO_BTC = ouroPath(-1);
+
+/** Sectors around every second crossing, where the second strand is drawn on top. */
+const ouroWedges = () => {
+  const { cx, cy, R, A, k } = OURO;
+  const reach = R + A + 40;
+  const half = Math.PI / (2 * k);
+  let d = '';
+  for (let m = 0; m < 2 * k; m += 2) {
+    const c0 = (m * Math.PI) / k - Math.PI / 2;
+    const a = c0 - half;
+    const b = c0 + half;
+    d += `M ${cx} ${cy} L ${cx + reach * Math.cos(a)} ${cy + reach * Math.sin(a)} A ${reach} ${reach} 0 0 1 ${cx + reach * Math.cos(b)} ${cy + reach * Math.sin(b)} Z `;
+  }
+  return d;
+};
+const OURO_WEDGES = ouroWedges();
+
+const Snake = ({ d, color, phase, halo, headOnly }: { d: string; color: string; phase: number; halo?: boolean; headOnly?: boolean }) => {
+  const { segs, body } = OURO;
+  const step = (body * 1000) / segs;
   return (
-    <Shell eyebrow="Setting" title="Two parts of a federation" proc={proc}>
-      <div style={{ display: 'flex', gap: 40, marginTop: 70 }}>
-        <PartCard
-          show={s >= 1}
-          label="Cryptography"
-          title="Threshold signatures"
-          tone={c.clayHex}
-          lines={[
-            <>
-              any <M>t</M> of <M>n</M> members sign
-            </>,
-            'no member holds the key',
-          ]}
-        />
-        <PartCard
-          show={s >= 2}
-          label="Consensus"
-          title="Shared state"
-          tone={c.violet}
-          lines={['payments observed by a quorum', 'same rules, same order, every member']}
-        />
-      </div>
+    <g>
+      {Array.from({ length: segs + 1 }, (_, j) => {
+        const head = j === segs;
+        if (headOnly && !head) return null;
+        const u = j / (segs - 1);
+        const w = head ? 22 : 3 + 13 * Math.min(1, 0.15 + u * 1.7) - (u > 0.96 ? 2 : 0);
+        const len = head ? 0.5 : step + 0.6;
+        const tone = head ? color : `color-mix(in srgb, ${color} ${Math.round(45 + 55 * u)}%, #faf9f5)`;
+        const base = j * step + phase * 1000;
+        return (
+          <path
+            key={j}
+            d={d}
+            pathLength={1000}
+            data-base={base}
+            style={{
+              fill: 'none',
+              stroke: halo ? '#faf9f5' : tone,
+              strokeWidth: halo ? w + 10 : w,
+              strokeLinecap: head || j === 0 ? 'round' : 'butt',
+              strokeDasharray: `${len} ${1000 - len}`,
+              strokeDashoffset: -base,
+            }}
+          />
+        );
+      })}
+    </g>
+  );
+};
+
+const FedParts: Page = () => {
+  const { cx, cy, period } = OURO;
+  const ticks = Array.from({ length: 48 }, (_, i) => i);
+  const root = useRef<SVGGElement>(null);
+  const active = useIsActivePage();
+  // Driven by requestAnimationFrame, not CSS: the editor freezes CSS animations.
+  useEffect(() => {
+    const g = root.current;
+    if (!g || REDUCED || !active) return;
+    const segs = [...g.querySelectorAll<SVGPathElement>('path[data-base]')].map((el) => ({ el, base: Number(el.dataset.base) }));
+    const spin = g.querySelector<SVGGElement>('[data-spin]');
+    const pulses = [...g.querySelectorAll<SVGCircleElement>('[data-pulse]')];
+    const t0 = performance.now();
+    let raf = 0;
+    const frame = (now: number) => {
+      const t = (now - t0) / 1000;
+      const shift = (t / period) * 1000;
+      for (const sg of segs) sg.el.style.strokeDashoffset = String(-((sg.base + shift) % 1000));
+      if (spin) spin.setAttribute('transform', `rotate(${(t * 4) % 360} ${cx} ${cy})`);
+      pulses.forEach((p, i) => {
+        const ph = ((t + i * 2) % 6) / 6;
+        const e = 1 - (1 - ph) ** 3;
+        p.setAttribute('r', String(120 + 150 * e));
+        p.style.opacity = String(0.45 * (1 - ph));
+      });
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [active, cx, cy, period]);
+  return (
+    <Shell eyebrow="Setting">
+      <Canvas>
+        <g ref={root}>
+        <defs>
+          <clipPath id="ouro-over">
+            <path d={OURO_WEDGES} />
+          </clipPath>
+        </defs>
+        <path d={OURO_ECASH} style={{ fill: 'none', stroke: c.claySoft, strokeWidth: 2 }} />
+        <path d={OURO_BTC} style={{ fill: 'none', stroke: c.coolSoft, strokeWidth: 2 }} />
+        <Snake d={OURO_BTC} color={c.cool} phase={0.5} halo />
+        <Snake d={OURO_BTC} color={c.cool} phase={0.5} />
+        <Snake d={OURO_ECASH} color={c.clayHex} phase={0} halo />
+        <Snake d={OURO_ECASH} color={c.clayHex} phase={0} />
+        <g clipPath="url(#ouro-over)">
+          <Snake d={OURO_BTC} color={c.cool} phase={0.5} halo />
+          <Snake d={OURO_BTC} color={c.cool} phase={0.5} />
+        </g>
+        <Snake d={OURO_BTC} color={c.cool} phase={0.5} headOnly />
+        <Snake d={OURO_ECASH} color={c.clayHex} phase={0} headOnly />
+        {[0, 1, 2].map((i) => (
+          <circle
+            key={`pulse${i}`}
+            data-pulse={i}
+            cx={cx}
+            cy={cy}
+            r={120 + i * 50}
+            style={{ fill: 'none', stroke: c.node, strokeWidth: 1.5, opacity: 0.3 - i * 0.1 }}
+          />
+        ))}
+        <g data-spin>
+          {ticks.map((i) => {
+            const a = (i / ticks.length) * Math.PI * 2;
+            const r1 = 150;
+            const r2 = i % 4 === 0 ? 172 : 162;
+            return (
+              <line
+                key={i}
+                x1={cx + r1 * Math.cos(a)}
+                y1={cy + r1 * Math.sin(a)}
+                x2={cx + r2 * Math.cos(a)}
+                y2={cy + r2 * Math.sin(a)}
+                style={{ stroke: c.node, strokeWidth: i % 4 === 0 ? 2 : 1.2, opacity: 0.7 }}
+              />
+            );
+          })}
+        </g>
+        <circle cx={cx} cy={cy} r={118} style={{ fill: c.card, stroke: c.line, strokeWidth: 1.5 }} />
+        <text x={cx} y={cy + 14} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 40, fill: c.ink }}>
+          consensus
+        </text>
+        <text x={cx - 420} y={cy + 14} textAnchor="end" style={{ fontFamily: SERIF, fontSize: 44, fill: c.clayHex }}>
+          ecash
+        </text>
+        <text x={cx + 420} y={cy + 14} textAnchor="start" style={{ fontFamily: SERIF, fontSize: 44, fill: c.cool }}>
+          bitcoin
+        </text>
+        </g>
+      </Canvas>
     </Shell>
   );
 };
@@ -6196,11 +6328,11 @@ export default [
   Cover,
   OutlineAll,
   Chapter1,
+  Thanks,
   Paper,
   Built,
   Model,
   FedParts,
-  Thanks,
   Section1,
   Bdhke,
   BlsFlow,
@@ -6451,6 +6583,8 @@ export {
   CustodyQuorum,
   FrostDkg,
   TwoShares,
+  OURO,
+  Snake,
 };
 export type {
   StepRegistration,

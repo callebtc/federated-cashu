@@ -1,6 +1,6 @@
-# 04.03 · Two planes
+# 07.03 · Two planes
 
-Variation 3 of slide 04 (What is a federation) · lens: Graphical · deck `fcv-a-bls` page 5 · 6 steps · script 117 words, about 50 s
+Variation 3 of slide 07 (What is a federation) · lens: Graphical · deck `fcv-a-bls` page 5 · 6 steps · script 117 words, about 50 s
 
 ## Script
 

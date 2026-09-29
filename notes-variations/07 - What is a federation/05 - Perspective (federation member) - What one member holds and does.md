@@ -1,6 +1,6 @@
-# 04.05 · What one member holds and does
+# 07.05 · What one member holds and does
 
-Variation 5 of slide 04 (What is a federation) · lens: Perspective: federation member · deck `fcv-a-bls` page 7 · 4 steps · script 139 words, about 60 s
+Variation 5 of slide 07 (What is a federation) · lens: Perspective: federation member · deck `fcv-a-bls` page 7 · 4 steps · script 139 words, about 60 s
 
 ## Script
 
