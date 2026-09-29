@@ -3138,6 +3138,161 @@ const DkgRounds: Page = () => {
   );
 };
 
+const TRI = (cx: number, cy: number) => [
+  { x: cx, y: cy - 150 },
+  { x: cx + 130, y: cy + 75 },
+  { x: cx - 130, y: cy + 75 },
+];
+const TRI_PAIRS: [number, number][] = [
+  [0, 1],
+  [1, 0],
+  [0, 2],
+  [2, 0],
+  [1, 2],
+  [2, 1],
+];
+const TRI_MEMC = [c.cool, c.violet, c.good];
+const triSeg = (ax: number, ay: number, bx: number, by: number, ra: number, rb: number) => {
+  const d = Math.hypot(bx - ax, by - ay);
+  const ux = (bx - ax) / d;
+  const uy = (by - ay) / d;
+  return { x1: ax + ux * ra, y1: ay + uy * ra, x2: bx - ux * rb, y2: by - uy * rb };
+};
+
+const TriPanel = ({ cx, cy, n, s, anim, kind }: { cx: number; cy: number; n: number; s: number; anim: boolean; kind: 'bcast' | 'private' | 'sign' }) => {
+  const P = TRI(cx, cy);
+  const seen = s >= n;
+  return (
+    <g style={{ opacity: seen ? 1 : 0.15, transition: `opacity 500ms ${EASE_OUT}` }}>
+      {kind !== 'sign' &&
+        TRI_PAIRS.map(([a, b], k) => {
+          const e = triSeg(P[a].x, P[a].y, P[b].x, P[b].y, 44, 44);
+          const len = Math.hypot(e.x2 - e.x1, e.y2 - e.y1);
+          const ox = (-(e.y2 - e.y1) / len) * 7;
+          const oy = ((e.x2 - e.x1) / len) * 7;
+          const col = kind === 'private' ? TRI_MEMC[a] : c.node;
+          return (
+            <g key={`p${k}`}>
+              <Arrow x1={e.x1 + ox} y1={e.y1 + oy} x2={e.x2 + ox} y2={e.y2 + oy} show={seen} color={col} delay={k * 50} />
+              <Packet
+                x1={e.x1 + ox}
+                y1={e.y1 + oy}
+                x2={e.x2 + ox}
+                y2={e.y2 + oy}
+                run={anim && s === n}
+                color={kind === 'private' ? TRI_MEMC[a] : c.muted}
+                delay={300 + k * 80}
+                r={6}
+              />
+            </g>
+          );
+        })}
+      {kind === 'sign' &&
+        P.map((p, k) => {
+          const e = triSeg(p.x, p.y, cx, cy, 44, 34);
+          return (
+            <g key={`g${k}`}>
+              <Arrow {...e} show={seen} color={c.cool} delay={k * 60} />
+              <Packet {...e} run={anim && s === n} color={c.cool} delay={300 + k * 100} r={6} />
+            </g>
+          );
+        })}
+      {kind === 'sign' && (
+        <g>
+          <rect
+            x={cx - 42}
+            y={cy - 22}
+            width={84}
+            height={44}
+            rx={8}
+            style={{
+              fill: seen ? c.claySoft : c.card,
+              stroke: seen ? c.clayHex : c.node,
+              strokeWidth: 1.75,
+              transition: `fill 400ms ${EASE_OUT} 900ms, stroke 400ms ${EASE_OUT} 900ms`,
+            }}
+          />
+          <text x={cx} y={cy + 8} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 22, fill: c.ink }}>
+            hash
+          </text>
+        </g>
+      )}
+      <Member x={P[0].x} y={P[0].y} r={36} label="m1" tone={s === n ? 'on' : 'idle'} />
+      <Member x={P[1].x} y={P[1].y} r={36} label="m2" tone={s === n ? 'on' : 'idle'} />
+      <Member x={P[2].x} y={P[2].y} r={36} label="m3" tone={s === n ? 'on' : 'idle'} />
+    </g>
+  );
+};
+
+const DKG_PHASES = ['Commit', 'Reveal', 'Deliver', 'Sign'];
+
+const DkgOverview: Page = () => {
+  const proc = useProcess(4, 2200);
+  const s = proc.step;
+  const cy = 540;
+  const xs = [330, 740, 1150, 1560];
+  const lab = (on: boolean): CSSProperties => ({
+    fontFamily: MATH,
+    fontStyle: 'italic',
+    fontSize: 34,
+    fill: on ? c.ink : c.muted,
+    transition: `fill 300ms ${EASE_OUT}`,
+  });
+  return (
+    <Shell n="1.4" eyebrow="Keys and membership" title="Commit, reveal, deliver, sign" proc={proc}>
+      {DKG_PHASES.map((p, i) => (
+        <div
+          key={p}
+          style={{
+            position: 'absolute',
+            left: xs[i] - 150,
+            top: 272,
+            width: 300,
+            textAlign: 'center',
+            fontFamily: SERIF,
+            fontSize: 40,
+            color: s >= i + 1 ? c.ink : c.dim,
+            transition: `color 300ms ${EASE_OUT}`,
+          }}
+        >
+          {p}
+        </div>
+      ))}
+      <Canvas>
+        <TriPanel cx={xs[0]} cy={cy} n={1} s={s} anim={proc.anim} kind="bcast" />
+        <TriPanel cx={xs[1]} cy={cy} n={2} s={s} anim={proc.anim} kind="bcast" />
+        <TriPanel cx={xs[2]} cy={cy} n={3} s={s} anim={proc.anim} kind="private" />
+        <TriPanel cx={xs[3]} cy={cy} n={4} s={s} anim={proc.anim} kind="sign" />
+        <text x={xs[0]} y={cy + 180} textAnchor="middle" style={lab(s === 1)}>
+          H(reveal)
+        </text>
+        <text x={xs[1]} y={cy + 180} textAnchor="middle" style={lab(s === 2)}>
+          a·G₂
+        </text>
+        <text x={xs[2]} y={cy + 180} textAnchor="middle" style={lab(s === 3)}>
+          fⱼ(i)
+        </text>
+        <text x={xs[3]} y={cy + 180} textAnchor="middle" style={{ ...lab(s === 4), fontFamily: SANS, fontStyle: 'normal', fontSize: 30 }}>
+          transcript
+        </text>
+        <line x1={xs[0]} y1={cy + 260} x2={xs[3]} y2={cy + 260} style={{ stroke: c.rule, strokeWidth: 2 }} />
+        <Draw x1={xs[0]} y1={cy + 260} x2={xs[1]} y2={cy + 260} show={s >= 2} width={3} />
+        <Draw x1={xs[1]} y1={cy + 260} x2={xs[2]} y2={cy + 260} show={s >= 3} width={3} />
+        <Draw x1={xs[2]} y1={cy + 260} x2={xs[3]} y2={cy + 260} show={s >= 4} width={3} />
+        {xs.map((x, i) => (
+          <circle
+            key={`d${i}`}
+            cx={x}
+            cy={cy + 260}
+            r={10}
+            style={{ fill: s >= i + 1 ? c.clayHex : c.card, stroke: s >= i + 1 ? c.clayHex : c.node, strokeWidth: 2, transition: `fill 300ms ${EASE_OUT}` }}
+          />
+        ))}
+      </Canvas>
+    </Shell>
+  );
+};
+
 const ROSTER_A =
   'fed:v1|t=2|c=3|m1,https://m1.mint.example,4c1f09|m2,https://m2.mint.example,9a07e2|m3,https://m3.mint.example,e21b77';
 const ROSTER_B =
@@ -5832,6 +5987,7 @@ export default [
   Topology,
   Section4,
   Dkg,
+  DkgOverview,
   DkgRounds,
   Recovery,
   Section5,
@@ -6061,6 +6217,8 @@ export {
   OrdChip,
   FlowChip,
   DAY,
+  TriPanel,
+  DkgOverview,
 };
 export type {
   StepRegistration,
