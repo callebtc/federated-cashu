@@ -1366,8 +1366,8 @@ const Built: Page = () => {
       </div>
       <At x={120} y={760} w={1680}>
         <div style={{ fontSize: 36 }}>
-          Agents: <span style={{ color: ACCENT }}>Sol</span> and <span style={{ color: ACCENT }}>Astra</span> (OpenAI),{' '}
-          <span style={{ color: ACCENT }}>Opus</span> (Anthropic)
+          Agents: <span style={{ color: ACCENT }}>Sol</span> and <span style={{ color: ACCENT }}>Astra</span>{' (OpenAI)'}{''}
+          <span style={{ color: ACCENT }}>{''}</span>{''}
         </div>
       </At>
     </Shell>
@@ -2442,7 +2442,7 @@ const Consensus: Page = () => {
         {ORD_REQ.map((r) => (
           <Member key={r.m} x={r.x} y={290} r={38} label={r.m} />
         ))}
-        <Arrow x1={640} y1={ORD_BOX.y + ORD_BOX.h + 4} x2={640} y2={ORD_ROW_Y[0] - 34} show={s >= 2} color={c.node} />
+        <Arrow x1={640} y1={ORD_BOX.y + ORD_BOX.h + 4} x2={640} y2={ORD_ROW_Y[0] - 32} show={s >= 2} color={c.node} />
       </Canvas>
       <div
         style={{
@@ -2498,7 +2498,7 @@ const Consensus: Page = () => {
             key={`row${r.m}`}
             style={{
               position: 'absolute',
-              left: 420,
+              left: 640 - 85 - 44 - 22,
               top: ORD_ROW_Y[i] - 26,
               display: 'flex',
               alignItems: 'center',
