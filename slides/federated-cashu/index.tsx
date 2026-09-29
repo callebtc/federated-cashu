@@ -1354,20 +1354,73 @@ const BigStat = ({ show, delay, value, label }: { show: boolean; delay: number; 
   </Fade>
 );
 
+const DAY = 64;
+
 const Built: Page = () => {
-  const proc = useProcess(3, 1800);
+  const proc = useProcess(6, 1800);
   const s = proc.step;
+  const D0 = 780;
+  const px = (d: number) => D0 + d * DAY;
+  const top = 320;
+  const rowH = 92;
+  const rows: { title: string; sub: string; x1: number; x2: number; tone: string; fill: string; fade?: boolean; mono?: boolean }[] = [
+    { title: 'Spec', sub: 'long description', x1: 600, x2: 680, tone: c.node, fill: c.panel },
+    { title: 'Grill-me', sub: 'on the spec', x1: 690, x2: 770, tone: c.violet, fill: c.panel },
+    { title: '/goal: build', sub: '7 days', x1: px(0), x2: px(7), tone: c.clayHex, fill: c.claySoft, mono: true },
+    { title: 'Review', sub: '1 day', x1: px(7) + 4, x2: px(8), tone: c.cool, fill: c.coolSoft },
+    { title: '/goal: implement review', sub: '6 days', x1: px(8) + 4, x2: px(14), tone: c.clayHex, fill: c.claySoft, mono: true },
+    { title: 'Ongoing', sub: 'optimizing, bug fixing', x1: px(14) + 4, x2: 1800, tone: c.clayHex, fill: c.claySoft, fade: true },
+  ];
   return (
     <Shell eyebrow="Authorship" title="How this was built" proc={proc}>
-      <div style={{ display: 'flex', gap: 60, marginTop: 110 }}>
-        <BigStat show={s >= 1} delay={0} value="7 days" label={<>building with agents (<Code>/goal</Code>)</>} />
-        <BigStat show={s >= 2} delay={0} value="7 days" label={<>cleaning up (<Code>/goal</Code>)</>} />
-        <BigStat show={s >= 3} delay={0} value="many days" label="refining" />
-      </div>
-      <At x={120} y={760} w={1680}>
-        <div style={{ fontSize: 36 }}>
-          Agents: <span style={{ color: ACCENT }}>Sol</span> and <span style={{ color: ACCENT }}>Astra</span>{' (OpenAI)'}{''}
-          <span style={{ color: ACCENT }}>{''}</span>{''}
+      <Canvas>
+        {[0, 3, 7, 8, 14].map((d) => (
+          <g key={d}>
+            <line x1={px(d)} y1={top - 22} x2={px(d)} y2={top + rows.length * rowH - 30} style={{ stroke: c.rule, strokeWidth: 1.5, strokeDasharray: '3 6' }} />
+            <text x={px(d)} y={top - 34} opacity={d === 8 ? 0 : 1} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 22, fill: c.dim }}>
+              {`day ${d}`}
+            </text>
+          </g>
+        ))}
+      </Canvas>
+      {rows.map((r, i) => (
+        <Fade key={r.title} show={s >= i + 1} style={{ position: 'absolute', left: 120, top: top + i * rowH, width: 1680, height: rowH }}>
+          <div style={{ position: 'absolute', left: 0, top: 4, display: 'flex', alignItems: 'baseline', gap: 16 }}>
+            <span style={{ fontFamily: r.mono ? MONO : SERIF, fontSize: r.mono ? 28 : 34 }}>{r.title}</span>
+          </div>
+          <div style={{ position: 'absolute', left: 0, top: 50, fontSize: 24, color: c.muted }}>{r.sub}</div>
+          <div
+            style={{
+              position: 'absolute',
+              left: r.x1 - 120,
+              top: 10,
+              width: r.x2 - r.x1,
+              height: 50,
+              boxSizing: 'border-box',
+              borderRadius: r.fade ? '10px 0 0 10px' : 10,
+              border: r.fade ? 'none' : `1.75px solid ${r.tone}`,
+              borderLeft: `1.75px solid ${r.tone}`,
+              background: r.fade ? `linear-gradient(90deg, ${r.fill}, rgba(217, 119, 87, 0))` : r.fill,
+            }}
+          />
+        </Fade>
+      ))}
+      <Canvas>
+        <GFade show={s >= 3} delay={500}>
+          <circle cx={px(3)} cy={top + 2 * rowH + 35} r={10} style={{ fill: c.clayHex }} />
+        </GFade>
+      </Canvas>
+      <At x={px(7) + 20} y={top + 2 * rowH + 14} w={600}>
+        <Fade show={s >= 3} delay={600}>
+          <span style={{ fontSize: 28 }}>
+            <span style={{ color: ACCENT }}>●</span> day 3: first working federation
+          </span>
+        </Fade>
+      </At>
+      <At x={120} y={935} w={1680}>
+        <div style={{ fontSize: 30, color: c.muted }}>
+          Agents: <span style={{ color: ACCENT }}>Sol</span> and <span style={{ color: ACCENT }}>Astra</span> (OpenAI),{' '}
+          <span style={{ color: ACCENT }}>Opus</span> (Anthropic)
         </div>
       </At>
     </Shell>
@@ -6007,6 +6060,7 @@ export {
   ORD_REQ,
   OrdChip,
   FlowChip,
+  DAY,
 };
 export type {
   StepRegistration,
