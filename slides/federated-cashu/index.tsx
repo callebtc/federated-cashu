@@ -496,8 +496,8 @@ const StepItem = ({ n, step, children }: { n: number; step: number; children: Re
       style={{
         display: 'flex',
         gap: 14,
-        padding: '5px 0 5px 16px',
-        marginBottom: 10,
+        padding: '6px 0 6px 18px',
+        marginBottom: 14,
         borderLeft: `3px solid ${on ? c.clayHex : 'transparent'}`,
         color: on ? c.ink : done ? c.muted : c.dim,
         transition: `color 300ms ${EASE_OUT}, border-color 300ms ${EASE_OUT}`,
@@ -506,16 +506,16 @@ const StepItem = ({ n, step, children }: { n: number; step: number; children: Re
       <span
         style={{
           fontFamily: MONO,
-          fontSize: 20,
-          minWidth: 22,
-          paddingTop: 4,
+          fontSize: 22,
+          minWidth: 24,
+          paddingTop: 5,
           color: on ? ACCENT : 'inherit',
           transition: `color 300ms ${EASE_OUT}`,
         }}
       >
         {n}
       </span>
-      <span style={{ fontSize: 24, lineHeight: 1.38 }}>{children}</span>
+      <span style={{ fontSize: 28, lineHeight: 1.3 }}>{children}</span>
     </div>
   );
 };
@@ -998,10 +998,8 @@ const Cover: Page = () => (
       >
         Federated Cashu
       </h1>
-      <div style={{ fontSize: 34, color: c.muted, lineHeight: 1.4, maxWidth: 880 }}>
-        Threshold BLS issuance, consensus-ordered signing and threshold custody in the Cashu Development Kit
-      </div>
-      <div style={{ fontFamily: MONO, fontSize: 24, color: c.dim, marginTop: 64 }}>calle · github.com/cashubtc/cdk</div>
+      <div style={{ fontSize: 40, color: c.muted, lineHeight: 1.4 }}>Federations and nutroot</div>
+      <div style={{ fontFamily: MONO, fontSize: 26, color: c.dim, marginTop: 64 }}>calle · github.com/cashubtc/cdk</div>
     </div>
   </div>
 );
@@ -1020,43 +1018,39 @@ const SECTION_TITLES: Record<string, string> = {
   '2.3': 'Using nutroot',
 };
 
-const OUTLINE_TOP = 372;
-const OUTLINE_ROW = 84;
+const OUTLINE_TOP = 382;
+const OUTLINE_ROW = 70;
 const OUTLINE_COL = [120, 1000];
 
-const OutlineRow = ({ n, title, topics, state }: { n: string; title: string; topics: string; state: 'on' | 'off' | 'all' }) => (
-  <div style={{ height: OUTLINE_ROW, color: state === 'off' ? c.dim : c.ink, transition: `color 400ms ${EASE_OUT}` }}>
-    <div style={{ display: 'flex', alignItems: 'baseline' }}>
-      <span
-        style={{
-          fontFamily: MONO,
-          fontSize: 21,
-          width: 64,
-          color: state === 'off' ? c.dim : ACCENT,
-          transition: `color 400ms ${EASE_OUT}`,
-        }}
-      >
-        {n}
-      </span>
-      <span style={{ fontFamily: SERIF, fontSize: 34 }}>{title}</span>
-    </div>
-    <div
+const OutlineRow = ({ n, title, state }: { n: string; title: string; topics?: string; state: 'on' | 'off' | 'all' }) => (
+  <div
+    style={{
+      height: OUTLINE_ROW,
+      display: 'flex',
+      alignItems: 'baseline',
+      color: state === 'off' ? c.dim : c.ink,
+      transition: `color 400ms ${EASE_OUT}`,
+    }}
+  >
+    <span
       style={{
-        marginLeft: 64,
-        fontSize: 21,
-        color: state === 'off' ? c.dim : c.muted,
+        fontFamily: MONO,
+        fontSize: 24,
+        width: 76,
+        color: state === 'off' ? c.dim : ACCENT,
         transition: `color 400ms ${EASE_OUT}`,
       }}
     >
-      {topics}
-    </div>
+      {n}
+    </span>
+    <span style={{ fontFamily: SERIF, fontSize: 40 }}>{title}</span>
   </div>
 );
 
 const ChapterHead = ({ n, title, dim }: { n: number; title: string; dim: boolean }) => (
-  <div style={{ height: 114, color: dim ? c.dim : c.ink, transition: `color 400ms ${EASE_OUT}` }}>
-    <Label color={dim ? c.dim : c.clayHex}>Chapter {n}</Label>
-    <div style={{ fontFamily: SERIF, fontSize: 46, marginTop: 6 }}>{title}</div>
+  <div style={{ height: 124, color: dim ? c.dim : c.ink, transition: `color 400ms ${EASE_OUT}` }}>
+    <Label color={dim ? c.dim : c.clayHex}>Part {n}</Label>
+    <div style={{ fontFamily: SERIF, fontSize: 52, marginTop: 6 }}>{title}</div>
   </div>
 );
 
@@ -1077,30 +1071,30 @@ const Outline = ({ active }: { active?: SectionRef }) => {
           style={{
             position: 'absolute',
             left: OUTLINE_COL[at.ch - 1] - 24,
-            top: OUTLINE_TOP + at.i * OUTLINE_ROW + 4,
+            top: OUTLINE_TOP + at.i * OUTLINE_ROW + 10,
             width: 4,
-            height: 64,
+            height: 46,
             borderRadius: 2,
             background: ACCENT,
             transition: `top 600ms ${EASE_IO}, left 600ms ${EASE_IO}`,
           }}
         />
       )}
-      <At x={OUTLINE_COL[0]} y={258} w={800}>
-        <ChapterHead n={1} title="Federating Cashu" dim={at !== undefined && at.ch !== 1} />
-        <OutlineRow n="1.1" title="BLS blind signatures" topics="BDHKE, pairings, keyset v3" state={st(1, 0)} />
-        <OutlineRow n="1.2" title="Threshold issuance" topics="Shamir shares, Lagrange, wallet-side aggregation" state={st(1, 1)} />
-        <OutlineRow n="1.3" title="Ordering" topics="mix-and-match, operation IDs, consensus, request flows" state={st(1, 2)} />
-        <OutlineRow n="1.4" title="Keys and membership" topics="DKG, federation ID, recovery" state={st(1, 3)} />
-        <OutlineRow n="1.5" title="Custody" topics="funding backends, FROST, melt" state={st(1, 4)} />
-        <OutlineRow n="1.6" title="Client intent" topics="proof rewriting, transaction transcript, input signatures" state={st(1, 5)} />
+      <At x={OUTLINE_COL[0]} y={258} w={840}>
+        <ChapterHead n={1} title="Federations" dim={at !== undefined && at.ch !== 1} />
+        <OutlineRow n="1.1" title="BLS blind signatures" state={st(1, 0)} />
+        <OutlineRow n="1.2" title="Threshold issuance" state={st(1, 1)} />
+        <OutlineRow n="1.3" title="Ordering" state={st(1, 2)} />
+        <OutlineRow n="1.4" title="Keys and membership" state={st(1, 3)} />
+        <OutlineRow n="1.5" title="Custody" state={st(1, 4)} />
+        <OutlineRow n="1.6" title="Client intent" state={st(1, 5)} />
       </At>
       <At x={OUTLINE_COL[1]} y={258} w={800}>
         <ChapterHead n={2} title="Nutroot" dim={at !== undefined && at.ch !== 2} />
-        <OutlineRow n="2.1" title="Spending conditions today" topics="NUT-10 JSON secrets, P2PK, HTLC" state={st(2, 0)} />
-        <OutlineRow n="2.2" title="Taproot" topics="BIP340/341 output keys, key path, script path" state={st(2, 1)} />
-        <OutlineRow n="2.3" title="Nutroot secrets" topics="point secrets, leaves, tree fold, spends, internal keys" state={st(2, 2)} />
-        <OutlineRow n="2.4" title="Using nutroot" topics="spend info, receiver keys, capabilities, BIP341 differences" state={st(2, 3)} />
+        <OutlineRow n="2.1" title="Spending conditions today" state={st(2, 0)} />
+        <OutlineRow n="2.2" title="Taproot" state={st(2, 1)} />
+        <OutlineRow n="2.3" title="Nutroot secrets" state={st(2, 2)} />
+        <OutlineRow n="2.4" title="Using nutroot" state={st(2, 3)} />
       </At>
     </Shell>
   );
@@ -1123,7 +1117,7 @@ const ChapterTitle = ({ n, title, sub }: { n: number; title: string; sub: ReactN
   return (
     <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
       <Fade show={on}>
-        <Label color={c.clayHex}>Chapter {n}</Label>
+        <Label color={c.clayHex}>Part {n}</Label>
       </Fade>
       <Fade show={on} delay={60}>
         <div
@@ -1140,31 +1134,16 @@ const ChapterTitle = ({ n, title, sub }: { n: number; title: string; sub: ReactN
         </div>
       </Fade>
       <Fade show={on} delay={120}>
-        <div style={{ fontSize: 32, color: c.muted, maxWidth: 1200, lineHeight: 1.4 }}>{sub}</div>
+        <div style={{ fontSize: 40, color: c.muted, lineHeight: 1.4 }}>{sub}</div>
       </Fade>
       <Footer />
     </div>
   );
 };
 
-const Chapter1: Page = () => (
-  <ChapterTitle
-    n={1}
-    title="Federating Cashu"
-    sub="A Cashu mint operated by n members: threshold BLS issuance, consensus-ordered signing, threshold custody."
-  />
-);
+const Chapter1: Page = () => <ChapterTitle n={1} title="Federations" sub="One Cashu mint, run by n members." />;
 const Chapter2: Page = () => (
-  <ChapterTitle
-    n={2}
-    title="Nutroot"
-    sub={
-      <>
-        Point secrets and condition trees for v3 keysets. Specification: <Code>cashubtc/nuts#443</Code>, NUT-10 and
-        per-NUT deltas.
-      </>
-    }
-  />
+  <ChapterTitle n={2} title="Nutroot" sub="Conditional payments for Cashu v3, built like taproot." />
 );
 
 const Fact = ({ k, children }: { k: ReactNode; children: ReactNode }) => (
@@ -1172,6 +1151,15 @@ const Fact = ({ k, children }: { k: ReactNode; children: ReactNode }) => (
     <span style={{ width: 130, flexShrink: 0 }}>{k}</span>
     <span style={{ fontSize: 24, color: c.muted, lineHeight: 1.4 }}>{children}</span>
   </div>
+);
+
+const FedRow = ({ k, show, delay = 0, children }: { k: ReactNode; show: boolean; delay?: number; children: ReactNode }) => (
+  <Fade show={show} delay={delay}>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 24, padding: '18px 0', borderBottom: `1px solid ${c.rule}` }}>
+      <span style={{ width: 290, flexShrink: 0 }}>{k}</span>
+      <span style={{ fontSize: 30 }}>{children}</span>
+    </div>
+  </Fade>
 );
 
 const Model: Page = () => {
@@ -1184,7 +1172,7 @@ const Model: Page = () => {
   const pairs: [number, number][] = [];
   for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) pairs.push([i, j]);
   return (
-    <Shell eyebrow="Setting" title="System model" proc={proc}>
+    <Shell eyebrow="Setting" title="What is a federation" proc={proc}>
       <Canvas>
         {pairs.map(([i, j]) => {
           const a = ring(cx, cy, 230, i);
@@ -1220,7 +1208,7 @@ const Model: Page = () => {
             mint
           </T>
           <T x={cx} y={cy + 34} size={24} color={c.muted}>
-            key k, reserves
+            one key, one operator
           </T>
         </g>
         {[0, 1, 2, 3, 4].map((i) => {
@@ -1244,17 +1232,171 @@ const Model: Page = () => {
           <WalletNode x={w2.x} y={w2.y} r={46} />
         </GFade>
       </Canvas>
-      <At x={1180} y={270} w={620}>
-        <Fact k={<M size={34}>n</M>}>members in a fixed roster</Fact>
-        <Fact k={<M size={34}>t</M>}>signing threshold: BLS shares per signature</Fact>
-        <Fact k={<M size={34}>c</M>}>
-          consensus threshold, <M>c = n − ⌊(n − 1)/3⌋</M>, with <M>t ≤ c</M>
-        </Fact>
-        <Fact k={<M size={34}>q</M>}>
-          payment observation quorum, <M>q ≥ c</M>
-        </Fact>
-        <Fact k={<span style={{ fontSize: 24 }}>wallet</span>}>sends each request to every member and aggregates the responses</Fact>
-        <Fact k={<span style={{ fontSize: 24 }}>members</span>}>order operations with AlephBFT before signing</Fact>
+      <At x={1180} y={300} w={640}>
+        <FedRow k={<M size={40}>n</M>} show={s >= 1}>
+          members instead of one mint
+        </FedRow>
+        <FedRow k={<M size={40}>t</M>} show={s >= 1} delay={60}>
+          members sign each token
+        </FedRow>
+        <FedRow k={<M size={40}>c = n − f</M>} show={s >= 1} delay={120}>
+          order every operation
+        </FedRow>
+        <FedRow k={<M size={40}>f = ⌊(n − 1)/3⌋</M>} show={s >= 1} delay={180}>
+          may fail or lie
+        </FedRow>
+        <FedRow k={<span style={{ fontSize: 30, color: c.cool }}>wallets</span>} show={s >= 2}>
+          talk to every member
+        </FedRow>
+      </At>
+    </Shell>
+  );
+};
+
+const PartCard = ({ show, label, title, lines, tone }: { show: boolean; label: string; title: string; lines: ReactNode[]; tone: string }) => (
+  <Fade show={show} dimTo={0.25}>
+    <div
+      style={{
+        width: 780,
+        height: 420,
+        boxSizing: 'border-box',
+        border: `1.75px solid ${tone}`,
+        background: c.card,
+        borderRadius: 'var(--osd-radius)',
+        padding: '36px 44px',
+      }}
+    >
+      <Label color={tone}>{label}</Label>
+      <div style={{ fontFamily: SERIF, fontSize: 56, marginTop: 14 }}>{title}</div>
+      {lines.map((l, i) => (
+        <div key={i} style={{ fontSize: 32, color: c.muted, marginTop: i === 0 ? 40 : 16 }}>
+          {l}
+        </div>
+      ))}
+    </div>
+  </Fade>
+);
+
+const FedParts: Page = () => {
+  const proc = useProcess(2, 2200);
+  const s = proc.step;
+  return (
+    <Shell eyebrow="Setting" title="Two parts of a federation" proc={proc}>
+      <div style={{ display: 'flex', gap: 40, marginTop: 70 }}>
+        <PartCard
+          show={s >= 1}
+          label="Cryptography"
+          title="Threshold signatures"
+          tone={c.clayHex}
+          lines={[
+            <>
+              any <M>t</M> of <M>n</M> members sign
+            </>,
+            'no member holds the key',
+          ]}
+        />
+        <PartCard
+          show={s >= 2}
+          label="Consensus"
+          title="Shared state"
+          tone={c.violet}
+          lines={['payments observed by a quorum', 'same rules, same order, every member']}
+        />
+      </div>
+    </Shell>
+  );
+};
+
+const Paper: Page = () => (
+  <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+    <div style={{ marginTop: 40 }}>
+      <Label>btc++ payments · Berlin · 2026-10-01</Label>
+    </div>
+    <div style={{ fontFamily: SERIF, fontSize: 64, fontWeight: 500, lineHeight: 1.15, maxWidth: 1400, marginTop: 44 }}>
+      Federated Cashu: Threshold Blind Signatures with Consensus-Ordered Issuance
+    </div>
+    <div style={{ fontFamily: SERIF, fontSize: 36, marginTop: 48, display: 'flex', gap: 80 }}>
+      <span>Calle</span>
+      <span>Sol</span>
+      <span>Astra</span>
+    </div>
+    <div style={{ fontSize: 24, color: c.muted, marginTop: 10, display: 'flex', gap: 80 }}>
+      <span>Cashu</span>
+      <span>OpenAI</span>
+      <span>OpenAI</span>
+    </div>
+    <div style={{ fontFamily: SERIF, fontSize: 30, fontWeight: 600, marginTop: 64 }}>Abstract</div>
+    <div
+      style={{
+        fontFamily: SERIF,
+        fontSize: 28,
+        lineHeight: 1.5,
+        maxWidth: 1240,
+        marginTop: 16,
+        textAlign: 'justify',
+        hyphens: 'auto',
+      }}
+    >
+      We describe a Cashu mint operated by a federation of n members. Any t members issue a BLS blind signature that
+      verifies under one aggregate key. Members order every operation through consensus before they sign. The reserves
+      are held under a FROST threshold key by the same members. In v3, every input signs the whole transaction.
+    </div>
+    <Footer />
+  </div>
+);
+
+const BigStat = ({ show, delay, value, label }: { show: boolean; delay: number; value: string; label: ReactNode }) => (
+  <Fade show={show} delay={delay}>
+    <div style={{ width: 500 }}>
+      <div style={{ fontFamily: SERIF, fontSize: 104, lineHeight: 1.05 }}>{value}</div>
+      <div style={{ fontSize: 32, color: c.muted, marginTop: 14 }}>{label}</div>
+    </div>
+  </Fade>
+);
+
+const Built: Page = () => {
+  const proc = useProcess(3, 1800);
+  const s = proc.step;
+  return (
+    <Shell eyebrow="Authorship" title="How this was built" proc={proc}>
+      <div style={{ display: 'flex', gap: 60, marginTop: 110 }}>
+        <BigStat show={s >= 1} delay={0} value="7 days" label={<>building with agents (<Code>/goal</Code>)</>} />
+        <BigStat show={s >= 2} delay={0} value="7 days" label={<>cleaning up (<Code>/goal</Code>)</>} />
+        <BigStat show={s >= 3} delay={0} value="many days" label="refining" />
+      </div>
+      <At x={120} y={760} w={1680}>
+        <div style={{ fontSize: 36 }}>
+          Agents: <span style={{ color: ACCENT }}>Sol</span> and <span style={{ color: ACCENT }}>Astra</span> (OpenAI),{' '}
+          <span style={{ color: ACCENT }}>Opus</span> (Anthropic)
+        </div>
+      </At>
+    </Shell>
+  );
+};
+
+const ThanksRow = ({ show, delay, who, what }: { show: boolean; delay: number; who: string; what: ReactNode }) => (
+  <Fade show={show} delay={delay}>
+    <div style={{ display: 'flex', alignItems: 'baseline', gap: 40, padding: '30px 0', borderBottom: `1px solid ${c.rule}` }}>
+      <span style={{ fontFamily: SERIF, fontSize: 48, width: 460, flexShrink: 0 }}>{who}</span>
+      <span style={{ fontSize: 32, color: c.muted }}>{what}</span>
+    </div>
+  </Fade>
+);
+
+const Thanks: Page = () => {
+  const proc = useProcess(3, 1800);
+  const s = proc.step;
+  return (
+    <Shell eyebrow="Authorship" title="Built on the work of" proc={proc}>
+      <At x={120} y={300} w={1680}>
+        <ThanksRow show={s >= 1} delay={0} who="CDK team" what="the codebase all of this builds on" />
+        <ThanksRow show={s >= 2} delay={0} who="Cashu team" what="the BLS blind signature spec" />
+        <ThanksRow
+          show={s >= 3}
+          delay={0}
+          who="Fedimint team"
+          what="showed it works: BLS blind signatures, AlephBFT, iroh"
+        />
       </At>
     </Shell>
   );
@@ -1319,33 +1461,34 @@ const Bdhke: Page = () => {
           </M>
         </Fade>
       </At>
-      <At x={120} y={908} w={1200}>
-        <Note>
-          Wallet-side verification needs a DLEQ proof (NUT-12). With <M>k</M> split across members, checking{' '}
-          <M>k·Y = C</M> becomes an interactive threshold computation on every redemption.
-        </Note>
+      <At x={120} y={900} w={1200}>
+        <Fade show={s >= 7}>
+          <div style={{ fontSize: 32 }}>
+            Only the holder of <M>k</M> can verify <M>C</M>.
+          </div>
+        </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Hash the secret <M>x</M> to a curve point <M>Y</M>.
+          Hash <M>x</M> to <M>Y</M>
         </StepItem>
         <StepItem n={2} step={s}>
-          Blind with a random scalar <M>r</M>.
+          Blind with <M>r</M>
         </StepItem>
         <StepItem n={3} step={s}>
-          Send <M>B′</M> to the mint.
+          Send <M>B′</M>
         </StepItem>
         <StepItem n={4} step={s}>
-          Mint multiplies by its private key <M>k</M>.
+          Sign with <M>k</M>
         </StepItem>
         <StepItem n={5} step={s}>
-          Mint returns <M>C′</M>.
+          Return <M>C′</M>
         </StepItem>
         <StepItem n={6} step={s}>
-          Unblind with the public key <M>K = k·G</M>.
+          Unblind
         </StepItem>
         <StepItem n={7} step={s}>
-          On redemption the mint recomputes <M>k·Y</M>. This requires <M>k</M>.
+          Verifying needs <M>k</M>
         </StepItem>
       </StepList>
     </Shell>
@@ -1396,39 +1539,32 @@ const BlsFlow: Page = () => {
           </M>
         </Fade>
       </At>
-      <At x={900} y={680} w={420}>
+      <At x={900} y={700} w={420}>
         <Fade show={s >= 1}>
-          <Note>
-            <div>
-              <Code>H</Code>: hash-to-curve, DST
-            </div>
-            <div style={{ fontFamily: MONO, fontSize: 18, color: c.ink, margin: '4px 0 12px' }}>
-              CASHU_BLS12_381_G1_XMD:SHA-256_SSWU_RO_
-            </div>
-            <div>G₁: 48 B messages and signatures</div>
-            <div>G₂: 96 B public keys</div>
-            <div>DLEQ on v3: rejected</div>
-          </Note>
+          <div style={{ fontSize: 30, lineHeight: 1.7 }}>
+            <div>signatures: 48 B</div>
+            <div>public keys: 96 B</div>
+          </div>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Hash <M>x</M> to <M>Y</M> in G₁ (standard hash-to-curve).
+          Hash <M>x</M> to <M>Y</M> in G₁
         </StepItem>
         <StepItem n={2} step={s}>
-          Blind by scalar multiplication, <M>r ∈ 𝔽ᵣ*</M>.
+          Blind: <M>r·Y</M>
         </StepItem>
         <StepItem n={3} step={s}>
-          Send <M>B′</M> to the mint.
+          Send <M>B′</M>
         </StepItem>
         <StepItem n={4} step={s}>
-          Mint multiplies by <M>k</M>, as before.
+          Sign with <M>k</M>
         </StepItem>
         <StepItem n={5} step={s}>
-          Wallet checks <M>C′</M> against the public key <M>K = k·G₂</M>.
+          Check with a pairing
         </StepItem>
         <StepItem n={6} step={s}>
-          Unblind with <M>r⁻¹</M>. Any party verifies <M>C</M> with <M>K</M> only.
+          Unblind, verify with <M>K</M>
         </StepItem>
       </StepList>
     </Shell>
@@ -1485,17 +1621,13 @@ const Pairing: Page = () => {
           <Up>e</Up>(Y, <Hi color={c.cool}>K</Hi>)
         </DerivLine>
       </At>
-      <At x={120} y={800} w={1680}>
-        <div style={{ height: 1, background: c.rule, marginBottom: 22 }} />
-        <Note>
-          <div>
-            Blind check before unblinding: <M>e(C′, G₂) = e(B′, K)</M>, same derivation without <M>r</M>.
+      <At x={120} y={830} w={1680}>
+        <div style={{ height: 1, background: c.rule, marginBottom: 28 }} />
+        <Fade show={s >= 6}>
+          <div style={{ fontSize: 34 }}>
+            Both sides use only public values: anyone with <M>K</M> can verify.
           </div>
-          <div>
-            Batch verification: <M>e(Σ hᵢ·Cᵢ, G₂) = Π e(hᵢ·Yᵢ, Kᵢ)</M>, weights <M>hᵢ</M> from a SHA-256 transcript{' '}
-            <Code>Cashu_BLS_Batch_v1</Code>, rejection-sampled into <M>𝔽ᵣ*</M>.
-          </div>
-        </Note>
+        </Fade>
       </At>
     </Shell>
   );
@@ -1621,8 +1753,8 @@ const Keysets: Page = () => (
 
 const XW = [380, 620, 680];
 const Multisig: Page = () => (
-  <Shell n="1.1" eyebrow="BLS blind signatures" title="Threshold BLS compared with t-of-n secp multisig">
-    <At x={120} y={262} w={1680}>
+  <Shell n="1.1" eyebrow="BLS blind signatures" title="Threshold BLS compared with t-of-n multisig">
+    <At x={120} y={290} w={1680}>
       <Row i={0} head>
         <Cell head w={XW[0]}> </Cell>
         <Cell head w={XW[1]}>secp multisig</Cell>
@@ -1633,49 +1765,30 @@ const Multisig: Page = () => (
       <Row i={1}>
         <Cell w={XW[0]} color={c.muted}>Proof contains</Cell>
         <Cell w={XW[1]}>
-          <M>x</M>, <M>t</M> signatures, roster, policy
+          <M>t</M> signatures, roster
         </Cell>
-        <Cell w={XW[2]}>
-          <M>x</M>, one <M>C</M>
-        </Cell>
+        <Cell w={XW[2]}>one signature</Cell>
       </Row>
       <Row i={2}>
-        <Cell w={XW[0]} color={c.muted}>Wallet verification</Cell>
+        <Cell w={XW[0]} color={c.muted}>Wallet checks</Cell>
         <Cell w={XW[1]}>
-          <M>t</M> DLEQ checks and a policy check
+          <M>t</M> DLEQ proofs
         </Cell>
-        <Cell w={XW[2]}>one pairing, or one batch</Cell>
+        <Cell w={XW[2]}>one pairing</Cell>
       </Row>
       <Row i={3}>
-        <Cell w={XW[0]} color={c.muted}>Keyset</Cell>
-        <Cell w={XW[1]}>member keys plus roster history</Cell>
-        <Cell w={XW[2]}>
-          one aggregate <M>K</M> per amount
-        </Cell>
+        <Cell w={XW[0]} color={c.muted}>Signers visible</Cell>
+        <Cell w={XW[1]}>yes</Cell>
+        <Cell w={XW[2]}>no</Cell>
       </Row>
       <Row i={4}>
-        <Cell w={XW[0]} color={c.muted}>Receiver</Cell>
-        <Cell w={XW[1]}>must implement the federation format</Cell>
-        <Cell w={XW[2]}>any v3 wallet verifies offline</Cell>
-      </Row>
-      <Row i={5}>
-        <Cell w={XW[0]} color={c.muted}>Signer set visible</Cell>
-        <Cell w={XW[1]}>yes</Cell>
-        <Cell w={XW[2]}>
-          no: every subset yields the same <M>C</M>
-        </Cell>
-      </Row>
-      <Row i={6}>
         <Cell w={XW[0]} color={c.muted}>Consensus needed</Cell>
         <Cell w={XW[1]}>yes</Cell>
         <Cell w={XW[2]}>yes</Cell>
       </Row>
     </At>
-    <At x={120} y={760} w={1680}>
-      <Note>
-        Both keep blindness and <M>t</M>-of-<M>n</M> availability. Neither removes consensus, replay protection,
-        catch-up or payment observation. Threshold Schnorr (FROST) over the secret would be a different token format.
-      </Note>
+    <At x={120} y={720} w={1680}>
+      <div style={{ fontSize: 34 }}>Threshold BLS keeps today's proof format.</div>
     </At>
   </Shell>
 );
@@ -1745,21 +1858,17 @@ const Shamir: Page = () => {
       </Canvas>
       <StepList>
         <StepItem n={1} step={s}>
-          Sample <M>f(x) = k + a₁x + … + aₜ₋₁xᵗ⁻¹</M>, so <M>f(0) = k</M>. With <M>t = 2</M>, <M>f</M> is a line.
+          Random line through (0, <M>k</M>)
         </StepItem>
         <StepItem n={2} step={s}>
-          Member <M>i</M> stores <M>kᵢ = f(i)</M>. Member IDs are non-zero.
+          Member <M>i</M> holds <M>f(i)</M>
         </StepItem>
         <StepItem n={3} step={s}>
-          One share is consistent with every line; it reveals nothing about <M>k</M>.
+          One share: any <M>k</M> fits
         </StepItem>
         <StepItem n={4} step={s}>
-          Any <M>t</M> shares fix <M>f</M>, and with it <M>f(0)</M>.
+          Two shares fix <M>k</M>
         </StepItem>
-        <Note style={{ marginTop: 26, fontSize: 22 }}>
-          One polynomial per amount in the keyset. Issuance never reconstructs <M>k</M>; interpolation is applied to
-          signature shares.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -1964,25 +2073,25 @@ const ThresholdSign: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Wallet blinds the secret once.
+          Blind once
         </StepItem>
         <StepItem n={2} step={s}>
-          It sends the same request to every member's public URL.
+          Send to every member
         </StepItem>
         <StepItem n={3} step={s}>
-          Member <M>i</M> returns <M>C′ᵢ = kᵢ·B′</M> (<Code>blind_sign_share</Code>).
+          Each returns <M>kᵢ·B′</M>
         </StepItem>
         <StepItem n={4} step={s}>
-          m2 does not answer. <M>t = 2</M> responses are enough.
+          m2 silent: 2 are enough
         </StepItem>
         <StepItem n={5} step={s}>
-          Each share is checked against the member's public share <M>Kᵢ</M>; invalid shares are dropped.
+          Check each share
         </StepItem>
         <StepItem n={6} step={s}>
-          Wallet interpolates with the weights for <M>S = {'{1, 3}'}</M>.
+          Combine the shares
         </StepItem>
         <StepItem n={7} step={s}>
-          Unblind and verify against the aggregate key <M>K</M>. Members never exchange shares.
+          Unblind, verify with <M>K</M>
         </StepItem>
       </StepList>
     </Shell>
@@ -2075,8 +2184,8 @@ const MixMatch: Page = () => {
   const rowY = [420, 560, 700];
   return (
     <Shell n="1.3" eyebrow="Ordering" title="Mix-and-match across members" proc={proc}>
-      <div style={{ fontSize: 26, color: c.muted, marginTop: 10 }}>
-        <M>t = 2</M>, <M>n = 3</M>. The wallet paid a mint quote for two outputs and sends each member a different pair.
+      <div style={{ fontSize: 32, marginTop: 14 }}>
+        <M>t = 2</M>, <M>n = 3</M>. Paid for two outputs. Each member gets a different pair.
       </div>
       <At x={colX[0] - 75} y={316} w={150} style={{ textAlign: 'center' }}>
         <M size={38}>A</M>
@@ -2122,21 +2231,17 @@ const MixMatch: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          m1 signs <M>A, B</M>. The request matches the paid amount.
+          m1 signs A, B
         </StepItem>
         <StepItem n={2} step={s}>
-          m2 signs <M>B, C</M>. <M>B</M> now has <M>t</M> shares.
+          m2 signs B, C
         </StepItem>
         <StepItem n={3} step={s}>
-          m3 signs <M>C, A</M>. <M>A</M> and <M>C</M> now have <M>t</M> shares.
+          m3 signs C, A
         </StepItem>
         <StepItem n={4} step={s}>
-          Three valid signatures for a two-output quote. Each member saw a valid request.
+          3 signatures, 2 paid
         </StepItem>
-        <Note style={{ marginTop: 26, fontSize: 22 }}>
-          Swap variant: fixed inputs, overlapping output windows. Regression test: windows ABC, BCD, CDA, DAB against
-          one 3-output quote.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -2297,7 +2402,7 @@ const ShareTag = ({ m, op }: { m: string; op: string }) => (
 );
 
 const Consensus: Page = () => {
-  const proc = useProcess(5);
+  const proc = useProcess(4);
   const s = proc.step;
   const ha = useSha256(ENV_A).slice(0, 4);
   const hb = useSha256(ENV_B).slice(0, 4);
@@ -2342,33 +2447,19 @@ const Consensus: Page = () => {
           </div>
         </Fade>
       </At>
-      <At x={120} y={720} w={1180}>
-        <Fade show={s >= 5}>
-          <Note>
-            <div>Conflict keys: mint and melt quote IDs. Swaps have none; the proof store at apply is the spend lock.</div>
-            <div>Replay is idempotent: the same operation yields the same state and the same shares.</div>
-            <div>
-              A signing threshold <M>t</M> below the consensus threshold <M>c</M> is safe only because signing follows
-              ordering.
-            </div>
-          </Note>
-        </Fade>
-      </At>
+
       <StepList>
         <StepItem n={1} step={s}>
-          Members submit envelopes to consensus instead of signing on receipt.
+          Submit, do not sign
         </StepItem>
         <StepItem n={2} step={s}>
-          Consensus emits one order. #41 is applied.
+          One order for everyone
         </StepItem>
         <StepItem n={3} step={s}>
-          #42 targets the same quote and fails when applied.
+          #42: quote already used
         </StepItem>
         <StepItem n={4} step={s}>
-          Members sign only the outputs of accepted operations; shares are bound to the operation ID.
-        </StepItem>
-        <StepItem n={5} step={s}>
-          Conflict keys, replay, thresholds.
+          Sign accepted only
         </StepItem>
       </StepList>
     </Shell>
@@ -2411,7 +2502,7 @@ const PipeStage = ({
     >
       <div style={{ fontFamily: MONO, fontSize: 20, color: on ? ACCENT : c.dim }}>{n}</div>
       <div style={{ fontSize: 28, fontWeight: 600, marginTop: 6 }}>{title}</div>
-      <div style={{ fontSize: 22, color: c.muted, lineHeight: 1.45, marginTop: 12 }}>{children}</div>
+      <div style={{ fontSize: 28, color: c.muted, lineHeight: 1.35, marginTop: 16 }}>{children}</div>
     </div>
   );
 };
@@ -2444,52 +2535,26 @@ const Swap: Page = () => {
     <Shell n="1.3" eyebrow="Ordering" title="Federated swap" proc={proc}>
       <PipeArrows proc={proc} />
       <PipeStage x={PIPE_X[0]} n={1} title="Request" step={s}>
-        <div>
-          <Code>POST /v1/swap</Code>
-        </div>
-        <div>to every member's public URL</div>
-        <div>identical body</div>
+        same request to every member
       </PipeStage>
       <PipeStage x={PIPE_X[1]} n={2} title="Admission" step={s}>
-        <div>unique inputs</div>
-        <div>v3 outputs, unique</div>
-        <div>content bounds</div>
-        <div>proofs and spending conditions verify</div>
+        proofs and conditions verify
       </PipeStage>
       <PipeStage x={PIPE_X[2]} n={3} title="Consensus" step={s}>
-        <div>
-          envelope → <Code>operation_id</Code>
-        </div>
-        <div>total order</div>
-        <div>first swap spending the inputs wins</div>
+        first swap of these inputs wins
       </PipeStage>
       <PipeStage x={PIPE_X[3]} n={4} title="Apply" step={s}>
-        <div>check the balance incl. fees</div>
-        <div>mark inputs spent</div>
-        <div>
-          sign outputs: <M>C′ᵢ = kᵢ·B′</M>
-        </div>
+        mark spent, sign outputs
       </PipeStage>
       <PipeStage x={PIPE_X[4]} n={5} title="Aggregate" step={s} tone={c.cool}>
-        <div>
-          wallet collects <M>t</M> shares per output
-        </div>
-        <div>interpolate, unblind</div>
-        <div>
-          verify against <M>K</M>
-        </div>
+        <M>t</M> shares → one signature
       </PipeStage>
-      <At x={120} y={660} w={1680}>
-        <div style={{ height: 1, background: c.rule, marginBottom: 22 }} />
-        <Note>
-          <div>Members that lag behind the consensus log fail closed and return no shares.</div>
-          <div>
-            An offline member catches up from the journal, then serves the accepted shares; it cannot sign another
-            output set for spent inputs.
+      <At x={120} y={700} w={1680}>
+        <Fade show={s >= 4}>
+          <div style={{ fontSize: 34 }}>
+            A second swap of the same inputs fails: <Code>TokenAlreadySpent</Code>.
           </div>
-          <div>Restore returns the stored shares of the accepted operation, never new ones.</div>
-          <div>Swaps carry no conflict key: a second swap over the same inputs fails at apply with <Code>TokenAlreadySpent</Code>.</div>
-        </Note>
+        </Fade>
       </At>
     </Shell>
   );
@@ -2624,32 +2689,29 @@ const Topology: Page = () => {
       <At x={120} y={300} w={290}>
         <Fade show={s >= 1} dimTo={0.35}>
           <Label color={c.cool}>Public plane</Label>
-          <Note style={{ marginTop: 8 }}>
-            Cashu HTTP API on each member's <Code>public_mint_url</Code>. The wallet fans out and aggregates.
+          <Note style={{ marginTop: 8, fontSize: 28, color: c.ink }}>
+            Cashu API on every member
           </Note>
         </Fade>
       </At>
       <At x={120} y={720} w={290}>
         <Fade show={s >= 2} dimTo={0.35}>
           <Label color={c.violet}>Private plane</Label>
-          <Note style={{ marginTop: 8 }}>
-            <Code>/federation/v1</Code>, member-authenticated: consensus, journal catch-up, DKG.
+          <Note style={{ marginTop: 8, fontSize: 28, color: c.ink }}>
+            consensus, catch-up, DKG
           </Note>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Wallets use the public plane only. Responses are aggregated client-side.
+          Wallets: public API
         </StepItem>
         <StepItem n={2} step={s}>
-          Members order operations on the private plane. Wallets never see it.
+          Members: private plane
         </StepItem>
         <StepItem n={3} step={s}>
-          Two members offline: signing needs <M>t</M> responses, ordering needs <M>c</M> members.
+          2 offline: ordering stops
         </StepItem>
-        <Note style={{ marginTop: 26, fontSize: 22 }}>
-          Both planes run over HTTPS or iroh. The transport does not change the protocol.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -2659,33 +2721,41 @@ const Topology: Page = () => {
 // 04 · Keys and membership
 // ═════════════════════════════════════════════════════════════════════════════
 
+const DKG_ROWS: [string, number, number, number, number][] = [
+  ['m1', 3, 3, 2, 8],
+  ['m2', 4, 2, 3, 9],
+  ['m3', 5, 1, 4, 10],
+];
+
 const Dkg: Page = () => {
-  const proc = useProcess(4);
+  const proc = useProcess(4, 2000);
   const s = proc.step;
-  const X = (x: number) => 220 + 280 * x;
-  const Y = (y: number) => 900 - 52 * y;
-  const f1 = (x: number) => 1.5 + 0.8 * x;
-  const f2 = (x: number) => 3 - 0.4 * x;
-  const f3 = (x: number) => 1 + 0.6 * x;
+  // Toy example: f₁ = 2 + x, f₂ = 4 − x, f₃ = 1 + x, sum f = 7 + x.
+  const X = (x: number) => 200 + 180 * x;
+  const Y = (y: number) => 900 - 48 * y;
+  const f1 = (x: number) => 2 + x;
+  const f2 = (x: number) => 4 - x;
+  const f3 = (x: number) => 1 + x;
   const sum = (x: number) => f1(x) + f2(x) + f3(x);
   const lineOp = s >= 3 ? 0.3 : 1;
   const sub = ['₁', '₂', '₃'];
+  const cols = [c.cool, c.violet, c.good];
   return (
     <Shell n="1.4" eyebrow="Keys and membership" title="Distributed key generation" proc={proc}>
       <Canvas>
-        <Line x1={220} y1={900} x2={1220} y2={900} color={c.node} />
-        <Line x1={220} y1={900} x2={220} y2={330} color={c.node} />
+        <Line x1={200} y1={900} x2={900} y2={900} color={c.node} />
+        <Line x1={200} y1={900} x2={200} y2={330} color={c.node} />
         <Draw x1={X(0)} y1={Y(f1(0))} x2={X(3.5)} y2={Y(f1(3.5))} show={s >= 1} color={c.cool} width={2.5} opacity={lineOp} />
         <Draw x1={X(0)} y1={Y(f2(0))} x2={X(3.5)} y2={Y(f2(3.5))} show={s >= 1} color={c.violet} width={2.5} delay={80} opacity={lineOp} />
         <Draw x1={X(0)} y1={Y(f3(0))} x2={X(3.5)} y2={Y(f3(3.5))} show={s >= 1} color={c.good} width={2.5} delay={160} opacity={lineOp} />
-        <T x={X(3.5) + 16} y={Y(f1(3.5)) + 10} size={28} font="math" anchor="start" color={c.cool} show={s >= 1}>
-          f₁
+        <T x={X(3.5) + 14} y={Y(f1(3.5)) + 10} size={28} font="math" anchor="start" color={c.cool} show={s >= 1}>
+          f₁ = 2 + x
         </T>
-        <T x={X(3.5) + 16} y={Y(f2(3.5)) + 10} size={28} font="math" anchor="start" color={c.violet} show={s >= 1}>
-          f₂
+        <T x={X(3.5) + 14} y={Y(f2(3.5)) + 10} size={28} font="math" anchor="start" color={c.violet} show={s >= 1}>
+          f₂ = 4 − x
         </T>
-        <T x={X(3.5) + 16} y={Y(f3(3.5)) + 10} size={28} font="math" anchor="start" color={c.good} show={s >= 1}>
-          f₃
+        <T x={X(3.5) + 14} y={Y(f3(3.5)) - 6} size={28} font="math" anchor="start" color={c.good} show={s >= 1}>
+          f₃ = 1 + x
         </T>
         {[1, 2, 3].map((i) => (
           <g key={`g${i}`}>
@@ -2698,43 +2768,67 @@ const Dkg: Page = () => {
             <T x={X(i)} y={940} size={22} font="mono" color={c.muted} show={s >= 2} delay={i * 60}>
               {`m${i}`}
             </T>
-            <Dot x={X(i)} y={Y(sum(i))} r={9} show={s >= 3} delay={600 + i * 60} />
-            <T x={X(i)} y={Y(sum(i)) - 24} size={30} font="math" show={s >= 3} delay={600 + i * 60}>
-              {`k${sub[i - 1]}`}
+            <Dot x={X(i)} y={Y(sum(i))} r={9} show={s >= 3} delay={400 + i * 60} />
+            <T x={X(i)} y={Y(sum(i)) - 24} size={30} font="math" show={s >= 3} delay={400 + i * 60}>
+              {`k${sub[i - 1]} = ${sum(i)}`}
             </T>
           </g>
         ))}
         <Draw x1={X(0)} y1={Y(sum(0))} x2={X(3.5)} y2={Y(sum(3.5))} show={s >= 3} width={3} />
-        <T x={X(3.5) + 16} y={Y(sum(3.5)) + 10} size={28} font="math" anchor="start" color={c.clayHex} show={s >= 3}>
-          f
+        <T x={X(3.5) + 14} y={Y(sum(3.5)) + 10} size={28} font="math" anchor="start" color={c.clayHex} show={s >= 3}>
+          f = 7 + x
         </T>
         <GFade show={s >= 4}>
           <circle cx={X(0)} cy={Y(sum(0))} r={18} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 2, strokeDasharray: '4 5' }} />
-          <T x={190} y={Y(sum(0)) + 12} size={40} font="math" anchor="end" color={c.clayHex}>
-            k
+          <T x={X(0) + 30} y={Y(sum(0)) + 44} size={30} font="math" anchor="start" color={c.clayHex}>
+            k = 2 + 4 + 1 = 7
           </T>
         </GFade>
       </Canvas>
+      <At x={1010} y={330} w={330}>
+        <Fade show={s >= 2}>
+          <div style={{ display: 'flex', fontSize: 24, color: c.muted }}>
+            <span style={{ width: 80 }} />
+            {['f₁', 'f₂', 'f₃'].map((f, j) => (
+              <span key={f} style={{ width: 80, textAlign: 'center', fontFamily: MATH, fontStyle: 'italic', color: cols[j] }}>
+                {f}
+              </span>
+            ))}
+          </div>
+          {DKG_ROWS.map(([m, a, b, d, k]) => (
+            <div key={m} style={{ display: 'flex', alignItems: 'baseline', height: 64, borderBottom: `1px solid ${c.rule}` }}>
+              <span style={{ width: 80, fontFamily: MONO, fontSize: 22, color: c.muted }}>{m}</span>
+              {[a, b, d].map((v, j) => (
+                <span key={j} style={{ width: 80, textAlign: 'center' }}>
+                  <M size={32}>{v}</M>
+                </span>
+              ))}
+            </div>
+          ))}
+        </Fade>
+        <Fade show={s >= 3} style={{ marginTop: 18 }}>
+          {DKG_ROWS.map(([m, , , , k], i) => (
+            <div key={m} style={{ fontSize: 28, height: 44 }}>
+              <M size={30}>
+                k{sub[i]} = {DKG_ROWS[i][1]} + {DKG_ROWS[i][2]} + {DKG_ROWS[i][3]} = <Hi>{k}</Hi>
+              </M>
+            </div>
+          ))}
+        </Fade>
+      </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Member <M>j</M> samples its own polynomial <M>fⱼ</M> of degree <M>t − 1</M>.
+          Each picks a random line
         </StepItem>
         <StepItem n={2} step={s}>
-          It sends <M>fⱼ(i)</M> privately to member <M>i</M>.
+          Send <M>fⱼ(i)</M> to member <M>i</M>
         </StepItem>
         <StepItem n={3} step={s}>
-          Member <M>i</M> sums what it received: <M>kᵢ = Σⱼ fⱼ(i) = f(i)</M> with <M>f = Σⱼ fⱼ</M>.
+          Add what you received
         </StepItem>
         <StepItem n={4} step={s}>
-          <M>k = f(0) = Σⱼ fⱼ(0)</M> is never computed. <M>K = k·G₂</M> is published.
+          <M>k = f(0)</M>: never computed
         </StepItem>
-        <Note style={{ marginTop: 26, fontSize: 22 }}>
-          Dealer-free DKG (<Code>PedersenDkg</Code> in code) with Feldman-style commitments <M>aⱼ,ₗ·G₂</M>, once per
-          amount. The trusted-dealer setup used in tests ends in the same state.
-          <div style={{ marginTop: 6 }}>
-            <Code>cdk-common/src/federation/dkg.rs</Code>
-          </div>
-        </Note>
       </StepList>
     </Shell>
   );
@@ -2756,49 +2850,43 @@ const DkgRounds: Page = () => {
         <Lifeline x={A} label="m1" color={c.cool} />
         <Lifeline x={B} label="m2" color={c.violet} />
         <Lifeline x={C} label="m3" color={c.good} />
-        <Band x1={A - 60} x2={C + 60} y={314} label="readiness: same ceremony ID and keyset policy" show={s >= 1} />
-        <Band x1={A - 60} x2={C + 60} y={378} label="commitment: SHA-256 of the member's reveal" show={s >= 2} />
-        <Band x1={A - 60} x2={C + 60} y={442} label="reveal: Aⱼ,ₗ = aⱼ,ₗ·G₂ for every amount" show={s >= 3} />
+        <Band x1={A - 60} x2={C + 60} y={314} label="same ceremony, same policy" show={s >= 1} />
+        <Band x1={A - 60} x2={C + 60} y={378} label="commit: hash of the reveal" show={s >= 2} />
+        <Band x1={A - 60} x2={C + 60} y={442} label="reveal: coefficients · G₂" show={s >= 3} />
         <P2P x1={A} x2={B} y={494} show={s >= 4} delay={0} color={c.cool} />
         <P2P x1={A} x2={C} y={516} show={s >= 4} delay={60} color={c.cool} />
         <P2P x1={B} x2={A} y={538} show={s >= 4} delay={120} color={c.violet} />
         <P2P x1={B} x2={C} y={560} show={s >= 4} delay={180} color={c.violet} />
         <P2P x1={C} x2={A} y={582} show={s >= 4} delay={240} color={c.good} />
         <P2P x1={C} x2={B} y={604} show={s >= 4} delay={300} color={c.good} />
-        <T x={C + 90} y={556} size={22} font="mono" anchor="start" color={c.muted} show={s >= 4}>
+        <T x={C + 90} y={556} size={26} font="math" anchor="start" color={c.muted} show={s >= 4}>
           fⱼ(i)
         </T>
-        <Band x1={A - 60} x2={C + 60} y={660} label="check fⱼ(i)·G₂ = Σₗ iˡ·Aⱼ,ₗ · kᵢ = Σⱼ fⱼ(i) · K = Σⱼ Aⱼ,₀" show={s >= 5} tone="clay" />
-        <Band x1={A - 60} x2={C + 60} y={726} label="transcript signature by each identity key" show={s >= 6} />
-        <Band x1={A - 60} x2={C + 60} y={792} label="activation: same transcript hash and final config digest" show={s >= 7} tone="cool" />
-        <T x={(A + C) / 2} y={862} size={22} color={c.muted} show={s >= 7}>
-          then FROST rounds 1, 2 and confirmation for the treasury root
-        </T>
-        <T x={(A + C) / 2} y={900} size={21} color={c.muted} show={s >= 1}>
-          Every message is a signed request to every member; there is no broadcast channel.
-        </T>
+        <Band x1={A - 60} x2={C + 60} y={660} label="check each value, add" show={s >= 5} tone="clay" />
+        <Band x1={A - 60} x2={C + 60} y={726} label="sign the transcript" show={s >= 6} />
+        <Band x1={A - 60} x2={C + 60} y={792} label="activate" show={s >= 7} tone="cool" />
       </Canvas>
       <StepList>
         <StepItem n={1} step={s}>
-          Each member confirms it runs the exact ceremony and keyset policy.
+          Ready
         </StepItem>
         <StepItem n={2} step={s}>
-          Each member sends a hash of its reveal first, so no member can choose its polynomial after seeing others.
+          Commit
         </StepItem>
         <StepItem n={3} step={s}>
-          After all commitments arrive, members reveal their G₂ commitments.
+          Reveal
         </StepItem>
         <StepItem n={4} step={s}>
-          Point-to-point delivery of <M>fⱼ(i)</M> on the private plane.
+          Deliver shares
         </StepItem>
         <StepItem n={5} step={s}>
-          Each value is checked against the sender's commitments; each member stores its share.
+          Verify and add
         </StepItem>
         <StepItem n={6} step={s}>
-          Members sign the public transcript hash.
+          Sign transcript
         </StepItem>
         <StepItem n={7} step={s}>
-          All members confirm the finalized config. No ecash is signed before activation.
+          Activate
         </StepItem>
       </StepList>
     </Shell>
@@ -3017,26 +3105,25 @@ const Recovery: Page = () => {
             m2 ready: serving and signing
           </span>
         </Fade>
-        <Note style={{ marginTop: 26 }}>
-          Not recoverable from peers: identity key, BLS key shares, sealed FROST share. Without them the seat cannot
-          sign, and replacing it requires a new roster.
+        <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>
+          Keys are not recoverable from peers.
         </Note>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Restore a checkpoint: snapshot, manifest and secrets from one backup generation.
+          Restore a checkpoint
         </StepItem>
         <StepItem n={2} step={s}>
-          Request the journal suffix from peers.
+          Fetch the missing log
         </StepItem>
         <StepItem n={3} step={s}>
-          Replay accepted operations deterministically: same operation, same state, same shares.
+          Replay it
         </StepItem>
         <StepItem n={4} step={s}>
-          Check log positions and digests against a checkpoint signed by at least <M>c</M> members.
+          Match the signed checkpoint
         </StepItem>
         <StepItem n={5} step={s}>
-          Readiness gate passes. Until then the member does not sign.
+          Ready: sign again
         </StepItem>
       </StepList>
     </Shell>
@@ -3124,39 +3211,25 @@ const Funding: Page = () => {
       <At x={120} y={250}>
         <Label color={c.clayHex}>Ecash issuer · BLS threshold</Label>
       </At>
-      <At x={120} y={780} w={1000}>
-        <div style={{ position: 'relative', height: 150 }}>
+      <At x={120} y={800} w={1100}>
+        <div style={{ position: 'relative', height: 120 }}>
           <Fade show={s === 1} style={{ position: 'absolute', inset: 0 }}>
-            <Note>
-              <div style={{ color: c.bad }}>The node operator can:</div>
-              <div>mark unpaid quotes paid · refuse or redirect melts · spend the reserves</div>
-              <div>Consensus among members does not constrain a key they do not hold.</div>
-            </Note>
+            <div style={{ fontSize: 34, color: c.bad }}>One operator can spend the reserves.</div>
           </Fade>
           <Fade show={s >= 2} style={{ position: 'absolute', inset: 0 }}>
-            <Note>
-              <div style={{ color: c.good }}>Invoices, payments and withdrawals are consensus operations.</div>
-              <div>
-                Spending requires <M>t</M> FROST signers from the same roster.
-              </div>
-            </Note>
+            <div style={{ fontSize: 34, color: c.good }}>
+              Spending needs <M>t</M> members.
+            </div>
           </Fade>
         </div>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Federated issuance over a single-operator Lightning or on-chain backend.
+          One-operator backend
         </StepItem>
         <StepItem n={2} step={s}>
-          Threshold custody: the members that sign ecash also sign treasury transactions.
+          Threshold custody
         </StepItem>
-        <Note style={{ marginTop: 26, fontSize: 22 }}>
-          <div>Federated BDK: on-chain treasury.</div>
-          <div>Federated Bark: Lightning treasury.</div>
-          <div style={{ marginTop: 10 }}>
-            <Code>development_single_observation</Code> and <Code>fakewallet</Code> are test-only.
-          </div>
-        </Note>
       </StepList>
     </Shell>
   );
@@ -3264,32 +3337,18 @@ const KeyMaterial: Page = () => {
       <Badge x={xs[2]} y={402} label="FROST sᵢ" color={c.cool} soft={c.coolSoft} show={s >= 2} delay={100} />
       <Badge x={xs[3]} y={402} label="FROST sᵢ" color={c.cool} soft={c.coolSoft} show={s >= 2} delay={150} />
       <Badge x={xs[4]} y={402} label="FROST sᵢ" color={c.cool} soft={c.coolSoft} show={s >= 2} delay={200} />
-      <At x={120} y={352} w={520}>
+      <At x={120} y={360} w={600}>
         <Fade show={s >= 1} dimTo={0.3}>
-          <div style={{ fontSize: 24 }}>
-            ecash: BLS12-381, <M>K</M> in G₂, per amount
-          </div>
+          <div style={{ fontSize: 30 }}>ecash: BLS, one key per amount</div>
         </Fade>
         <Fade show={s >= 2} dimTo={0.3} style={{ marginTop: 18 }}>
-          <div style={{ fontSize: 24 }}>treasury: FROST on secp256k1, one root</div>
+          <div style={{ fontSize: 30 }}>treasury: FROST, one root key</div>
         </Fade>
       </At>
-      <At x={120} y={480} w={1680}>
-        <Note>
-          <div>
-            Same roster, ceremony ID and signature threshold. Startup is complete only when both ceremonies finish; the
-            secrets never mix.
-          </div>
-          <div>
-            FROST: <Code>frost-secp256k1-tr 3.0.0</Code>, ciphersuite <Code>secp256k1_sha256_tr_v1</Code>. Three rounds
-            on the private plane: commitments, per-recipient packages, root confirmation. Each message binds federation,
-            ceremony, epoch, threshold, roster, sender and receiver. Shares are sealed with AES-256-GCM.
-          </div>
-        </Note>
-      </At>
-      <At x={120} y={712}>
+
+      <At x={120} y={700}>
         <Fade show={s >= 3}>
-          <Label color={c.cool}>Derivation from the untweaked root, in order</Label>
+          <Label color={c.cool}>Wallet keys derive from the root</Label>
         </Fade>
       </At>
       <ChainChip
@@ -3306,12 +3365,9 @@ const KeyMaterial: Page = () => {
       <ChainChip i={3} show={s >= 3} label="non-hardened BIP32" />
       <ChainChip i={4} show={s >= 3} label="BIP340 even-Y" />
       <ChainChip i={5} show={s >= 3} label="BIP341 key-path tweak" />
-      <At x={120} y={872} w={1680}>
+      <At x={120} y={880} w={1680}>
         <Fade show={s >= 3} delay={500}>
-          <Note>
-            BDK and Bark derive from <M>P</M>; there is no second DKG. Any <M>t</M> members produce one BIP340 signature;
-            the private key is never reconstructed.
-          </Note>
+          <div style={{ fontSize: 32 }}>One root key, never reconstructed.</div>
         </Fade>
       </At>
     </Shell>
@@ -3325,50 +3381,24 @@ const Melt: Page = () => {
     <Shell n="1.5" eyebrow="Custody" title="On-chain melt: intent to broadcast" proc={proc}>
       <PipeArrows proc={proc} />
       <PipeStage x={PIPE_X[0]} n={1} title="Intent" step={s}>
-        <div>
-          <Code>make_payment</Code> creates an intent
-        </div>
-        <div>Melt operation through consensus</div>
-        <div>no funds move</div>
+        ordered by consensus, no funds move
       </PipeStage>
       <PipeStage x={PIPE_X[1]} n={2} title="Proposal" step={s}>
-        <div>
-          <Code>TransactionProposal</Code>
-        </div>
-        <div>exact unsigned transaction</div>
-        <div>ordered like any operation</div>
+        exact unsigned transaction
       </PipeStage>
       <PipeStage x={PIPE_X[2]} n={3} title="Recompute" step={s}>
-        <div>every member checks:</div>
-        <div>input ownership, value conservation, fee cap, destination, sighashes</div>
+        every member checks it
       </PipeStage>
       <PipeStage x={PIPE_X[3]} n={4} title="FROST sign" step={s} tone={c.cool}>
-        <div>authorization binds operation, tx, input index, sighash</div>
-        <div>nonces burn on failure, never reused</div>
+        <M>t</M> members, fresh nonces
       </PipeStage>
-      <PipeStage x={PIPE_X[4]} n={5} title="Persist, broadcast" step={s}>
-        <div>
-          <Code>TransactionSigned</Code> stored
-        </div>
-        <div>
-          then <Code>BroadcastIntent</Code>
-        </div>
-        <div>replay broadcasts the same bytes</div>
+      <PipeStage x={PIPE_X[4]} n={5} title="Broadcast" step={s}>
+        stored first, same bytes on replay
       </PipeStage>
-      <At x={120} y={660} w={1680}>
-        <div style={{ height: 1, background: c.rule, marginBottom: 22 }} />
-        <Note>
-          <div>
-            A single member can propose. It cannot change the destination, get a different transaction signed, or
-            broadcast different bytes.
-          </div>
-          <div>
-            Deposits: addresses are allocated by consensus (quote, epoch, keychain, index). A deposit needs the
-            observation quorum and confirmation depth.
-          </div>
-          <div>A reorg before issuance withdraws the observation; after issuance it raises an alarm and does not unmint.</div>
-          <div>Nonce lifecycle (cdk-frost): Generated → Reserved → CommitmentSent → Signing → ShareProduced → Consumed; failures burn the nonce.</div>
-        </Note>
+      <At x={120} y={700} w={1680}>
+        <Fade show={s >= 3}>
+          <div style={{ fontSize: 34 }}>One member can propose. It cannot change what gets signed.</div>
+        </Fade>
       </At>
     </Shell>
   );
@@ -3409,12 +3439,12 @@ const Rewrite: Page = () => {
       </Canvas>
       <At x={120} y={300} w={460}>
         <Fade show={s >= 1}>
-          <span style={{ fontFamily: MONO, fontSize: 22, color: c.cool }}>swap P₁ P₂ → A B</span>
+          <span style={{ fontFamily: MONO, fontSize: 26, color: c.cool }}>swap P₁ P₂ → A B</span>
         </Fade>
       </At>
-      <At x={560} y={800} w={400}>
+      <At x={540} y={800} w={440}>
         <Fade show={s >= 2}>
-          <span style={{ fontFamily: MONO, fontSize: 22, color: c.bad }}>swap P₁ P₂ → X Y</span>
+          <span style={{ fontFamily: MONO, fontSize: 26, color: c.bad }}>swap P₁ P₂ → X Y</span>
         </Fade>
       </At>
       <div
@@ -3437,7 +3467,7 @@ const Rewrite: Page = () => {
       >
         consensus
       </div>
-      <At x={1000} y={680} w={320}>
+      <At x={1000} y={680} w={330}>
         <Fade show={s >= 3} style={{ marginBottom: 14 }}>
           <div
             style={{
@@ -3446,10 +3476,10 @@ const Rewrite: Page = () => {
               borderRadius: 10,
               padding: '10px 18px',
               fontFamily: MONO,
-              fontSize: 21,
+              fontSize: 24,
             }}
           >
-            #57 → X Y <span style={{ color: c.bad }}>applied</span>
+            X Y <span style={{ color: c.bad }}>applied</span>
           </div>
         </Fade>
         <Fade show={s >= 3} delay={150}>
@@ -3460,31 +3490,116 @@ const Rewrite: Page = () => {
               borderRadius: 10,
               padding: '10px 18px',
               fontFamily: MONO,
-              fontSize: 21,
+              fontSize: 24,
               color: c.dim,
             }}
           >
-            #58 → A B inputs spent
+            A B already spent
           </div>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Fan-out gives every member the bearer proofs <M>(x, C)</M>.
+          All members see the proofs
         </StepItem>
         <StepItem n={2} step={s}>
-          m3 builds a swap of the same inputs to its own outputs and submits it first.
+          m3 swaps them first
         </StepItem>
         <StepItem n={3} step={s}>
-          Consensus orders #57 first. The wallet's swap fails with <Code>TokenAlreadySpent</Code>.
+          The owner's swap fails
         </StepItem>
         <StepItem n={4} step={s}>
-          The shares for X, Y are valid. A pre-v3 bearer proof carries no witness, so nothing binds it to the owner's outputs.
+          Nothing binds the outputs
         </StepItem>
-        <Note style={{ marginTop: 26, fontSize: 22 }}>
-          Audit SEC-2026-07-17-01. DKG protects <M>k</M>, not bearer secrets; consensus picks one operation, not the
-          owner's.
-        </Note>
+      </StepList>
+    </Shell>
+  );
+};
+
+const TxSide = ({ items, tone, hot }: { items: string[]; tone: string; hot?: boolean }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+    {items.map((it) => (
+      <div
+        key={it}
+        style={{
+          width: 170,
+          height: 76,
+          boxSizing: 'border-box',
+          border: `1.75px solid ${tone}`,
+          background: hot ? c.badSoft : c.card,
+          borderRadius: 12,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: MONO,
+          fontSize: 30,
+          transition: `background 300ms ${EASE_OUT}, border-color 300ms ${EASE_OUT}`,
+        }}
+      >
+        {it}
+      </div>
+    ))}
+  </div>
+);
+
+const SigAll: Page = () => {
+  const proc = useProcess(3, 2200);
+  const s = proc.step;
+  const swapped = s >= 2;
+  return (
+    <Shell n="1.6" eyebrow="Client intent" title="SIG_ALL for every transaction" proc={proc}>
+      <At x={120} y={330} w={1200}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
+          <TxSide items={['P₁', 'P₂']} tone={c.cool} />
+          <div style={{ fontSize: 44, color: c.muted }}>→</div>
+          <div style={{ position: 'relative' }}>
+            <Fade show={!swapped} style={{ position: 'absolute', inset: 0 }}>
+              <TxSide items={['A', 'B']} tone={c.cool} />
+            </Fade>
+            <Fade show={swapped}>
+              <TxSide items={['X', 'Y']} tone={c.bad} hot />
+            </Fade>
+          </div>
+          <div style={{ marginLeft: 40 }}>
+            <Fade show={s >= 1}>
+              <div
+                style={{
+                  border: `1.75px solid ${swapped ? c.bad : c.good}`,
+                  background: swapped ? c.badSoft : c.goodSoft,
+                  borderRadius: 12,
+                  padding: '18px 26px',
+                  fontSize: 30,
+                  transition: `background 300ms ${EASE_OUT}, border-color 300ms ${EASE_OUT}`,
+                }}
+              >
+                {swapped ? 'signature invalid' : 'each input signs inputs and outputs'}
+              </div>
+            </Fade>
+          </div>
+        </div>
+      </At>
+      <At x={120} y={680} w={1200}>
+        <Fade show={s >= 3}>
+          <div style={{ fontSize: 36, lineHeight: 1.5 }}>
+            <div>
+              Before v3: <Code>SIG_ALL</Code> is optional.
+            </div>
+            <div>
+              In v3: <Code>SIG_ALL</Code> is always on.
+            </div>
+          </div>
+        </Fade>
+      </At>
+      <StepList>
+        <StepItem n={1} step={s}>
+          Inputs sign the outputs
+        </StepItem>
+        <StepItem n={2} step={s}>
+          Swapped outputs: rejected
+        </StepItem>
+        <StepItem n={3} step={s}>
+          v3: mandatory
+        </StepItem>
       </StepList>
     </Shell>
   );
@@ -3831,42 +3946,40 @@ const InputsSign: Page = () => {
 const SW = [460, 1220];
 const Summary: Page = () => (
   <Shell eyebrow="Summary" title="Federation components">
-    <At x={120} y={262} w={1680}>
+    <At x={120} y={290} w={1680}>
       <Row h={66} i={0} head>
-        <Cell head w={SW[0]}>Concern</Cell>
+        <Cell head w={SW[0]}>Problem</Cell>
         <Cell head w={SW[1]}>Mechanism</Cell>
       </Row>
       <Row h={66} i={1}>
-        <Cell w={SW[0]} color={c.muted}>Verification without k</Cell>
-        <Cell w={SW[1]}>BLS12-381 pairings, keyset v3</Cell>
+        <Cell w={SW[0]} color={c.muted}>Verify without the key</Cell>
+        <Cell w={SW[1]}>BLS pairings</Cell>
       </Row>
       <Row h={66} i={2}>
-        <Cell w={SW[0]} color={c.muted}>Split signing key</Cell>
-        <Cell w={SW[1]}>Shamir shares, wallet-side interpolation</Cell>
+        <Cell w={SW[0]} color={c.muted}>Split the key</Cell>
+        <Cell w={SW[1]}>Shamir shares, combined by the wallet</Cell>
       </Row>
       <Row h={66} i={3}>
         <Cell w={SW[0]} color={c.muted}>Mix-and-match</Cell>
-        <Cell w={SW[1]}>operation IDs, AlephBFT before signing</Cell>
+        <Cell w={SW[1]}>AlephBFT consensus before signing</Cell>
       </Row>
       <Row h={66} i={4}>
-        <Cell w={SW[0]} color={c.muted}>Wallet fan-out</Cell>
-        <Cell w={SW[1]}>per-member requests, share checks, aggregation</Cell>
+        <Cell w={SW[0]} color={c.muted}>No dealer</Cell>
+        <Cell w={SW[1]}>Distributed key generation</Cell>
       </Row>
       <Row h={66} i={5}>
-        <Cell w={SW[0]} color={c.muted}>Key generation</Cell>
-        <Cell w={SW[1]}>Pedersen DKG (BLS), FROST DKG (treasury)</Cell>
+        <Cell w={SW[0]} color={c.muted}>Reserves</Cell>
+        <Cell w={SW[1]}>FROST threshold custody</Cell>
       </Row>
       <Row h={66} i={6}>
-        <Cell w={SW[0]} color={c.muted}>Custody</Cell>
-        <Cell w={SW[1]}>FROST-signed BDK and Bark treasuries</Cell>
-      </Row>
-      <Row h={66} i={7}>
-        <Cell w={SW[0]} color={c.muted}>Client intent</Cell>
-        <Cell w={SW[1]}>every v3 input signs the TLV transaction transcript</Cell>
+        <Cell w={SW[0]} color={c.muted}>Rewritten outputs</Cell>
+        <Cell w={SW[1]}>
+          <Code>SIG_ALL</Code> always on (v3)
+        </Cell>
       </Row>
     </At>
-    <At x={120} y={820} w={1680}>
-      <Note>Status: not production-ready. Review: cashubtc/cdk#2048.</Note>
+    <At x={120} y={800} w={1680}>
+      <div style={{ fontSize: 32 }}>Status: not production-ready.</div>
     </At>
   </Shell>
 );
@@ -4085,7 +4198,7 @@ const JsonSecret: Page = () => {
           <M size={36}>
             Y = <Up>hash_to_curve</Up>(secret)
           </M>
-          <span style={{ fontSize: 24, color: c.muted }}>&nbsp;&nbsp;over the 195 UTF-8 bytes of the string</span>
+          <span style={{ fontSize: 30, color: c.muted }}>&nbsp;&nbsp;over 195 bytes</span>
         </Fade>
         <Fade show={s >= 4} style={{ marginTop: 18 }}>
           <span style={{ fontFamily: MONO, fontSize: 21 }}>
@@ -4095,16 +4208,16 @@ const JsonSecret: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          A JSON array: <Code>kind</Code>, then <Code>nonce</Code>, <Code>data</Code> and <Code>tags</Code>.
+          JSON array
         </StepItem>
         <StepItem n={2} step={s}>
-          The JSON is serialized into the string <Code>Proof.secret</Code>, then escaped again inside the proof JSON.
+          Escaped into a string
         </StepItem>
         <StepItem n={3} step={s}>
-          The mint hashes the string bytes to the curve. Secret size follows the policy.
+          Hashed as a string
         </StepItem>
         <StepItem n={4} step={s}>
-          The witness is a JSON string too. <Code>SIG_INPUTS</Code> signs the unescaped secret string.
+          Witness: JSON too
         </StepItem>
       </StepList>
     </Shell>
@@ -4121,6 +4234,15 @@ const Limit = ({ children }: { children: ReactNode }) => (
 const JsonLimits: Page = () => {
   const proc = useProcess(2, 2400);
   const s = proc.step;
+  const box = (tone: string, bg: string): CSSProperties => ({
+    flex: 1,
+    border: `1.5px solid ${tone}`,
+    background: bg,
+    borderRadius: 12,
+    padding: '18px 24px',
+    fontSize: 30,
+    lineHeight: 1.35,
+  });
   return (
     <Shell n="2.1" eyebrow="Spending conditions today" title="Conditions as tags: HTLC (NUT-14)" proc={proc}>
       <At x={120} y={256} w={640}>
@@ -4138,33 +4260,29 @@ const JsonLimits: Page = () => {
   }
 ]`}
         </Pre>
-        <Note style={{ marginTop: 12 }}>323 bytes as a secret string. Every value is a string, including integers.</Note>
+        <div style={{ fontSize: 30, marginTop: 18 }}>323 bytes, integers as strings</div>
       </At>
       <At x={820} y={256} w={980}>
         <Fade show={s >= 1} dimTo={0.3}>
           <Label>Pathways</Label>
-          <div style={{ display: 'flex', gap: 20, marginTop: 10 }}>
-            <div style={{ flex: 1, border: `1.5px solid ${c.cool}`, background: c.coolSoft, borderRadius: 12, padding: '14px 18px', fontSize: 22, lineHeight: 1.4 }}>
+          <div style={{ display: 'flex', gap: 20, marginTop: 12 }}>
+            <div style={box(c.cool, c.coolSoft)}>
               <div style={{ fontWeight: 600 }}>Receiver</div>
-              preimage of <Code>data</Code> and signatures by <Code>pubkeys</Code> (<Code>n_sigs</Code>). Always available.
+              preimage + signatures
             </div>
-            <div style={{ flex: 1, border: `1.5px solid ${c.node}`, background: c.card, borderRadius: 12, padding: '14px 18px', fontSize: 22, lineHeight: 1.4 }}>
+            <div style={box(c.node, c.card)}>
               <div style={{ fontWeight: 600 }}>Sender</div>
-              after <Code>locktime</Code>: signatures by <Code>refund</Code> keys. No <Code>refund</Code> tag: anyone can
-              spend.
+              after locktime: refund keys
             </div>
           </div>
         </Fade>
       </At>
       <At x={820} y={560} w={980}>
         <Fade show={s >= 2} dimTo={0.3}>
-          <Label>Properties of JSON secrets</Label>
-          <div style={{ fontSize: 23, lineHeight: 1.4, marginTop: 12 }}>
-            <Limit>Secret size grows with the policy: 195 B (P2PK), 323 B (this HTLC).</Limit>
-            <Limit>Every spend reveals the complete policy to the mint.</Limit>
-            <Limit>Signed message: the secret string, or a string concatenation under <Code>SIG_ALL</Code>.</Limit>
-            <Limit>A mint without support for a kind treats the proof as anyone-can-spend.</Limit>
-            <Limit>Combinations are limited to the tag pathways of each kind.</Limit>
+          <div style={{ fontSize: 34, lineHeight: 1.5 }}>
+            <Limit>Size grows with the policy</Limit>
+            <Limit>Every spend reveals the whole policy</Limit>
+            <Limit>Unknown kind: anyone can spend</Limit>
           </div>
         </Fade>
       </At>
@@ -4300,23 +4418,20 @@ const TaprootTree: Page = () => {
       </Fig>
       <StepList>
         <StepItem n={1} step={s}>
-          Each leaf is a tapscript. <Code>leaf_hash = hash_TapLeaf(0xc0 ‖ compact_size(s) ‖ s)</Code>.
+          Hash each script
         </StepItem>
         <StepItem n={2} step={s}>
-          <Code>hash_TapBranch</Code> hashes the two children in sorted order.
+          Hash pairs, sorted
         </StepItem>
         <StepItem n={3} step={s}>
-          The root commits to every script.
+          Root commits to all
         </StepItem>
         <StepItem n={4} step={s}>
-          The output key <M>Q</M> is the internal key tweaked by the root. The output is a 32-byte x-only key.
+          Tweak: <M>Q = P + t·G</M>
         </StepItem>
         <StepItem n={5} step={s}>
-          The constructor chooses the shape: the likely script sits at depth 1 for a shorter proof.
+          Shape: builder chooses
         </StepItem>
-        <Note style={{ marginTop: 18, fontSize: 21 }}>
-          Tagged hashes (BIP340): <Code>SHA256(SHA256(tag) ‖ SHA256(tag) ‖ m)</Code>.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -4334,44 +4449,30 @@ const TaprootSpend: Page = () => {
       <At x={990} y={262} w={360} style={{ height: 420 }}>
         <Fade show={s <= 1} style={{ position: 'absolute', inset: 0 }}>
           <Label color={c.clayHex}>Key path witness</Label>
-          <Pre size={20}>{`[ signature ]      64 B`}</Pre>
-          <Note style={{ marginTop: 12 }}>
-            Signed with <M>q = p + t</M> (BIP340 parity negation applies). Indistinguishable from a single-key spend.
-          </Note>
+          <Pre size={24}>{`[ signature ]`}</Pre>
+          <div style={{ fontSize: 28, marginTop: 16 }}>Looks like any single-key spend.</div>
         </Fade>
         <Fade show={s >= 2} style={{ position: 'absolute', inset: 0 }}>
-          <Label color={c.clayHex}>Script path witness for B</Label>
-          <Pre size={17}>{`[ …inputs, script B, control ]
-
-control = (0xc0 | parity(Q))
-          ‖ x(P)
-          ‖ hash(C) ‖ hash(A)`}</Pre>
-          <Note style={{ marginTop: 10 }}>33 + 32·m bytes, m ≤ 128.</Note>
+          <Label color={c.clayHex}>Script path witness</Label>
+          <Pre size={22}>{`[ inputs, script B,
+  control ]`}</Pre>
+          <div style={{ fontSize: 28, marginTop: 16 }}>control: x(P), hash(C), hash(A)</div>
         </Fade>
       </At>
-      <At x={120} y={730} w={1220}>
+      <At x={120} y={760} w={1220}>
         <Fade show={s >= 3}>
-          <Note>
-            <div>
-              Verifier: leaf hash of B → <Code>hash_TapBranch</Code> with hash(C), then hash(A) → tweak with x(P) → compare
-              with <M>Q</M> and the parity bit → execute script B.
-            </div>
-            <div style={{ marginTop: 8 }}>
-              Unexecuted scripts stay hashes. An internal key with no known discrete log (<M>H</M> = lift_x(SHA256(G)),
-              or <M>H + r·G</M>) disables the key path.
-            </div>
-          </Note>
+          <div style={{ fontSize: 34 }}>Unused scripts stay hidden.</div>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Key path: one signature by the tweaked key. The tree is never revealed.
+          Key path: one signature
         </StepItem>
         <StepItem n={2} step={s}>
-          Script path: reveal one script and the sibling hashes on its path. Here: B, with hash(C) and hash(A).
+          Script path: script + path
         </StepItem>
         <StepItem n={3} step={s}>
-          Recompute the root, check the tweak, then run the script.
+          Recompute, then run
         </StepItem>
       </StepList>
     </Shell>
@@ -4389,22 +4490,14 @@ const PointSecret: Page = () => {
         <Label>Keysets v1, v2: a string</Label>
         <div
           style={{
-            marginTop: 8,
+            marginTop: 10,
             fontFamily: MONO,
-            fontSize: 18,
-            lineHeight: 1.5,
-            wordBreak: 'break-all',
-            background: c.card,
-            border: `1.5px solid ${c.rule}`,
-            borderRadius: 12,
-            padding: '12px 20px',
+            fontSize: 26,
             opacity: s >= 1 ? 0.45 : 1,
             transition: `opacity 500ms ${EASE_OUT}`,
           }}
         >
-          407915bc212be61a77e3e6d2aeb4c727980bda51cd06a6afc29e2861768a7837
-          <span style={{ color: c.dim }}>{'   or   '}</span>
-          {'["P2PK",{"nonce":"859d4935c4907062…","data":"0249098aa8b9d2fb…","tags":[["sigflag","SIG_INPUTS"]]}]'}
+          407915bc…768a7837<span style={{ color: c.dim, fontFamily: SANS }}>{'   or   '}</span>["P2PK",{"{…}"}]
         </div>
       </At>
       <At x={120} y={450} w={1220}>
@@ -4449,25 +4542,19 @@ const PointSecret: Page = () => {
           </div>
         </Fade>
         <Fade show={s >= 3} style={{ marginTop: 26 }}>
-          <Note>
-            A bare <M>K</M> and a tweaked <M>P</M> look the same on the wire. A key-path spend of a locked proof is
-            byte-identical to a bare-key spend.
-          </Note>
+          <div style={{ fontSize: 34 }}>A locked secret looks like an unlocked one.</div>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Every v3 secret is a 33-byte compressed point, 66 hex characters. Mints reject any other form.
+          33-byte public key
         </StepItem>
         <StepItem n={2} step={s}>
-          Conditions are committed into the key, following BIP341 with Cashu tags.
+          Conditions in the tweak
         </StepItem>
         <StepItem n={3} step={s}>
-          The mint learns that conditions exist only when a script path is used.
+          Same look on the wire
         </StepItem>
-        <Note style={{ marginTop: 18, fontSize: 21 }}>
-          Pre-v3 and v3 <M>Y</M> spaces cannot overlap: secp256k1 vs. BLS12-381 G₁.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -4642,124 +4729,94 @@ const NutrootTree: Page = () => {
       <Fig x={120} y={262} w={1180} h={620}>
         <NutTree s={s} mode="build" />
       </Fig>
-      <At x={120} y={910} w={1220}>
-        <Note style={{ fontSize: 21 }}>
-          Values: three-leaf vector in <Code>tests/10-tests.md</Code>; the root above reproduces the vector's root.
-        </Note>
-      </At>
+
       <StepList>
         <StepItem n={1} step={s}>
-          Three condition leaves, serialized as TLV records, in transmitted order.
+          Three leaves
         </StepItem>
         <StepItem n={2} step={s}>
-          <Code>leaf_hash = tagged_hash("Cashu_NutrootLeaf", leaf)</Code>
+          Hash each leaf
         </StepItem>
         <StepItem n={3} step={s}>
-          Sort the leaf hashes ascending: <M>h₀ &lt; h₂ &lt; h₁</M>.
+          Sort the hashes
         </StepItem>
         <StepItem n={4} step={s}>
-          Pair per level with <Code>tagged_hash("Cashu_NutrootBranch", min ‖ max)</Code>. The unpaired <M>h₁</M> is
-          promoted unchanged.
+          Pair, promote the odd one
         </StepItem>
         <StepItem n={5} step={s}>
-          One hash remains: the merkle root.
+          Root
         </StepItem>
         <StepItem n={6} step={s}>
-          Tweak the internal key: <M>t</M> is taken mod <M>n</M>, never rejected.
+          Tweak the key
         </StepItem>
       </StepList>
     </Shell>
   );
 };
 
+const LEAF_TYPES = [
+  { name: 'threshold', code: '0x01', rule: 'n of the listed keys sign' },
+  { name: 'after', code: '0x02', rule: 'after a time, n keys sign' },
+  { name: 'hashlock', code: '0x03', rule: 'preimage, and n keys sign' },
+  { name: 'commit', code: '0x04', rule: 'never spendable, binds data' },
+];
+
 const LeafEncoding: Page = () => {
-  const proc = useProcess(5);
+  const proc = useProcess(5, 2000);
   const s = proc.step;
-  const LW = [210, 110, 400, 460];
   return (
-    <Shell n="2.3" eyebrow="Nutroot secrets" title="Condition leaves (leaf version 0x00)" proc={proc}>
-      <At x={120} y={262} w={1220}>
-        <Label>after_1of1_key4, 49 bytes</Label>
-        <div style={{ display: 'flex', marginTop: 10 }}>
-          <Seg bytes="00" label="version" tone="type" hot={s === 1} />
-          <Seg bytes="02" label="type: after" tone="type" hot={s === 1} />
-          <Seg bytes="02 0001 01" label="n = 1" hot={s === 2} />
-          <Seg bytes="04 0021 02e493…c4cd13" label="keys: key 4" hot={s === 3} />
-          <Seg bytes="06 0004 68a3be80" label="time 1755561600" hot={s === 4} />
-        </div>
-      </At>
-      <At x={120} y={400} w={1220}>
+    <Shell n="2.3" eyebrow="Nutroot secrets" title="Condition leaves" proc={proc}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginTop: 44, width: 1220 }}>
+        {LEAF_TYPES.map((l, i) => (
+          <Fade key={l.name} show={s >= i + 1}>
+            <div
+              style={{
+                height: 156,
+                boxSizing: 'border-box',
+                border: `1.75px solid ${s === i + 1 ? c.clayHex : c.rule}`,
+                background: s === i + 1 ? c.claySoft : c.card,
+                borderRadius: 'var(--osd-radius)',
+                padding: '22px 30px',
+                transition: `background 300ms ${EASE_OUT}, border-color 300ms ${EASE_OUT}`,
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <span style={{ fontFamily: SERIF, fontSize: 46 }}>{l.name}</span>
+                <span style={{ fontFamily: MONO, fontSize: 24, color: c.muted }}>{l.code}</span>
+              </div>
+              <div style={{ fontSize: 30, color: c.muted, marginTop: 12 }}>{l.rule}</div>
+            </div>
+          </Fade>
+        ))}
+      </div>
+      <At x={120} y={690} w={1220}>
         <Fade show={s >= 5}>
-          <span style={{ fontSize: 24 }}>
-            <Code>tagged_hash("Cashu_NutrootLeaf", leaf)</Code>
-            <span style={{ color: c.muted }}> = </span>
-            <Code color={c.clayHex}>9ed9c0b8907f7af4fce51cbeac218907…</Code>
-          </span>
+          <Label>after leaf, 49 bytes</Label>
+          <div style={{ display: 'flex', marginTop: 12 }}>
+            <Seg bytes="00" label="version" tone="type" size={24} />
+            <Seg bytes="02" label="after" tone="type" size={24} />
+            <Seg bytes="02 0001 01" label="n = 1" size={24} />
+            <Seg bytes="04 0021 02e493…" label="keys" size={24} />
+            <Seg bytes="06 0004 68a3be80" label="time" size={24} />
+          </div>
         </Fade>
-      </At>
-      <At x={120} y={462} w={1220}>
-        <Row i={0} head>
-          <Cell head w={LW[0]}>Leaf</Cell>
-          <Cell head w={LW[1]}>Type</Cell>
-          <Cell head w={LW[2]}>Fields</Cell>
-          <Cell head w={LW[3]}>Satisfied by</Cell>
-        </Row>
-        <Row i={1}>
-          <Cell w={LW[0]}>threshold</Cell>
-          <Cell w={LW[1]}><Code>0x01</Code></Cell>
-          <Cell w={LW[2]}>n, keys, disclosure?</Cell>
-          <Cell w={LW[3]}>n distinct listed keys sign</Cell>
-        </Row>
-        <Row i={2}>
-          <Cell w={LW[0]} color={s >= 1 && s <= 4 ? c.clayHex : undefined}>after</Cell>
-          <Cell w={LW[1]}><Code>0x02</Code></Cell>
-          <Cell w={LW[2]}>n, keys, time, disclosure?</Cell>
-          <Cell w={LW[3]}>clock ≥ time, and n keys sign</Cell>
-        </Row>
-        <Row i={3}>
-          <Cell w={LW[0]}>hashlock</Cell>
-          <Cell w={LW[1]}><Code>0x03</Code></Cell>
-          <Cell w={LW[2]}>n, keys, hash, disclosure?</Cell>
-          <Cell w={LW[3]}>SHA-256 preimage, and n keys sign</Cell>
-        </Row>
-        <Row i={4}>
-          <Cell w={LW[0]}>commit</Cell>
-          <Cell w={LW[1]}><Code>0x04</Code></Cell>
-          <Cell w={LW[2]}>hash</Cell>
-          <Cell w={LW[3]}>never: binds external data</Cell>
-        </Row>
-      </At>
-      <At x={120} y={800} w={1220}>
-        <Note style={{ fontSize: 22 }}>
-          <div>
-            Fields: <Code>n 0x02</Code> · <Code>keys 0x04</Code> (33-byte points, one record) · <Code>time 0x06</Code> ·{' '}
-            <Code>hash 0x08</Code> · <Code>disclosure 0x0a</Code> (mode 0x01 only).
-          </div>
-          <div>
-            Record = type (1) ‖ length (2, BE) ‖ value. Fields strictly ascending. Unknown fields reject; odd types
-            reserved. Body ≤ 512 B.
-          </div>
-        </Note>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          <Code>leaf = leaf_version ‖ leaf_type ‖ field TLVs</Code>. Other versions and unknown types are unsatisfiable.
+          threshold
         </StepItem>
         <StepItem n={2} step={s}>
-          Signature threshold, one byte: <M>1 ≤ n ≤</M> number of keys.
+          after
         </StepItem>
         <StepItem n={3} step={s}>
-          Keys are compressed points. Two keys with the same x-coordinate reject.
+          hashlock
         </StepItem>
         <StepItem n={4} step={s}>
-          Unix seconds, minimal big-endian.
+          commit
         </StepItem>
         <StepItem n={5} step={s}>
-          The exact bytes are the leaf everywhere: spend info, witness, hash preimage.
+          Bytes: TLV records
         </StepItem>
-        <Note style={{ marginTop: 16, fontSize: 21 }}>
-          Every spendable leaf names at least one key. A preimage alone is never spend power.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -4875,19 +4932,16 @@ const FoldShapes: Page = () => {
         </FigSvg>
       </Fig>
       <At x={120} y={870} w={1200}>
-        <Note style={{ fontSize: 22 }}>
-          Leaves in sorted-hash order. Numbers under leaves: sibling hashes on the path. Dashed: promoted unchanged.
+        <Note style={{ fontSize: 30, color: c.ink }}>
+          Numbers: path length per leaf
         </Note>
       </At>
       <StepList>
-        <Note style={{ fontSize: 23, color: c.ink }}>
-          <Limit>Sort leaf hashes, pair neighbours per level, promote an unpaired last hash.</Limit>
-          <Limit>The shape depends only on the leaf count. A payer can rebuild a payee's requested tree without being told its shape.</Limit>
-          <Limit>No left/right flags: pairs are hashed in sorted order.</Limit>
-          <Limit>At most 8 leaves, so every path has at most 3 sibling hashes.</Limit>
-          <Limit>Duplicate leaves are kept, not deduplicated.</Limit>
-          <Limit>BIP341 lets the constructor choose depths; nutroot does not.</Limit>
-        </Note>
+        <div style={{ fontSize: 30, lineHeight: 1.45 }}>
+          <Limit>Sort, pair, promote</Limit>
+          <Limit>Shape = number of leaves</Limit>
+          <Limit>≤ 8 leaves, path ≤ 3</Limit>
+        </div>
       </StepList>
     </Shell>
   );
@@ -4905,52 +4959,36 @@ const NutrootSpends: Page = () => {
       <At x={990} y={262} w={370} style={{ height: 460 }}>
         <Fade show={s <= 1} style={{ position: 'absolute', inset: 0 }}>
           <Label color={c.clayHex}>Key path witness</Label>
-          <Pre size={19}>{`{ "signatures": ["<64 B>"] }`}</Pre>
-          <Note style={{ marginTop: 12 }}>
-            One BIP-340 signature by <M>p′ = (k + t) mod n</M>, checked against x(<M>P</M>). Exactly one entry.
-          </Note>
+          <Pre size={22}>{`{ "signatures": [sig] }`}</Pre>
+          <div style={{ fontSize: 28, marginTop: 16 }}>
+            one signature by <M>k + t</M>
+          </div>
         </Fade>
         <Fade show={s >= 2} style={{ position: 'absolute', inset: 0 }}>
-          <Label color={c.clayHex}>Script path witness, hashlock leaf</Label>
-          <Pre size={16}>{`{
-  "leaf": "0003…a1a1a1",
-  "control": {
-    "K": "03a3e12c…3a419e51",
-    "path": ["23e8ff16…",
-             "9ed9c0b8…"]
-  },
-  "signatures": ["<64 B>"],
-  "preimage": "<≤ 32 B>"
+          <Label color={c.clayHex}>Script path witness</Label>
+          <Pre size={22}>{`{
+  "leaf": "0003…",
+  "control": { K, path },
+  "signatures": [sig],
+  "preimage": "…"
 }`}</Pre>
         </Fade>
       </At>
-      <At x={120} y={740} w={1220}>
+      <At x={120} y={760} w={1220}>
         <Fade show={s >= 3}>
-          <Note>
-            <div>
-              Only the exercised leaf is revealed. <M>h₀</M> and <M>h₁</M> travel as opaque hashes; the after leaf stays
-              private.
-            </div>
-            <div style={{ marginTop: 6 }}>
-              By default the disclosure ends at the mint. A leaf with <Code>disclosure 0x01</Code> makes the mint publish
-              the exercised witness and input digest (NUT-07, NUT-17).
-            </div>
-          </Note>
+          <div style={{ fontSize: 34 }}>Only the used leaf is revealed.</div>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Key path: byte-identical to a bare-key spend. The mint learns nothing about the tree.
+          Key path: one signature
         </StepItem>
         <StepItem n={2} step={s}>
-          Script path: reveal one leaf, the internal key <M>K</M> and the sibling path. No leaf version, no parity bit.
+          Script path: one leaf
         </StepItem>
         <StepItem n={3} step={s}>
-          What the mint learns, and when it is published.
+          What the mint learns
         </StepItem>
-        <Note style={{ marginTop: 16, fontSize: 21 }}>
-          Both witnesses sign the input digest of the NUT-10 transaction transcript.
-        </Note>
       </StepList>
     </Shell>
   );
@@ -4975,7 +5013,7 @@ const JLine = ({ on, children }: { on: boolean; children: ReactNode }) => (
 );
 
 const Check = ({ ok = true, children }: { ok?: boolean; children: ReactNode }) => (
-  <div style={{ display: 'flex', gap: 12, marginBottom: 12, fontSize: 23, lineHeight: 1.4 }}>
+  <div style={{ display: 'flex', gap: 12, marginBottom: 12, fontSize: 28, lineHeight: 1.35 }}>
     <span style={{ color: ok ? c.good : c.bad, fontFamily: MONO }}>{ok ? '✓' : '✗'}</span>
     <span>{children}</span>
   </div>
@@ -5003,7 +5041,7 @@ const ScriptVerify: Page = () => {
         <Fade show={s === 1} style={{ position: 'absolute', inset: 0 }}>
           <Label>Step 1</Label>
           <div style={{ marginTop: 12 }}>
-            <Check>2 sibling hashes; at most 3 are allowed.</Check>
+            <Check>2 sibling hashes, at most 3 allowed</Check>
           </div>
         </Fade>
         <Fade show={s === 2} style={{ position: 'absolute', inset: 0 }}>
@@ -5023,34 +5061,30 @@ const ScriptVerify: Page = () => {
           <div style={{ marginTop: 12 }}>
             <Check>version 0x00</Check>
             <Check>type 0x03, hashlock</Check>
-            <Check>fields 02 n, 04 keys, 08 hash: known, ascending</Check>
+            <Check>fields: known, in order</Check>
           </div>
         </Fade>
         <Fade show={s >= 4} style={{ position: 'absolute', inset: 0 }}>
           <Label>Step 4 · evaluate</Label>
           <div style={{ marginTop: 12 }}>
-            <Check>SHA256(preimage) = hash, preimage ≤ 32 bytes</Check>
-            <Check>distinct listed keys with a valid BIP-340 signature over the input digest ≥ n = 1</Check>
-            <Check>signatures ≤ number of listed keys</Check>
+            <Check>SHA256(preimage) = hash</Check>
+            <Check>signatures from n = 1 listed key</Check>
           </div>
         </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Reject a path with more than 3 sibling hashes.
+          Path: at most 3
         </StepItem>
         <StepItem n={2} step={s}>
-          Recompute leaf hash → root through the path, then the tweak from <M>K</M>. <M>K + t·G</M> must equal the
-          secret.
+          Recompute the secret
         </StepItem>
         <StepItem n={3} step={s}>
-          Parse the leaf. Unknown version, type or field fails closed.
+          Parse the leaf
         </StepItem>
         <StepItem n={4} step={s}>
-          Evaluate: commit rejects; after needs clock ≥ time; hashlock needs the preimage; then count distinct signing
-          keys ≥ <M>n</M>.
+          Evaluate
         </StepItem>
-        <Note style={{ marginTop: 16, fontSize: 21 }}>Mints may reject witnesses longer than 4096 characters.</Note>
       </StepList>
     </Shell>
   );
@@ -5062,7 +5096,7 @@ const KeyCard = ({ n, step, title, children }: { n: number; step: number; title:
     <div
       style={{
         width: 390,
-        height: 480,
+        height: 380,
         boxSizing: 'border-box',
         border: `1.75px solid ${step === n ? c.clayHex : c.rule}`,
         background: c.card,
@@ -5073,7 +5107,7 @@ const KeyCard = ({ n, step, title, children }: { n: number; step: number; title:
       }}
     >
       <Label color={step === n ? c.clayHex : c.muted}>{title}</Label>
-      <div style={{ fontSize: 22, lineHeight: 1.45, marginTop: 14 }}>{children}</div>
+      <div style={{ fontSize: 30, lineHeight: 1.4, marginTop: 22 }}>{children}</div>
     </div>
   );
 };
@@ -5085,48 +5119,31 @@ const InternalKey: Page = () => {
     <Shell n="2.3" eyebrow="Nutroot secrets" title="Three forms of internal key" proc={proc}>
       <div style={{ display: 'flex', gap: 20, marginTop: 50 }}>
         <KeyCard n={1} step={s} title="Single-party">
-          <M size={32}>K = k·G</M>
-          <div style={{ marginTop: 12 }}>The holder can key-path spend.</div>
-          <div style={{ marginTop: 10 }}>Without conditions the secret is <M>K</M>, untweaked.</div>
-          <div style={{ marginTop: 10, color: c.muted }}>
-            Vector: <M>k = 7</M> → secret <Code>025cbdf0…c4f9bc</Code>
-          </div>
+          <M size={40}>K = k·G</M>
+          <div style={{ marginTop: 22 }}>holder spends by key path</div>
         </KeyCard>
-        <KeyCard n={2} step={s} title="Aggregated (MuSig2, FROST)">
-          <div>Nobody holds <M>k</M>. The secret must carry at least the empty tweak:</div>
-          <div style={{ marginTop: 10 }}>
-            <Code>t = tagged_hash(Tweak, K)</Code>
-          </div>
-          <div style={{ marginTop: 10 }}>so cosigners can verify that no script path is hidden.</div>
-          <div style={{ marginTop: 10, color: c.muted }}>
-            Vector: <M>K</M> = key 3 → secret <Code>03b2bb25…d9233aee</Code>
-          </div>
+        <KeyCard n={2} step={s} title="Aggregated">
+          <div>MuSig2, FROST: nobody holds <M>k</M></div>
+          <div style={{ marginTop: 22 }}>must carry the empty tweak</div>
         </KeyCard>
-        <KeyCard n={3} step={s} title="NUMS offset (script-only)">
-          <M size={32}>K = H + u·G</M>
-          <div style={{ marginTop: 10 }}>
-            <M>H</M> = lift_x(SHA256(G uncompressed)) = <Code>0250929b…ce803ac0</Code>
-          </div>
-          <div style={{ marginTop: 10 }}>
-            Fresh <M>u</M> per proof, disclosed in spend info. Holders check <M>K − u·G = H</M>: no key path exists.
+        <KeyCard n={3} step={s} title="NUMS offset">
+          <M size={40}>K = H + u·G</M>
+          <div style={{ marginTop: 22 }}>no key path</div>
+          <div style={{ marginTop: 12 }}>
+            <M>u</M> is disclosed and checked
           </div>
         </KeyCard>
       </div>
-      <At x={120} y={820} w={1220}>
-        <Note style={{ fontSize: 22 }}>
-          Secrets must be unique (NUT-00). Keys come from the seed (NUT-13), a blinded static key (NUT-28), a random
-          keypair, or a fresh NUMS offset. v3 key derivations are hardened at every step.
-        </Note>
-      </At>
+
       <StepList>
         <StepItem n={1} step={s}>
-          A wallet key.
+          Wallet key
         </StepItem>
         <StepItem n={2} step={s}>
-          A key shared by cosigners.
+          Shared key
         </StepItem>
         <StepItem n={3} step={s}>
-          No key path. Not ECDH-blinded: nobody holds the scalar of <M>H</M>.
+          No key path
         </StepItem>
       </StepList>
     </Shell>
@@ -5140,7 +5157,7 @@ const FlowBox = ({ title, show, tone = c.rule, children }: { title: string; show
     <div
       style={{
         width: 390,
-        height: 290,
+        height: 200,
         boxSizing: 'border-box',
         border: `1.5px solid ${tone}`,
         background: c.card,
@@ -5192,52 +5209,39 @@ const SpendInfo: Page = () => {
           <Cell w={SIW[2]}>NUMS offset, 32 B</Cell>
         </Row>
       </At>
-      <At x={900} y={262} w={440}>
-        <Note style={{ fontSize: 21 }}>
-          <div>
-            <Code>k</Code> and <Code>E</Code> are mutually exclusive. <Code>K</Code> is required with a tree when neither
-            is present. <Code>u</Code> is present exactly for NUMS keys.
-          </div>
-          <div style={{ marginTop: 10 }}>
-            Locked proofs need the tree even for key-path spends (the tweak needs the root): spend info is fund-critical
-            wallet data.
-          </div>
-        </Note>
+      <At x={900} y={290} w={440}>
+        <div style={{ fontSize: 30, lineHeight: 1.4 }}>Needed even for key-path spends: the tweak needs the root.</div>
       </At>
-      <div style={{ position: 'absolute', left: 120, top: 650, display: 'flex', gap: 25 }}>
-        <FlowBox title="Check 1 · reconstruct" show={s >= 2} tone={s === 2 ? c.clayHex : c.rule}>
-          <div>Key source: <M>k·G</M>, derived from <M>E</M>, or disclosed <M>K</M>.</div>
-          <div style={{ marginTop: 6 }}>No tree: <M>K</M> (or its empty tweak) = secret.</div>
-          <div style={{ marginTop: 6 }}>Tree: all leaves parse and <M>K + t·G</M> = secret. With <M>u</M>: <M>K − u·G = H</M>.</div>
+      <div style={{ position: 'absolute', left: 120, top: 660, display: 'flex', gap: 25 }}>
+        <FlowBox title="Check 1" show={s >= 2} tone={s === 2 ? c.clayHex : c.rule}>
+          <div style={{ fontSize: 30 }}>the data rebuilds the secret</div>
         </FlowBox>
-        <FlowBox title="Check 2 · spendable" show={s >= 3} tone={s === 3 ? c.clayHex : c.rule}>
-          <div>The wallet holds the key path (<M>k</M>, <M>E</M>-derived, seed key, cosigner share) or keys for a disclosed leaf.</div>
-          <div style={{ marginTop: 6 }}>Every leaf is checked against policy, eg a minimum refund horizon.</div>
+        <FlowBox title="Check 2" show={s >= 3} tone={s === 3 ? c.clayHex : c.rule}>
+          <div style={{ fontSize: 30 }}>the wallet can spend it</div>
         </FlowBox>
-        <FlowBox title="Sweep" show={s >= 4} tone={s === 4 ? c.clayHex : c.rule}>
-          <div>Swap received proofs to seed-derived secrets.</div>
-          <div style={{ marginTop: 6 }}>A bearer <M>k</M> is shared with the sender; <M>E</M> is not seed-recoverable; a disclosed tree may leave a key path to someone else.</div>
+        <FlowBox title="Then" show={s >= 4} tone={s === 4 ? c.clayHex : c.rule}>
+          <div style={{ fontSize: 30 }}>swap to your own keys</div>
         </FlowBox>
       </div>
       <StepList>
         <StepItem n={1} step={s}>
-          A token entry may carry spend info: what the next holder needs that the proof does not say.
+          Spend info
         </StepItem>
         <StepItem n={2} step={s}>
-          The disclosed data must compute the secret. A tree that computes it is provably complete.
+          Rebuild the secret
         </StepItem>
         <StepItem n={3} step={s}>
-          The receiver must be able to spend it.
+          Can I spend it
         </StepItem>
         <StepItem n={4} step={s}>
-          Then sweep.
+          Sweep
         </StepItem>
       </StepList>
     </Shell>
   );
 };
 
-const NoteBox = ({ x, y, w, show, children, tone = c.rule }: { x: number; y: number; w: number; show: boolean; children: ReactNode; tone?: string }) => (
+const NoteBox = ({ x, y, w, show, children, tone = c.rule, size = 20 }: { x: number; y: number; w: number; show: boolean; children: ReactNode; tone?: string; size?: number }) => (
   <div
     style={{
       position: 'absolute',
@@ -5249,7 +5253,7 @@ const NoteBox = ({ x, y, w, show, children, tone = c.rule }: { x: number; y: num
       background: tone === c.rule ? c.panel : c.claySoft,
       borderRadius: 10,
       padding: '8px 14px',
-      fontSize: 20,
+      fontSize: size,
       lineHeight: 1.4,
       opacity: show ? 1 : 0,
       transform: show || REDUCED ? 'translateY(0px)' : 'translateY(6px)',
@@ -5278,36 +5282,32 @@ const ReceiverKeyed: Page = () => {
         <Arrow x1={PR} y1={710} x2={PE + 6} y2={710} show={s >= 4} color={c.clayHex} font="mono" label="proof + spend info { E, K, tree }" delay={300} />
         <Packet x1={PR} y1={710} x2={PE} y2={710} run={proc.anim && s === 4} color={c.clayHex} delay={700} />
       </Canvas>
-      <NoteBox x={PR - 250} y={360} w={500} show={s >= 2}>
+      <NoteBox size={24} x={PR - 250} y={360} w={500} show={s >= 2}>
         fresh <M>(e, E)</M> per output · per key <M>P</M>: <M>Zx = x(e·P)</M>
         <br />
         <Code>rᵢ = SHA256("Cashu_P2BK_v1" ‖ Zx ‖ i)</Code>
       </NoteBox>
-      <NoteBox x={PR - 250} y={470} w={500} show={s >= 3}>
-        slot 0: <M>K = k + r₀·G</M> · slots 1…: keys in <Code>b</Code> become <M>P′ = P + rᵢ·G</M> · leaves of{' '}
-        <Code>l</Code> reproduced byte for byte · <M>P = K + t·G</M>
+      <NoteBox size={24} x={PR - 250} y={470} w={500} show={s >= 3}>
+        <M>K = k + r₀·G</M> · blinded keys in the leaves · <M>P = K + t·G</M>
       </NoteBox>
-      <NoteBox x={PE - 190} y={770} w={560} show={s >= 5} tone={c.clayHex}>
-        <M>Zx = x(p·E)</M> · check the tree equals <Code>l</Code> exactly · spend with <M>p + r₀ + t</M>
-        <br />
-        <span style={{ color: c.muted }}>Vector: (3 + r₀ + t) mod n = 31b2e906…78d008e7</span>
+      <NoteBox size={24} x={PE - 190} y={770} w={560} show={s >= 5} tone={c.clayHex}>
+        <M>Zx = x(p·E)</M> · tree = <Code>l</Code> · spend with <M>p + r₀ + t</M>
       </NoteBox>
       <StepList>
         <StepItem n={1} step={s}>
-          The payment request carries the payee's static key <M>k</M>, the requested leaves <Code>l</Code> and the
-          blind-me keys <Code>b</Code>.
+          Request: <Code>k, l, b</Code>
         </StepItem>
         <StepItem n={2} step={s}>
-          A fresh ephemeral and one ECDH per blinded key give one blinding scalar per slot.
+          ECDH per key
         </StepItem>
         <StepItem n={3} step={s}>
-          Slot 0 blinds the internal key. The tree is the requested one, no more leaves and no fewer.
+          Blind keys, build tree
         </StepItem>
         <StepItem n={4} step={s}>
-          The payer swaps to the tweaked secret and sends proof and spend info.
+          Swap, send
         </StepItem>
         <StepItem n={5} step={s}>
-          The payee derives the same scalars and key-path sweeps.
+          Payee sweeps
         </StepItem>
       </StepList>
     </Shell>
@@ -5315,71 +5315,33 @@ const ReceiverKeyed: Page = () => {
 };
 
 const CW = [300, 560, 360];
+const CapRow = ({ i, use, how, nut }: { i: number; use: string; how: ReactNode; nut: string }) => (
+  <Row i={i}>
+    <Cell w={CW[0] + 60} color={c.muted}>
+      {use}
+    </Cell>
+    <Cell w={CW[1] + 400}>{how}</Cell>
+    <Cell w={CW[2]}>{nut}</Cell>
+  </Row>
+);
+
 const Capabilities: Page = () => (
   <Shell n="2.4" eyebrow="Using nutroot" title="What the specification covers">
-    <At x={120} y={250} w={1680}>
+    <At x={120} y={260} w={1680}>
       <Row i={0} head>
-        <Cell head w={CW[0]}>Use</Cell>
-        <Cell head w={CW[1] + 460}>Construction</Cell>
+        <Cell head w={CW[0] + 60}>Use</Cell>
+        <Cell head w={CW[1] + 400}>Construction</Cell>
         <Cell head w={CW[2]}>NUT</Cell>
       </Row>
-      <Row i={1}>
-        <Cell w={CW[0]} color={c.muted}>Bearer token</Cell>
-        <Cell w={CW[1] + 460}>bare <M>K</M>; private key <M>k</M> in spend info</Cell>
-        <Cell w={CW[2]}>10</Cell>
-      </Row>
-      <Row i={2}>
-        <Cell w={CW[0]} color={c.muted}>Pay to a key</Cell>
-        <Cell w={CW[1] + 460}>internal key blinded from the receiver's static key; key-path spend</Cell>
-        <Cell w={CW[2]}>28, 18</Cell>
-      </Row>
-      <Row i={3}>
-        <Cell w={CW[0]} color={c.muted}>Multisig</Cell>
-        <Cell w={CW[1] + 460}><Code>threshold</Code> leaf, or a MuSig2/FROST internal key with at least the empty tweak</Cell>
-        <Cell w={CW[2]}>10</Cell>
-      </Row>
-      <Row i={4}>
-        <Cell w={CW[0]} color={c.muted}>Timelocked refund</Cell>
-        <Cell w={CW[1] + 460}><Code>after</Code> leaf naming the refund keys</Cell>
-        <Cell w={CW[2]}>10</Cell>
-      </Row>
-      <Row i={5}>
-        <Cell w={CW[0]} color={c.muted}>HTLC</Cell>
-        <Cell w={CW[1] + 460}><Code>hashlock</Code> leaf; <Code>disclosure 0x01</Code> when the preimage must be observable</Cell>
-        <Cell w={CW[2]}>10, 14, 07</Cell>
-      </Row>
-      <Row i={6}>
-        <Cell w={CW[0]} color={c.muted}>Binding to data</Cell>
-        <Cell w={CW[1] + 460}><Code>commit</Code> leaf beside the real conditions, eg a Nutzap event digest</Cell>
-        <Cell w={CW[2]}>10</Cell>
-      </Row>
-      <Row i={7}>
-        <Cell w={CW[0]} color={c.muted}>Auditable lock</Cell>
-        <Cell w={CW[1] + 460}>NUMS internal key + one <Code>threshold</Code> leaf (n = 1) with disclosure</Cell>
-        <Cell w={CW[2]}>10</Cell>
-      </Row>
-      <Row i={8}>
-        <Cell w={CW[0]} color={c.muted}>Locked mint quotes</Cell>
-        <Cell w={CW[1] + 460}>the paid quote is a signed input; its lock key may carry an <Code>after</Code> refund leaf</Cell>
-        <Cell w={CW[2]}>04, 20, 29</Cell>
-      </Row>
-      <Row i={9}>
-        <Cell w={CW[0]} color={c.muted}>Blind auth</Cell>
-        <Cell w={CW[1] + 460}>point secret signing a request transcript (method, target, body hash)</Cell>
-        <Cell w={CW[2]}>22</Cell>
-      </Row>
-      <Row i={10}>
-        <Cell w={CW[0]} color={c.muted}>Multi-party signing</Cell>
-        <Cell w={CW[1] + 460}><Code>nutspA</Code> signing package; <Code>nutrcA</Code> spend receipt</Cell>
-        <Cell w={CW[2]}>10</Cell>
-      </Row>
-      <Row i={11}>
-        <Cell w={CW[0]} color={c.muted}>Spend evidence</Cell>
-        <Cell w={CW[1] + 460}>
-          <Code>tagged_hash("Cashu_SpendCommitment", Y ‖ input_digest ‖ witness_hash)</Code>
-        </Cell>
-        <Cell w={CW[2]}>07</Cell>
-      </Row>
+      <CapRow i={1} use="Bearer token" how={<>bare key, <M>k</M> in spend info</>} nut="10" />
+      <CapRow i={2} use="Pay to a key" how="blinded receiver key" nut="28, 18" />
+      <CapRow i={3} use="Multisig" how="threshold leaf, or MuSig2 / FROST key" nut="10" />
+      <CapRow i={4} use="Timelocked refund" how="after leaf" nut="10" />
+      <CapRow i={5} use="HTLC" how="hashlock leaf" nut="10, 14" />
+      <CapRow i={6} use="Binding to data" how="commit leaf" nut="10" />
+      <CapRow i={7} use="Auditable lock" how="NUMS key + one threshold leaf" nut="10" />
+      <CapRow i={8} use="Locked mint quote" how="the quote signs as an input" nut="04, 20" />
+      <CapRow i={9} use="Blind auth" how="point secret signs the request" nut="22" />
     </At>
   </Shell>
 );
@@ -5387,62 +5349,47 @@ const Capabilities: Page = () => (
 const BW = [300, 640, 740];
 const VsBip341: Page = () => (
   <Shell n="2.4" eyebrow="Using nutroot" title="Nutroot compared with BIP341">
-    <At x={120} y={250} w={1680}>
+    <At x={120} y={260} w={1680}>
       <Row i={0} head>
         <Cell head w={BW[0]}> </Cell>
         <Cell head w={BW[1]}>BIP341</Cell>
-        <Cell head w={BW[2]} color={c.clayHex}>Nutroot</Cell>
+        <Cell head w={BW[2]} color={c.clayHex}>
+          Nutroot
+        </Cell>
       </Row>
       <Row i={1}>
         <Cell w={BW[0]} color={c.muted}>Key</Cell>
-        <Cell w={BW[1]}>32-byte x-only output key</Cell>
-        <Cell w={BW[2]}>33-byte compressed point; signatures checked against x</Cell>
+        <Cell w={BW[1]}>32-byte x-only</Cell>
+        <Cell w={BW[2]}>33-byte point</Cell>
       </Row>
       <Row i={2}>
         <Cell w={BW[0]} color={c.muted}>Tweak</Cell>
-        <Cell w={BW[1]}>over x(P), rejected if ≥ n</Cell>
-        <Cell w={BW[2]}>over the 33-byte K, reduced mod n</Cell>
+        <Cell w={BW[1]}>over x(P)</Cell>
+        <Cell w={BW[2]}>over K, mod n</Cell>
       </Row>
       <Row i={3}>
         <Cell w={BW[0]} color={c.muted}>Leaves</Cell>
-        <Cell w={BW[1]}>tapscript: opcodes, stack</Cell>
-        <Cell w={BW[2]}>declarative TLV: threshold, after, hashlock, commit</Cell>
+        <Cell w={BW[1]}>scripts with opcodes</Cell>
+        <Cell w={BW[2]}>four condition types</Cell>
       </Row>
       <Row i={4}>
         <Cell w={BW[0]} color={c.muted}>Tree shape</Cell>
-        <Cell w={BW[1]}>chosen per leaf, depth ≤ 128</Cell>
-        <Cell w={BW[2]}>fixed by the sorted fold; ≤ 8 leaves, path ≤ 3</Cell>
+        <Cell w={BW[1]}>builder chooses</Cell>
+        <Cell w={BW[2]}>fixed by sorting</Cell>
       </Row>
       <Row i={5}>
-        <Cell w={BW[0]} color={c.muted}>Control block</Cell>
-        <Cell w={BW[1]}>leaf version, parity, x(P), path</Cell>
-        <Cell w={BW[2]}>K and path in the JSON witness</Cell>
+        <Cell w={BW[0]} color={c.muted}>Unknown data</Cell>
+        <Cell w={BW[1]}>reserved for upgrades</Cell>
+        <Cell w={BW[2]}>rejected</Cell>
       </Row>
       <Row i={6}>
-        <Cell w={BW[0]} color={c.muted}>Tags</Cell>
-        <Cell w={BW[1]}>TapLeaf, TapBranch, TapTweak</Cell>
-        <Cell w={BW[2]}>Cashu_NutrootLeaf, _Branch, _Tweak</Cell>
-      </Row>
-      <Row i={7}>
-        <Cell w={BW[0]} color={c.muted}>Unknown data</Cell>
-        <Cell w={BW[1]}>OP_SUCCESS, annex</Cell>
-        <Cell w={BW[2]}>unknown fields of either parity reject</Cell>
-      </Row>
-      <Row i={8}>
-        <Cell w={BW[0]} color={c.muted}>NUMS</Cell>
-        <Cell w={BW[1]}>H, with H + r·G suggested</Cell>
-        <Cell w={BW[2]}>H + u·G required, u disclosed</Cell>
-      </Row>
-      <Row i={9}>
         <Cell w={BW[0]} color={c.muted}>Signed message</Cell>
-        <Cell w={BW[1]}>sighash: input index, annex, hash type</Cell>
-        <Cell w={BW[2]}>input digest of the NUT-10 transaction transcript</Cell>
+        <Cell w={BW[1]}>sighash</Cell>
+        <Cell w={BW[2]}>transaction digest</Cell>
       </Row>
     </At>
-    <At x={120} y={900} w={1680}>
-      <Note style={{ fontSize: 22 }}>
-        Borrowed: the commitment structure. Tweaked keys and derived values are not interchangeable with Bitcoin's.
-      </Note>
+    <At x={120} y={800} w={1680}>
+      <div style={{ fontSize: 34 }}>Same structure. Not interchangeable with Bitcoin keys.</div>
     </At>
   </Shell>
 );
@@ -5450,53 +5397,42 @@ const VsBip341: Page = () => (
 const QW = [300, 640, 740];
 const Comparison: Page = () => (
   <Shell n="2.4" eyebrow="Using nutroot" title="JSON secrets and nutroot secrets">
-    <At x={120} y={250} w={1680}>
+    <At x={120} y={260} w={1680}>
       <Row i={0} head>
         <Cell head w={QW[0]}> </Cell>
-        <Cell head w={QW[1]}>NUT-10 JSON (keysets v1, v2)</Cell>
-        <Cell head w={QW[2]} color={c.clayHex}>Nutroot (keyset v3)</Cell>
+        <Cell head w={QW[1]}>JSON (v1, v2)</Cell>
+        <Cell head w={QW[2]} color={c.clayHex}>
+          Nutroot (v3)
+        </Cell>
       </Row>
       <Row i={1}>
         <Cell w={QW[0]} color={c.muted}>Secret</Cell>
-        <Cell w={QW[1]}>string; 195 B for P2PK, 323 B for the HTLC</Cell>
-        <Cell w={QW[2]}>33-byte point, always</Cell>
+        <Cell w={QW[1]}>string, 195 to 323 B</Cell>
+        <Cell w={QW[2]}>33 bytes, always</Cell>
       </Row>
       <Row i={2}>
         <Cell w={QW[0]} color={c.muted}>Revealed on spend</Cell>
-        <Cell w={QW[1]}>the full policy</Cell>
-        <Cell w={QW[2]}>nothing (key path) or one leaf (script path)</Cell>
+        <Cell w={QW[1]}>the whole policy</Cell>
+        <Cell w={QW[2]}>nothing, or one leaf</Cell>
       </Row>
       <Row i={3}>
-        <Cell w={QW[0]} color={c.muted}>Signed message</Cell>
-        <Cell w={QW[1]}>secret string, or a concatenation (SIG_ALL)</Cell>
-        <Cell w={QW[2]}>per-input digest over the TLV transcript</Cell>
+        <Cell w={QW[0]} color={c.muted}>Signed</Cell>
+        <Cell w={QW[1]}>the secret string</Cell>
+        <Cell w={QW[2]}>the whole transaction</Cell>
       </Row>
       <Row i={4}>
-        <Cell w={QW[0]} color={c.muted}>Unlocked proofs</Cell>
-        <Cell w={QW[1]}>no witness</Cell>
-        <Cell w={QW[2]}>bare key; <M>k</M> travels in spend info</Cell>
+        <Cell w={QW[0]} color={c.muted}>Unsupported mint</Cell>
+        <Cell w={QW[1]}>anyone can spend</Cell>
+        <Cell w={QW[2]}>v3 implies support</Cell>
       </Row>
       <Row i={5}>
-        <Cell w={QW[0]} color={c.muted}>Unsupported mint</Cell>
-        <Cell w={QW[1]}>proof treated as anyone-can-spend</Cell>
-        <Cell w={QW[2]}>a v3 keyset implies full support</Cell>
-      </Row>
-      <Row i={6}>
         <Cell w={QW[0]} color={c.muted}>Combinations</Cell>
-        <Cell w={QW[1]}>tag pathways per kind</Cell>
-        <Cell w={QW[2]}>up to 8 leaves in one tree</Cell>
-      </Row>
-      <Row i={7}>
-        <Cell w={QW[0]} color={c.muted}>Encoding</Cell>
-        <Cell w={QW[1]}>JSON, integers as strings</Cell>
-        <Cell w={QW[2]}>TLV, minimal big-endian, fail closed</Cell>
+        <Cell w={QW[1]}>fixed per kind</Cell>
+        <Cell w={QW[2]}>up to 8 leaves</Cell>
       </Row>
     </At>
-    <At x={120} y={800} w={1680}>
-      <Note style={{ fontSize: 22 }}>
-        Test vectors in <Code>tests/10-tests.md</Code>, produced by two independent implementations (cashu-ts,
-        nutshell). CDK tracking issue: <Code>cashubtc/cdk#2433</Code>.
-      </Note>
+    <At x={120} y={740} w={1680}>
+      <div style={{ fontSize: 32 }}>Test vectors from two implementations: cashu-ts and nutshell.</div>
     </At>
   </Shell>
 );
@@ -5512,6 +5448,46 @@ const End: Page = () => (
   </div>
 );
 
+
+// Pre-rework styles, kept for the temporary variation decks (exported under the original names).
+const StepItemLegacy = ({ n, step, children }: { n: number; step: number; children: ReactNode }) => {
+  const on = step === n;
+  const done = step > n;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: 14,
+        padding: '5px 0 5px 16px',
+        marginBottom: 10,
+        borderLeft: `3px solid ${on ? c.clayHex : 'transparent'}`,
+        color: on ? c.ink : done ? c.muted : c.dim,
+        transition: `color 300ms ${EASE_OUT}, border-color 300ms ${EASE_OUT}`,
+      }}
+    >
+      <span
+        style={{
+          fontFamily: MONO,
+          fontSize: 20,
+          minWidth: 22,
+          paddingTop: 4,
+          color: on ? ACCENT : 'inherit',
+          transition: `color 300ms ${EASE_OUT}`,
+        }}
+      >
+        {n}
+      </span>
+      <span style={{ fontSize: 24, lineHeight: 1.38 }}>{children}</span>
+    </div>
+  );
+};
+
+const CheckLegacy = ({ ok = true, children }: { ok?: boolean; children: ReactNode }) => (
+  <div style={{ display: 'flex', gap: 12, marginBottom: 12, fontSize: 23, lineHeight: 1.4 }}>
+    <span style={{ color: ok ? c.good : c.bad, fontFamily: MONO }}>{ok ? '✓' : '✗'}</span>
+    <span>{children}</span>
+  </div>
+);
 
 // ─── Variation decks (temporary) ─────────────────────────────────────────────
 // Shared by the slides/fcv-* variation decks, which import from this file.
@@ -5592,27 +5568,26 @@ export default [
   OutlineAll,
   Chapter1,
   Model,
+  FedParts,
+  Paper,
+  Built,
+  Thanks,
   Section1,
   Bdhke,
   BlsFlow,
   Pairing,
-  Keysets,
   Multisig,
   Section2,
   Shamir,
-  Lagrange,
   ThresholdSign,
   Section3,
   MixMatch,
-  OperationId,
   Consensus,
   Swap,
-  MintQuote,
   Topology,
   Section4,
   Dkg,
   DkgRounds,
-  FederationId,
   Recovery,
   Section5,
   Funding,
@@ -5620,9 +5595,7 @@ export default [
   Melt,
   Section6,
   Rewrite,
-  Transcript,
-  InputDigest,
-  InputsSign,
+  SigAll,
   Summary,
   Chapter2,
   SectionN1,
@@ -5648,124 +5621,7 @@ export default [
   End,
 ] satisfies Page[];
 
-export const notes: (string | undefined)[] = [
-  // Cover
-  `Federated Cashu and nutroot. Two chapters: running a mint as a federation, and the v3 secret format.`,
-  // OutlineAll
-  undefined,
-  // Chapter1
-  undefined,
-  // Model
-  `Standalone mint: one key k per amount, one operator. Federation: n members, signing threshold t, consensus threshold c, observation quorum q. Wallets fan out to every member.`,
-  // Section1
-  undefined,
-  // Bdhke
-  `NUT-00 recap. Additive blinding with r·G. Verification computes k·Y, so the mint needs k. Wallets verify only with a DLEQ proof.`,
-  // BlsFlow
-  `Same protocol shape on BLS12-381. Multiplicative blinding. The wallet checks the blind signature with a pairing before unblinding. Verification needs only K. DLEQ is rejected for v3.`,
-  // Pairing
-  `Bilinearity, one step per line. The same argument gives the blind check. Batch verification uses random weights from a transcript.`,
-  // Keysets
-  `v3 is a keyset version, not a token format. Rotation to v3 is explicit.`,
-  // Multisig
-  `Multisig puts the federation into the proof. Threshold BLS keeps the proof format and moves the threshold into issuance.`,
-  // Section2
-  undefined,
-  // Shamir
-  `Standard Shamir. t = 2, so the polynomial is a line. One polynomial per amount.`,
-  // Lagrange
-  `The weights depend on which members respond. Three subsets, three sets of weights, same f(0). The weights are scalars, so they apply to G1 points.`,
-  // ThresholdSign
-  `The wallet is the aggregator. m2 being offline does not matter. Each share is verified against the member's public share before interpolation.`,
-  // Section3
-  undefined,
-  // MixMatch
-  `Members that sign on receipt can be played against each other. Every request looks valid to the member that receives it.`,
-  // OperationId
-  `Hash of the canonical envelope. Real SHA-256 on the slide.`,
-  // Consensus
-  `AlephBFT gives a total order. Conflicts are detected on apply. Only then are shares produced.`,
-  // Swap
-  `End-to-end swap. Admission checks run before consensus.`,
-  // MintQuote
-  `Quote created on one member and ordered through consensus; the wallet waits until t members return it. Members probe the backend on status requests, payment events or scans; observations reach quorum q. The wallet accepts a status from t identical responses. Each member mints only once the quote is paid in its own state.`,
-  // Topology
-  `Two planes. Liveness: t for signatures, c for ordering.`,
-  // Section4
-  undefined,
-  // Dkg
-  `Pedersen DKG. The aggregate secret is the sum of the constant terms and is never computed.`,
-  // DkgRounds
-  `Readiness, then a hash of each member's reveal, then the reveal, private deliveries checked against commitments, transcript signatures, and activation by all members. The FROST treasury ceremony runs after activation.`,
-  // FederationId
-  `The federation ID is a hash over the setup transcript. Membership changes produce a new federation. Open design questions at the bottom.`,
-  // Recovery
-  `History is replicated and verifiable; key material is not. Checkpoint, suffix, replay, digest check, readiness gate.`,
-  // Section5
-  undefined,
-  // Funding
-  `A single-operator backend under a federated issuer leaves the operator in control of the funds. Threshold custody with FROST.`,
-  // KeyMaterial
-  `Two ceremonies on the same roster. FROST produces one root; applications derive from it in a fixed order.`,
-  // Melt
-  `Melt as a sequence of consensus objects. Deposit and reorg handling below.`,
-  // Section6
-  undefined,
-  // Rewrite
-  `Fan-out shows every member the bearer proofs. A pre-v3 proof has no witness binding it to outputs, so a member can race a rewritten swap.`,
-  // Transcript
-  `v3 serializes every transaction as TLV containers: inputs (proofs, mint quotes) and outputs (blinded messages, melt quotes). Values are from the NUT-10 test vectors.`,
-  // InputDigest
-  `Each input signs its own tagged digest over the transaction digest and its container. Rewriting outputs changes every digest.`,
-  // InputsSign
-  `This is SIG_ALL for every v3 transaction. An unlocked token is a bare key with its private key in spend info; the mint never sees k.`,
-  // Summary
-  `Each federation concern and the mechanism behind it.`,
-  // Chapter2
-  `Nutroot: the v3 secret family. Spec PR cashubtc/nuts#443, on top of the BLS keyset PR #371.`,
-  // SectionN1
-  undefined,
-  // JsonSecret
-  `NUT-10 today: a JSON array serialized into a string, escaped again inside the proof JSON, hashed to the curve as a string.`,
-  // JsonLimits
-  `P2PK and HTLC express conditions as tags with fixed pathways. The whole policy is revealed on every spend.`,
-  // SectionN2
-  undefined,
-  // TaprootTree
-  `BIP341 recap: internal key, script leaves, TapLeaf and TapBranch hashes, tweak, x-only output key. The constructor picks the tree shape.`,
-  // TaprootSpend
-  `Key path: one signature, looks like single-sig. Script path: script plus control block with parity, internal key and path; then execute.`,
-  // SectionN3
-  undefined,
-  // PointSecret
-  `v3 secrets are 33-byte compressed secp256k1 points. Bare key or tweaked key, indistinguishable on the wire.`,
-  // NutrootTree
-  `Worked three-leaf vector from the spec: leaf hashes, sorted fold with a promoted leaf, root, tweak, secret.`,
-  // LeafEncoding
-  `Leaves are declarative TLV records with a fixed vocabulary. No interpreter, no opcodes, fail closed on anything unknown.`,
-  // FoldShapes
-  `The fold is normative: sort, pair, promote. Shape depends only on the leaf count. Press R to cycle 1 to 8 leaves.`,
-  // NutrootSpends
-  `Key path: one signature by k plus t. Script path: leaf, control with K and path, signatures, preimage.`,
-  // ScriptVerify
-  `The four verification steps from the spec, with the values of the three-leaf vector.`,
-  // InternalKey
-  `Single-party, aggregated with mandatory empty tweak, or NUMS offset with disclosed u for script-only proofs.`,
-  // SectionN4
-  undefined,
-  // SpendInfo
-  `Spend info carries k, E, K, tree, u. Receive-time checks: reconstruct the secret, confirm it is spendable, then sweep.`,
-  // ReceiverKeyed
-  `NUT-18 payment request with a nutroot option; NUT-28 slot blinding; the payee key-path sweeps.`,
-  // Capabilities
-  `Everything the current spec text covers, with the NUT that specifies it.`,
-  // VsBip341
-  `What nutroot borrows from BIP341 and where it differs.`,
-  // Comparison
-  `JSON secrets against nutroot secrets.`,
-  // End
-  undefined,
-];
+export { notes } from './speaker-notes';
 
 // Named exports for the temporary variation decks (slides/fcv-*).
 export {
@@ -5799,7 +5655,7 @@ export {
   Note,
   Label,
   StepList,
-  StepItem,
+  StepItemLegacy as StepItem,
   toneStroke,
   Member,
   WalletNode,
@@ -5925,7 +5781,7 @@ export {
   FoldShapes,
   NutrootSpends,
   JLine,
-  Check,
+  CheckLegacy as Check,
   ScriptVerify,
   KeyCard,
   InternalKey,
@@ -5943,6 +5799,19 @@ export {
   End,
   VarShell,
   VarCover,
+  FedRow,
+  FedParts,
+  PartCard,
+  Paper,
+  BigStat,
+  Built,
+  ThanksRow,
+  Thanks,
+  DKG_ROWS,
+  TxSide,
+  SigAll,
+  LEAF_TYPES,
+  CapRow,
 };
 export type {
   StepRegistration,

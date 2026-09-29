@@ -1,10 +1,10 @@
 # 02 · Outline
 
-Outline · script 52 words, about 20 s
+Outline · script 48 words, about 20 s
 
 ## Script
 
-Chapter one has six sections: the BLS blind signature scheme, threshold issuance, ordering of operations, keys and membership, custody of the reserves, and client intent, which ends in the new transaction serialization. Chapter two has four: spending conditions as they work today, a taproot recap, nutroot secrets, and how nutroot is used.
+Two parts. Part one, federations: blind signatures on a new curve, threshold issuance, ordering operations through consensus, key generation and membership, custody of the reserves, and client intent. Part two, nutroot: spending conditions as they work today, a short taproot recap, nutroot secrets, and how they are used.
 
 ## Background
 
