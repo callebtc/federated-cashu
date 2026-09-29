@@ -1357,17 +1357,16 @@ const BigStat = ({ show, delay, value, label }: { show: boolean; delay: number; 
 const DAY = 64;
 
 const Built: Page = () => {
-  const proc = useProcess(6, 1800);
+  const proc = useProcess(5, 1800);
   const s = proc.step;
   const D0 = 780;
   const px = (d: number) => D0 + d * DAY;
   const top = 320;
   const rowH = 92;
   const rows: { title: string; sub: string; x1: number; x2: number; tone: string; fill: string; fade?: boolean; mono?: boolean }[] = [
-    { title: 'Spec', sub: 'long description', x1: 600, x2: 680, tone: c.node, fill: c.panel },
-    { title: 'Grill-me', sub: 'on the spec', x1: 690, x2: 770, tone: c.violet, fill: c.panel },
+    { title: 'Spec', sub: '1 day · long description and review', x1: px(-1), x2: px(0) - 4, tone: c.violet, fill: c.panel },
     { title: '/goal: build', sub: '7 days', x1: px(0), x2: px(7), tone: c.clayHex, fill: c.claySoft, mono: true },
-    { title: 'Review', sub: '1 day', x1: px(7) + 4, x2: px(8), tone: c.cool, fill: c.coolSoft },
+    { title: 'Review & Refactor', sub: '1 day', x1: px(7) + 4, x2: px(8), tone: c.cool, fill: c.coolSoft },
     { title: '/goal: implement review', sub: '6 days', x1: px(8) + 4, x2: px(14), tone: c.clayHex, fill: c.claySoft, mono: true },
     { title: 'Ongoing', sub: 'optimizing, bug fixing', x1: px(14) + 4, x2: 1800, tone: c.clayHex, fill: c.claySoft, fade: true },
   ];
@@ -1406,15 +1405,13 @@ const Built: Page = () => {
         </Fade>
       ))}
       <Canvas>
-        <GFade show={s >= 3} delay={500}>
-          <circle cx={px(3)} cy={top + 2 * rowH + 35} r={10} style={{ fill: c.clayHex }} />
+        <GFade show={s >= 2} delay={500}>
+          <circle cx={px(3)} cy={top + rowH + 35} r={10} style={{ fill: c.clayHex }} />
         </GFade>
       </Canvas>
-      <At x={px(7) + 20} y={top + 2 * rowH + 14} w={600}>
-        <Fade show={s >= 3} delay={600}>
-          <span style={{ fontSize: 28 }}>
-            <span style={{ color: ACCENT }}>●</span> day 3: first working federation
-          </span>
+      <At x={px(3) + 18} y={top + rowH + 20} w={420}>
+        <Fade show={s >= 2} delay={600}>
+          <span style={{ fontSize: 23, color: c.clayHex }}>first working federation</span>
         </Fade>
       </At>
       <At x={120} y={935} w={1680}>
