@@ -1,6 +1,6 @@
 # 07 · How this was built
 
-Authorship · 5 steps · script 76 words, about 35 s
+Authorship · 5 steps · script 89 words, about 40 s
 
 ## Script
 
@@ -10,7 +10,7 @@ How this was built, in order.
 
 **[2]** Then seven days of building with /goal. On day three there was a first working federation.
 
-**[3]** Then one day of review and refactoring.
+**[3]** Review and refactoring ran alongside the build, from day one to day eight: regular supervision of what the agents produced.
 
 **[4]** Then six more days of /goal, implementing the review findings.
 

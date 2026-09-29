@@ -1363,10 +1363,10 @@ const Built: Page = () => {
   const px = (d: number) => D0 + d * DAY;
   const top = 320;
   const rowH = 92;
-  const rows: { title: string; sub: string; x1: number; x2: number; tone: string; fill: string; fade?: boolean; mono?: boolean }[] = [
+  const rows: { title: string; sub: string; x1: number; x2: number; tone: string; fill: string; fade?: boolean; mono?: boolean; band?: string }[] = [
     { title: 'Spec', sub: '1 day · long description and review', x1: px(-1), x2: px(0) - 4, tone: c.violet, fill: c.panel },
     { title: '/goal: build', sub: '7 days', x1: px(0), x2: px(7), tone: c.clayHex, fill: c.claySoft, mono: true },
-    { title: 'Review & Refactor', sub: '1 day', x1: px(7) + 4, x2: px(8), tone: c.cool, fill: c.coolSoft },
+    { title: 'Review & Refactor', sub: 'days 1 to 8', band: 'regular supervision', x1: px(1), x2: px(8), tone: c.cool, fill: c.coolSoft },
     { title: '/goal: implement review', sub: '6 days', x1: px(8) + 4, x2: px(14), tone: c.clayHex, fill: c.claySoft, mono: true },
     { title: 'Ongoing', sub: 'optimizing, bug fixing', x1: px(14) + 4, x2: 1800, tone: c.clayHex, fill: c.claySoft, fade: true },
   ];
@@ -1400,8 +1400,15 @@ const Built: Page = () => {
               border: r.fade ? 'none' : `1.75px solid ${r.tone}`,
               borderLeft: `1.75px solid ${r.tone}`,
               background: r.fade ? `linear-gradient(90deg, ${r.fill}, rgba(217, 119, 87, 0))` : r.fill,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 24,
+              color: r.tone,
             }}
-          />
+          >
+            {r.band}
+          </div>
         </Fade>
       ))}
       <Canvas>
@@ -6189,10 +6196,10 @@ export default [
   Cover,
   OutlineAll,
   Chapter1,
-  Model,
-  FedParts,
   Paper,
   Built,
+  Model,
+  FedParts,
   Thanks,
   Section1,
   Bdhke,
