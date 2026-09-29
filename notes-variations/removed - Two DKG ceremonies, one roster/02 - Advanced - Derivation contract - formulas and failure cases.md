@@ -1,6 +1,6 @@
-# 29.02 · Derivation contract: formulas and failure cases
+# removed.02 · Derivation contract: formulas and failure cases
 
-Variation 2 of slide 29 (Two DKG ceremonies, one roster) · lens: Advanced · deck `fcv-e-membership-custody` page 28 · 4 steps · script 139 words, about 60 s
+Variation 2 of slide removed (Two DKG ceremonies, one roster) · lens: Advanced · deck `fcv-e-membership-custody` page 28 · 4 steps · script 139 words, about 60 s
 
 ## Script
 

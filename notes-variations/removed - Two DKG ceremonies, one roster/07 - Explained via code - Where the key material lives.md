@@ -1,6 +1,6 @@
-# 29.07 · Where the key material lives
+# removed.07 · Where the key material lives
 
-Variation 7 of slide 29 (Two DKG ceremonies, one roster) · lens: Explained via code · deck `fcv-e-membership-custody` page 33 · 3 steps · script 133 words, about 55 s
+Variation 7 of slide removed (Two DKG ceremonies, one roster) · lens: Explained via code · deck `fcv-e-membership-custody` page 33 · 3 steps · script 133 words, about 55 s
 
 ## Script
 

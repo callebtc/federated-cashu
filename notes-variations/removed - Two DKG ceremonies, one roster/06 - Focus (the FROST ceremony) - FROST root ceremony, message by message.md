@@ -1,6 +1,6 @@
-# 29.06 · FROST root ceremony, message by message
+# removed.06 · FROST root ceremony, message by message
 
-Variation 6 of slide 29 (Two DKG ceremonies, one roster) · lens: Focus: the FROST ceremony · deck `fcv-e-membership-custody` page 32 · 5 steps · script 136 words, about 60 s
+Variation 6 of slide removed (Two DKG ceremonies, one roster) · lens: Focus: the FROST ceremony · deck `fcv-e-membership-custody` page 32 · 5 steps · script 136 words, about 60 s
 
 ## Script
 

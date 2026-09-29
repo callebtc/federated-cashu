@@ -1,6 +1,6 @@
-# 29.04 · Six derivation steps and the reason for each
+# removed.04 · Six derivation steps and the reason for each
 
-Variation 4 of slide 29 (Two DKG ceremonies, one roster) · lens: Focus: the derivation chain · deck `fcv-e-membership-custody` page 30 · 6 steps · script 135 words, about 60 s
+Variation 4 of slide removed (Two DKG ceremonies, one roster) · lens: Focus: the derivation chain · deck `fcv-e-membership-custody` page 30 · 6 steps · script 135 words, about 60 s
 
 ## Script
 

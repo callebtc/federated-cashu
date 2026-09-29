@@ -1,6 +1,6 @@
-# 30.01 · Paying 40,000 sat from the federation's coins
+# removed.01 · Paying 40,000 sat from the federation's coins
 
-Variation 1 of slide 30 (On-chain melt - intent to broadcast) · lens: Beginner · deck `fcv-e-membership-custody` page 35 · 5 steps · script 140 words, about 60 s
+Variation 1 of slide removed (On-chain melt - intent to broadcast) · lens: Beginner · deck `fcv-e-membership-custody` page 35 · 5 steps · script 140 words, about 60 s
 
 ## Script
 

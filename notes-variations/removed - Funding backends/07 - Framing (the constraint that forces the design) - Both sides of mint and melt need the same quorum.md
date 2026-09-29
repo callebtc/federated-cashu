@@ -1,6 +1,6 @@
-# 28.07 · Both sides of mint and melt need the same quorum
+# removed.07 · Both sides of mint and melt need the same quorum
 
-Variation 7 of slide 28 (Funding backends) · lens: Framing: the constraint that forces the design · deck `fcv-e-membership-custody` page 25 · 4 steps · script 132 words, about 55 s
+Variation 7 of slide removed (Funding backends) · lens: Framing: the constraint that forces the design · deck `fcv-e-membership-custody` page 25 · 4 steps · script 132 words, about 55 s
 
 ## Script
 

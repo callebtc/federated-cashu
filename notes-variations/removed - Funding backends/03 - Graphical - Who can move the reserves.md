@@ -1,6 +1,6 @@
-# 28.03 · Who can move the reserves
+# removed.03 · Who can move the reserves
 
-Variation 3 of slide 28 (Funding backends) · lens: Graphical · deck `fcv-e-membership-custody` page 21 · 3 steps · script 113 words, about 50 s
+Variation 3 of slide removed (Funding backends) · lens: Graphical · deck `fcv-e-membership-custody` page 21 · 3 steps · script 113 words, about 50 s
 
 ## Script
 

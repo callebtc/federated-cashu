@@ -1,6 +1,6 @@
-# 30.07 · A deposit reorg, before and after issuance
+# removed.07 · A deposit reorg, before and after issuance
 
-Variation 7 of slide 30 (On-chain melt - intent to broadcast) · lens: Framing: reorg before vs after issuance · deck `fcv-e-membership-custody` page 41 · 4 steps · script 131 words, about 55 s
+Variation 7 of slide removed (On-chain melt - intent to broadcast) · lens: Framing: reorg before vs after issuance · deck `fcv-e-membership-custody` page 41 · 4 steps · script 131 words, about 55 s
 
 ## Script
 

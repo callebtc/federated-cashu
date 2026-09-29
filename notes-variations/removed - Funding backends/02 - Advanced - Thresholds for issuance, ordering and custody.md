@@ -1,6 +1,6 @@
-# 28.02 · Thresholds for issuance, ordering and custody
+# removed.02 · Thresholds for issuance, ordering and custody
 
-Variation 2 of slide 28 (Funding backends) · lens: Advanced · deck `fcv-e-membership-custody` page 20 · 4 steps · script 139 words, about 60 s
+Variation 2 of slide removed (Funding backends) · lens: Advanced · deck `fcv-e-membership-custody` page 20 · 4 steps · script 139 words, about 60 s
 
 ## Script
 

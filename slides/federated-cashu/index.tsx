@@ -3159,7 +3159,7 @@ const triSeg = (ax: number, ay: number, bx: number, by: number, ra: number, rb: 
   return { x1: ax + ux * ra, y1: ay + uy * ra, x2: bx - ux * rb, y2: by - uy * rb };
 };
 
-const TriPanel = ({ cx, cy, n, s, anim, kind }: { cx: number; cy: number; n: number; s: number; anim: boolean; kind: 'bcast' | 'private' | 'sign' }) => {
+const TriPanel = ({ cx, cy, n, s, anim, kind, center = 'hash' }: { cx: number; cy: number; n: number; s: number; anim: boolean; kind: 'bcast' | 'private' | 'sign'; center?: string }) => {
   const P = TRI(cx, cy);
   const seen = s >= n;
   return (
@@ -3213,7 +3213,7 @@ const TriPanel = ({ cx, cy, n, s, anim, kind }: { cx: number; cy: number; n: num
             }}
           />
           <text x={cx} y={cy + 8} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 22, fill: c.ink }}>
-            hash
+            {center}
           </text>
         </g>
       )}
@@ -3800,6 +3800,231 @@ const Melt: Page = () => {
           <div style={{ fontSize: 34 }}>One member can propose. It cannot change what gets signed.</div>
         </Fade>
       </At>
+    </Shell>
+  );
+};
+
+const CUST_X = [300, 480, 660, 840, 1020];
+const CUST_MY = 600;
+
+const QuorumBox = ({ y, label, sub, value, tone, fill }: { y: number; label: string; sub: ReactNode; value: string; tone: string; fill: string }) => (
+  <div
+    style={{
+      position: 'absolute',
+      left: 180,
+      top: y,
+      width: 960,
+      height: 110,
+      boxSizing: 'border-box',
+      border: `1.75px solid ${tone}`,
+      background: fill,
+      borderRadius: 'var(--osd-radius)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 36px',
+      transition: `border-color 400ms ${EASE_OUT}, background 400ms ${EASE_OUT}`,
+    }}
+  >
+    <div>
+      <div style={{ fontFamily: SERIF, fontSize: 36 }}>{label}</div>
+      <div style={{ fontSize: 24, color: c.muted }}>{sub}</div>
+    </div>
+    <div key={value} style={{ fontFamily: SERIF, fontSize: 52, color: tone, animation: REDUCED ? 'none' : `fc-in 400ms ${EASE_OUT} both` }}>
+      {value}
+    </div>
+  </div>
+);
+
+const CustodyQuorum: Page = () => {
+  const proc = useProcess(3, 2400);
+  const s = proc.step;
+  const single = s === 2;
+  const frost = s >= 3;
+  const ecashOn = (i: number) => s >= 1 && i < 3;
+  const resOn = (i: number) => (single ? i === 0 : frost ? i < 3 : false);
+  const resTone = single ? c.bad : frost ? c.cool : c.rule;
+  return (
+    <Shell n="1.5" eyebrow="Custody" title="One threshold for ecash and reserves" proc={proc}>
+      <QuorumBox
+        y={290}
+        label="Ecash issuance"
+        sub="BLS threshold signatures"
+        value={s >= 1 ? '3 of 5' : ''}
+        tone={s >= 1 ? c.clayHex : c.rule}
+        fill={s >= 1 ? c.claySoft : c.card}
+      />
+      <QuorumBox
+        y={800}
+        label="Reserves"
+        sub={single ? 'one operator holds the key' : frost ? 'FROST treasury key' : 'Lightning and on-chain funds'}
+        value={single ? '1 of 5' : frost ? '3 of 5' : ''}
+        tone={resTone}
+        fill={single ? c.badSoft : frost ? c.coolSoft : c.card}
+      />
+      <Canvas>
+        {CUST_X.map((x, i) => (
+          <g key={x}>
+            <line
+              x1={x}
+              y1={CUST_MY - 46}
+              x2={x}
+              y2={400}
+              style={{ stroke: c.clayHex, strokeWidth: 2.5, opacity: ecashOn(i) ? 0.9 : 0.12, transition: `opacity 400ms ${EASE_OUT} ${i * 60}ms` }}
+            />
+            <line
+              x1={x}
+              y1={CUST_MY + 46}
+              x2={x}
+              y2={800}
+              style={{ stroke: single ? c.bad : c.cool, strokeWidth: 2.5, opacity: resOn(i) ? 0.9 : 0.12, transition: `opacity 400ms ${EASE_OUT} ${i * 60}ms, stroke 300ms ${EASE_OUT}` }}
+            />
+            <Member x={x} y={CUST_MY} r={44} label={`m${i + 1}`} tone={single && i === 0 ? 'bad' : ecashOn(i) || resOn(i) ? 'on' : 'idle'} />
+          </g>
+        ))}
+      </Canvas>
+      <StepList>
+        <StepItem n={1} step={s}>
+          Ecash: 3 of 5 sign
+        </StepItem>
+        <StepItem n={2} step={s}>
+          One-operator backend
+        </StepItem>
+        <StepItem n={3} step={s}>
+          FROST: 3 of 5 spend
+        </StepItem>
+      </StepList>
+    </Shell>
+  );
+};
+
+const FrostDkg: Page = () => {
+  const proc = useProcess(4, 2200);
+  const s = proc.step;
+  const cy = 520;
+  const xs = [360, 960, 1560];
+  const heads = ['Commit', 'Share', 'Confirm'];
+  const lab = (on: boolean): CSSProperties => ({
+    fontFamily: MATH,
+    fontStyle: 'italic',
+    fontSize: 34,
+    fill: on ? c.ink : c.muted,
+    transition: `fill 300ms ${EASE_OUT}`,
+  });
+  return (
+    <Shell n="1.5" eyebrow="Custody" title="FROST key generation" proc={proc}>
+      {heads.map((h, i) => (
+        <div
+          key={h}
+          style={{
+            position: 'absolute',
+            left: xs[i] - 200,
+            top: 262,
+            width: 400,
+            textAlign: 'center',
+            fontFamily: SERIF,
+            fontSize: 40,
+            color: s >= i + 1 ? c.ink : c.dim,
+            transition: `color 300ms ${EASE_OUT}`,
+          }}
+        >
+          {h}
+        </div>
+      ))}
+      <Canvas>
+        <TriPanel cx={xs[0]} cy={cy} n={1} s={s} anim={proc.anim} kind="bcast" />
+        <TriPanel cx={xs[1]} cy={cy} n={2} s={s} anim={proc.anim} kind="private" />
+        <TriPanel cx={xs[2]} cy={cy} n={3} s={s} anim={proc.anim} kind="sign" center="P" />
+        <text x={xs[0]} y={cy + 170} textAnchor="middle" style={lab(s === 1)}>
+          a·G + proof
+        </text>
+        <text x={xs[1]} y={cy + 170} textAnchor="middle" style={lab(s === 2)}>
+          fⱼ(i)
+        </text>
+        <text x={xs[2]} y={cy + 170} textAnchor="middle" style={{ ...lab(s === 3), fontFamily: SANS, fontStyle: 'normal', fontSize: 30 }}>
+          same key P
+        </text>
+      </Canvas>
+      <At x={120} y={800} w={1680}>
+        <Fade show={s >= 4}>
+          <div style={{ fontSize: 36, textAlign: 'center' }}>
+            One key <M>P</M> on secp256k1. Any <M>t</M> members sign; the private key never exists.
+          </div>
+        </Fade>
+      </At>
+    </Shell>
+  );
+};
+
+const ShareBadge = ({ x, y, label, tone, soft, show, delay }: { x: number; y: number; label: ReactNode; tone: string; soft: string; show: boolean; delay: number }) => (
+  <div
+    style={{
+      position: 'absolute',
+      left: x - 70,
+      top: y,
+      width: 140,
+      textAlign: 'center',
+      border: `1.75px solid ${tone}`,
+      background: soft,
+      borderRadius: 10,
+      padding: '8px 0',
+      fontSize: 28,
+      color: tone,
+      opacity: show ? 1 : 0,
+      transform: show || REDUCED ? 'translateY(0px)' : 'translateY(6px)',
+      transition: `opacity 400ms ${EASE_OUT} ${show ? delay : 0}ms, transform 400ms ${EASE_OUT} ${show ? delay : 0}ms`,
+    }}
+  >
+    {label}
+  </div>
+);
+
+const UseCard = ({ y, show, tone, soft, title, line }: { y: number; show: boolean; tone: string; soft: string; title: ReactNode; line: string }) => (
+  <Fade show={show} style={{ position: 'absolute', left: 980, top: y, width: 360 }}>
+    <div style={{ border: `1.75px solid ${tone}`, background: soft, borderRadius: 'var(--osd-radius)', padding: '18px 26px' }}>
+      <div style={{ fontFamily: SERIF, fontSize: 36 }}>{title}</div>
+      <div style={{ fontSize: 26, color: c.muted, marginTop: 6 }}>{line}</div>
+    </div>
+  </Fade>
+);
+
+const TwoShares: Page = () => {
+  const proc = useProcess(3, 2200);
+  const s = proc.step;
+  const xs = [200, 360, 520, 680, 840];
+  return (
+    <Shell n="1.5" eyebrow="Custody" title="Two key shares per member" proc={proc}>
+      <Canvas>
+        {xs.map((x, i) => (
+          <Member key={x} x={x} y={300} r={42} label={`m${i + 1}`} tone={s >= 3 ? 'on' : 'idle'} />
+        ))}
+        <Arrow x1={916} y1={437} x2={968} y2={437} show={s >= 1} color={c.clayHex} delay={300} />
+        <Arrow x1={916} y1={617} x2={968} y2={617} show={s >= 2} color={c.cool} delay={300} />
+      </Canvas>
+      {xs.map((x, i) => (
+        <ShareBadge key={`b${x}`} x={x} y={412} label={<M>kᵢ</M>} tone={c.clayHex} soft={c.claySoft} show={s >= 1} delay={i * 60} />
+      ))}
+      {xs.map((x, i) => (
+        <ShareBadge key={`f${x}`} x={x} y={592} label={<M>sᵢ</M>} tone={c.cool} soft={c.coolSoft} show={s >= 2} delay={i * 60} />
+      ))}
+      <UseCard y={378} show={s >= 1} tone={c.clayHex} soft={c.claySoft} title="BLS shares" line="sign ecash" />
+      <UseCard y={558} show={s >= 2} tone={c.cool} soft={c.coolSoft} title="FROST share" line="signs Bitcoin transactions" />
+      <At x={120} y={800} w={1220}>
+        <Fade show={s >= 3}>
+          <div style={{ fontSize: 34 }}>Same roster, same threshold, two separate ceremonies.</div>
+        </Fade>
+      </At>
+      <StepList>
+        <StepItem n={1} step={s}>
+          BLS shares: ecash
+        </StepItem>
+        <StepItem n={2} step={s}>
+          FROST shares: reserves
+        </StepItem>
+        <StepItem n={3} step={s}>
+          Same roster, same <M>t</M>
+        </StepItem>
+      </StepList>
     </Shell>
   );
 };
@@ -5991,9 +6216,9 @@ export default [
   DkgRounds,
   Recovery,
   Section5,
-  Funding,
-  KeyMaterial,
-  Melt,
+  CustodyQuorum,
+  FrostDkg,
+  TwoShares,
   Section6,
   Rewrite,
   SigAll,
@@ -6219,6 +6444,9 @@ export {
   DAY,
   TriPanel,
   DkgOverview,
+  CustodyQuorum,
+  FrostDkg,
+  TwoShares,
 };
 export type {
   StepRegistration,

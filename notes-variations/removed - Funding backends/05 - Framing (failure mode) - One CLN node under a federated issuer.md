@@ -1,6 +1,6 @@
-# 28.05 · One CLN node under a federated issuer
+# removed.05 · One CLN node under a federated issuer
 
-Variation 5 of slide 28 (Funding backends) · lens: Framing: failure mode · deck `fcv-e-membership-custody` page 23 · 4 steps · script 124 words, about 55 s
+Variation 5 of slide removed (Funding backends) · lens: Framing: failure mode · deck `fcv-e-membership-custody` page 23 · 4 steps · script 124 words, about 55 s
 
 ## Script
 

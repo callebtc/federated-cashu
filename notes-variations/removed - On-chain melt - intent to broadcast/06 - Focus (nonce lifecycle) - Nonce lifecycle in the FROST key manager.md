@@ -1,6 +1,6 @@
-# 30.06 · Nonce lifecycle in the FROST key manager
+# removed.06 · Nonce lifecycle in the FROST key manager
 
-Variation 6 of slide 30 (On-chain melt - intent to broadcast) · lens: Focus: nonce lifecycle · deck `fcv-e-membership-custody` page 40 · 4 steps · script 138 words, about 60 s
+Variation 6 of slide removed (On-chain melt - intent to broadcast) · lens: Focus: nonce lifecycle · deck `fcv-e-membership-custody` page 40 · 4 steps · script 138 words, about 60 s
 
 ## Script
 

@@ -1,6 +1,6 @@
-# 29.05 · Same roster, same threshold: what an attacker tries
+# removed.05 · Same roster, same threshold: what an attacker tries
 
-Variation 5 of slide 29 (Two DKG ceremonies, one roster) · lens: Perspective: attacker · deck `fcv-e-membership-custody` page 31 · 5 steps · script 137 words, about 60 s
+Variation 5 of slide removed (Two DKG ceremonies, one roster) · lens: Perspective: attacker · deck `fcv-e-membership-custody` page 31 · 5 steps · script 137 words, about 60 s
 
 ## Script
 

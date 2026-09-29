@@ -1,6 +1,6 @@
-# 30.04 · The accepted transaction as a state machine
+# removed.04 · The accepted transaction as a state machine
 
-Variation 4 of slide 30 (On-chain melt - intent to broadcast) · lens: Explained via state machine · deck `fcv-e-membership-custody` page 38 · 5 steps · script 130 words, about 55 s
+Variation 4 of slide removed (On-chain melt - intent to broadcast) · lens: Explained via state machine · deck `fcv-e-membership-custody` page 38 · 5 steps · script 130 words, about 55 s
 
 ## Script
 

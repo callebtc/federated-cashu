@@ -1,6 +1,6 @@
-# 30.05 · One member in a melt: what it can and cannot do
+# removed.05 · One member in a melt: what it can and cannot do
 
-Variation 5 of slide 30 (On-chain melt - intent to broadcast) · lens: Perspective: Byzantine member · deck `fcv-e-membership-custody` page 39 · 4 steps · script 140 words, about 60 s
+Variation 5 of slide removed (On-chain melt - intent to broadcast) · lens: Perspective: Byzantine member · deck `fcv-e-membership-custody` page 39 · 4 steps · script 140 words, about 60 s
 
 ## Script
 

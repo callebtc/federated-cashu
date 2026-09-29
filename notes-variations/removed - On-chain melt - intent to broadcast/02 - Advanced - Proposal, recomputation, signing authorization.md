@@ -1,6 +1,6 @@
-# 30.02 · Proposal, recomputation, signing authorization
+# removed.02 · Proposal, recomputation, signing authorization
 
-Variation 2 of slide 30 (On-chain melt - intent to broadcast) · lens: Advanced · deck `fcv-e-membership-custody` page 36 · 3 steps · script 136 words, about 60 s
+Variation 2 of slide removed (On-chain melt - intent to broadcast) · lens: Advanced · deck `fcv-e-membership-custody` page 36 · 3 steps · script 136 words, about 60 s
 
 ## Script
 

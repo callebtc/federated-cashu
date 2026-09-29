@@ -1,6 +1,6 @@
-# 28.04 · Funding backends compared
+# removed.04 · Funding backends compared
 
-Variation 4 of slide 28 (Funding backends) · lens: Explained via table · deck `fcv-e-membership-custody` page 22 · 2 steps · script 138 words, about 60 s
+Variation 4 of slide removed (Funding backends) · lens: Explained via table · deck `fcv-e-membership-custody` page 22 · 2 steps · script 138 words, about 60 s
 
 ## Script
 

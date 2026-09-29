@@ -1,6 +1,6 @@
-# 30.03 · From proofs to a broadcast transaction
+# removed.03 · From proofs to a broadcast transaction
 
-Variation 3 of slide 30 (On-chain melt - intent to broadcast) · lens: Graphical · deck `fcv-e-membership-custody` page 37 · 5 steps · script 111 words, about 50 s
+Variation 3 of slide removed (On-chain melt - intent to broadcast) · lens: Graphical · deck `fcv-e-membership-custody` page 37 · 5 steps · script 111 words, about 50 s
 
 ## Script
 

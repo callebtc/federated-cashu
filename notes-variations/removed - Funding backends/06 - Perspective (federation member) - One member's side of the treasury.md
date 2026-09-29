@@ -1,6 +1,6 @@
-# 28.06 · One member's side of the treasury
+# removed.06 · One member's side of the treasury
 
-Variation 6 of slide 28 (Funding backends) · lens: Perspective: federation member · deck `fcv-e-membership-custody` page 24 · 3 steps · script 134 words, about 55 s
+Variation 6 of slide removed (Funding backends) · lens: Perspective: federation member · deck `fcv-e-membership-custody` page 24 · 3 steps · script 134 words, about 55 s
 
 ## Script
 

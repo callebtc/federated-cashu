@@ -1,6 +1,6 @@
-# 28.01 · Two halves of a mint
+# removed.01 · Two halves of a mint
 
-Variation 1 of slide 28 (Funding backends) · lens: Beginner · deck `fcv-e-membership-custody` page 19 · 5 steps · script 140 words, about 60 s
+Variation 1 of slide removed (Funding backends) · lens: Beginner · deck `fcv-e-membership-custody` page 19 · 5 steps · script 140 words, about 60 s
 
 ## Script
 

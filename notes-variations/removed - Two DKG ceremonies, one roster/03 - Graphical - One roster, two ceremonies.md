@@ -1,6 +1,6 @@
-# 29.03 · One roster, two ceremonies
+# removed.03 · One roster, two ceremonies
 
-Variation 3 of slide 29 (Two DKG ceremonies, one roster) · lens: Graphical · deck `fcv-e-membership-custody` page 29 · 5 steps · script 130 words, about 55 s
+Variation 3 of slide removed (Two DKG ceremonies, one roster) · lens: Graphical · deck `fcv-e-membership-custody` page 29 · 5 steps · script 130 words, about 55 s
 
 ## Script
 

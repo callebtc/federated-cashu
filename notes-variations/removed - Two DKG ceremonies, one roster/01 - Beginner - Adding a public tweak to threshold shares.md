@@ -1,6 +1,6 @@
-# 29.01 · Adding a public tweak to threshold shares
+# removed.01 · Adding a public tweak to threshold shares
 
-Variation 1 of slide 29 (Two DKG ceremonies, one roster) · lens: Beginner · deck `fcv-e-membership-custody` page 27 · 5 steps · script 140 words, about 60 s
+Variation 1 of slide removed (Two DKG ceremonies, one roster) · lens: Beginner · deck `fcv-e-membership-custody` page 27 · 5 steps · script 140 words, about 60 s
 
 ## Script
 

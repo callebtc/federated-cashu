@@ -1,6 +1,6 @@
-# 30.08 · Crash points in an on-chain melt
+# removed.08 · Crash points in an on-chain melt
 
-Variation 8 of slide 30 (On-chain melt - intent to broadcast) · lens: Framing: crash at each stage · deck `fcv-e-membership-custody` page 42 · 5 steps · script 139 words, about 60 s
+Variation 8 of slide removed (On-chain melt - intent to broadcast) · lens: Framing: crash at each stage · deck `fcv-e-membership-custody` page 42 · 5 steps · script 139 words, about 60 s
 
 ## Script
 
