@@ -287,6 +287,11 @@ const Heading = ({ children }: { children: ReactNode }) => (
       margin: '14px 0 0',
     }}
   >
+    {/* @slide-comment id="c-3bed480b" ts="2026-09-29T20:02:52.647Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
+    {/* @slide-comment id="c-fcec6e0c" ts="2026-09-29T20:01:50.810Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
+    {/* @slide-comment id="c-73eaa891" ts="2026-09-29T20:01:31.393Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
+    {/* @slide-comment id="c-5ffc5c66" ts="2026-09-29T20:01:25.941Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
+    {/* @slide-comment id="c-cfa45fa6" ts="2026-09-29T20:00:03.850Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
     {children}
   </h2>
 );
@@ -4727,6 +4732,7 @@ const Fig = ({
       transformOrigin: 'top left',
     }}
   >
+    {/* @slide-comment id="c-498e902f" ts="2026-09-29T20:00:35.191Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgcGFnZSJ9" */}
     {children}
   </div>
 );
@@ -6766,8 +6772,8 @@ export default [
   TapReveal,
   SectionN3,
   PointSecret,
-  NutrootTree,
   LeafEncoding,
+  NutrootTree,
   FoldShapes,
   NutrootSpends,
   ScriptVerify,
