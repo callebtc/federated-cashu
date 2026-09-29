@@ -3641,9 +3641,7 @@ const Recovery: Page = () => {
             m2 ready: serving and signing
           </span>
         </Fade>
-        <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>
-          Keys are not recoverable from peers.
-        </Note>
+        <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>Federations are are inherently robust.</Note>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
@@ -4124,47 +4122,6 @@ const UseCard = ({ y, show, tone, soft, title, line }: { y: number; show: boolea
   </Fade>
 );
 
-const TwoShares: Page = () => {
-  const proc = useProcess(3, 2200);
-  const s = proc.step;
-  const xs = [200, 360, 520, 680, 840];
-  return (
-    <Shell n="1.5" eyebrow="Custody" title="Two key shares per member" proc={proc}>
-      <Canvas>
-        {xs.map((x, i) => (
-          <Member key={x} x={x} y={300} r={42} label={`m${i + 1}`} tone={s >= 3 ? 'on' : 'idle'} />
-        ))}
-        <Arrow x1={916} y1={437} x2={968} y2={437} show={s >= 1} color={c.clayHex} delay={300} />
-        <Arrow x1={916} y1={617} x2={968} y2={617} show={s >= 2} color={c.cool} delay={300} />
-      </Canvas>
-      {xs.map((x, i) => (
-        <ShareBadge key={`b${x}`} x={x} y={412} label={<M>kᵢ</M>} tone={c.clayHex} soft={c.claySoft} show={s >= 1} delay={i * 60} />
-      ))}
-      {xs.map((x, i) => (
-        <ShareBadge key={`f${x}`} x={x} y={592} label={<M>sᵢ</M>} tone={c.cool} soft={c.coolSoft} show={s >= 2} delay={i * 60} />
-      ))}
-      <UseCard y={378} show={s >= 1} tone={c.clayHex} soft={c.claySoft} title="BLS shares" line="sign ecash" />
-      <UseCard y={558} show={s >= 2} tone={c.cool} soft={c.coolSoft} title="FROST share" line="signs Bitcoin transactions" />
-      <At x={120} y={800} w={1220}>
-        <Fade show={s >= 3}>
-          <div style={{ fontSize: 34 }}>Same roster, same threshold, two separate ceremonies.</div>
-        </Fade>
-      </At>
-      <StepList>
-        <StepItem n={1} step={s}>
-          BLS shares: ecash
-        </StepItem>
-        <StepItem n={2} step={s}>
-          FROST shares: reserves
-        </StepItem>
-        <StepItem n={3} step={s}>
-          Same roster, same <M>t</M>
-        </StepItem>
-      </StepList>
-    </Shell>
-  );
-};
-
 // ═════════════════════════════════════════════════════════════════════════════
 // 06 · Client intent
 // ═════════════════════════════════════════════════════════════════════════════
@@ -4240,7 +4197,7 @@ const Rewrite: Page = () => {
               fontSize: 24,
             }}
           >
-            X Y <span style={{ color: c.bad }}>applied</span>
+            X Y <span style={{ color: c.bad }}>signed</span>
           </div>
         </Fade>
         <Fade show={s >= 3} delay={150}>
@@ -4254,9 +4211,7 @@ const Rewrite: Page = () => {
               fontSize: 24,
               color: c.dim,
             }}
-          >
-            A B already spent
-          </div>
+          >P₁ P₂ already spent</div>
         </Fade>
       </At>
       <StepList>
@@ -4713,27 +4668,23 @@ const Summary: Page = () => (
         <Cell head w={SW[1]}>Mechanism</Cell>
       </Row>
       <Row h={66} i={1}>
-        <Cell w={SW[0]} color={c.muted}>Verify without the key</Cell>
+        <Cell w={SW[0]} color={c.muted}>Blind threshold signatures</Cell>
         <Cell w={SW[1]}>BLS pairings</Cell>
       </Row>
       <Row h={66} i={2}>
-        <Cell w={SW[0]} color={c.muted}>Split the key</Cell>
-        <Cell w={SW[1]}>Shamir shares, combined by the wallet</Cell>
+        <Cell w={SW[0]} color={c.muted}>Consensus</Cell>
+        <Cell w={SW[1]}>AlephBFT</Cell>
       </Row>
       <Row h={66} i={3}>
-        <Cell w={SW[0]} color={c.muted}>Mix-and-match</Cell>
-        <Cell w={SW[1]}>AlephBFT consensus before signing</Cell>
+        <Cell w={SW[0]} color={c.muted}>No trusted dealer</Cell>
+        <Cell w={SW[1]}>Distributed key generation (DKG)</Cell>
       </Row>
       <Row h={66} i={4}>
-        <Cell w={SW[0]} color={c.muted}>No dealer</Cell>
-        <Cell w={SW[1]}>Distributed key generation</Cell>
-      </Row>
-      <Row h={66} i={5}>
         <Cell w={SW[0]} color={c.muted}>Reserves</Cell>
         <Cell w={SW[1]}>FROST threshold custody</Cell>
       </Row>
-      <Row h={66} i={6}>
-        <Cell w={SW[0]} color={c.muted}>Rewritten outputs</Cell>
+      <Row h={66} i={5}>
+        <Cell w={SW[0]} color={c.muted}>Malleability</Cell>
         <Cell w={SW[1]}>
           <Code>SIG_ALL</Code> always on (v3)
         </Cell>
@@ -6354,7 +6305,6 @@ export default [
   Section5,
   CustodyQuorum,
   FrostDkg,
-  TwoShares,
   Section6,
   Rewrite,
   SigAll,
@@ -6582,7 +6532,6 @@ export {
   DkgOverview,
   CustodyQuorum,
   FrostDkg,
-  TwoShares,
   OURO,
   Snake,
 };
