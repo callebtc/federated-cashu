@@ -1,6 +1,6 @@
 # 40.02 · Witness validation (BIP341, BIP342)
 
-Variation 2 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Advanced · deck `fcv-g-json-taproot` page 28 · 5 steps · script 139 words, about 60 s
+Variation 2 of slide 40 (What each spend reveals) · lens: Advanced · deck `fcv-g-json-taproot` page 28 · 5 steps · script 139 words, about 60 s
 
 ## Script
 

@@ -1,6 +1,6 @@
 # 39.05 · From a policy to an output key
 
-Variation 5 of slide 39 (Taproot output keys (BIP341)) · lens: Perspective: wallet that builds the output · deck `fcv-g-json-taproot` page 23 · 5 steps · script 140 words, about 60 s
+Variation 5 of slide 39 (Three tags, one output key) · lens: Perspective: wallet that builds the output · deck `fcv-g-json-taproot` page 23 · 5 steps · script 140 words, about 60 s
 
 ## Script
 

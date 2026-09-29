@@ -1,6 +1,6 @@
 # 39.06 · Tree shape sets the script path cost
 
-Variation 6 of slide 39 (Taproot output keys (BIP341)) · lens: Framing: tree shape and proof size · deck `fcv-g-json-taproot` page 24 · 5 steps · script 138 words, about 60 s
+Variation 6 of slide 39 (Three tags, one output key) · lens: Framing: tree shape and proof size · deck `fcv-g-json-taproot` page 24 · 5 steps · script 138 words, about 60 s
 
 ## Script
 

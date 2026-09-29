@@ -1,6 +1,6 @@
 # 39.01 · One script, one output key: a worked example
 
-Variation 1 of slide 39 (Taproot output keys (BIP341)) · lens: Beginner · deck `fcv-g-json-taproot` page 19 · 5 steps · script 138 words, about 60 s
+Variation 1 of slide 39 (Three tags, one output key) · lens: Beginner · deck `fcv-g-json-taproot` page 19 · 5 steps · script 138 words, about 60 s
 
 ## Script
 

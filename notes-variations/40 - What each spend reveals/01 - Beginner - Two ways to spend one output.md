@@ -1,6 +1,6 @@
 # 40.01 · Two ways to spend one output
 
-Variation 1 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Beginner · deck `fcv-g-json-taproot` page 27 · 4 steps · script 140 words, about 60 s
+Variation 1 of slide 40 (What each spend reveals) · lens: Beginner · deck `fcv-g-json-taproot` page 27 · 4 steps · script 140 words, about 60 s
 
 ## Script
 

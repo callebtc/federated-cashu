@@ -1,6 +1,6 @@
 # 39.02 · Output key construction: rules and edge cases
 
-Variation 2 of slide 39 (Taproot output keys (BIP341)) · lens: Advanced · deck `fcv-g-json-taproot` page 20 · 6 steps · script 140 words, about 60 s
+Variation 2 of slide 39 (Three tags, one output key) · lens: Advanced · deck `fcv-g-json-taproot` page 20 · 6 steps · script 140 words, about 60 s
 
 ## Script
 

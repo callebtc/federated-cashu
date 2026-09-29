@@ -1,6 +1,6 @@
-# 40.03 · What each spend reveals
+# 40 · What each spend reveals
 
-Variation 3 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Graphical · deck `fcv-g-json-taproot` page 29 · 4 steps · script 132 words, about 55 s
+2.2 Taproot · 4 steps · script 132 words, about 55 s
 
 ## Script
 
@@ -19,7 +19,3 @@ The same output drawn twice: Q commits to the internal key P and to a tree of th
 - **Merkle proof**: the sibling hashes on a leaf's path. With them the verifier recomputes the root without seeing the other leaves.
 - **Recomputed nodes**: the BC branch and the root are never sent; they follow from B's leaf hash and the two sibling hashes.
 - **Control block size**: 33 + 32m bytes for a leaf at depth m; here m = 2, so 97.
-
-## Speaker note
-
-- Step 1 changes nothing on screen; the tree is fully drawn from step 0. Use the click to describe the tree shape.

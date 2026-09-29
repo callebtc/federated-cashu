@@ -1,6 +1,8 @@
-# 39.03 · Three tags, one output key
+# 39 · Three tags, one output key
 
-Variation 3 of slide 39 (Taproot output keys (BIP341)) · lens: Graphical · deck `fcv-g-json-taproot` page 21 · 5 steps · script 120 words, about 50 s
+Original slide, deck `fcv-g-json-taproot` page 18 (main deck slide 39). Same text as `notes/39 - Three tags, one output key/notes.md`.
+
+2.2 Taproot · 5 steps · script 120 words, about 50 s
 
 ## Script
 

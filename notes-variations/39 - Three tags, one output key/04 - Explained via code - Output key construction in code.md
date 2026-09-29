@@ -1,6 +1,6 @@
 # 39.04 · Output key construction in code
 
-Variation 4 of slide 39 (Taproot output keys (BIP341)) · lens: Explained via code · deck `fcv-g-json-taproot` page 22 · 5 steps · script 138 words, about 60 s
+Variation 4 of slide 39 (Three tags, one output key) · lens: Explained via code · deck `fcv-g-json-taproot` page 22 · 5 steps · script 138 words, about 60 s
 
 ## Script
 

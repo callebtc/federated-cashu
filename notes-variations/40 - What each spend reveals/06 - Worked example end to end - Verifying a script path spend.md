@@ -1,6 +1,6 @@
 # 40.06 · Verifying a script path spend
 
-Variation 6 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Worked example end to end · deck `fcv-g-json-taproot` page 32 · 5 steps · script 137 words, about 60 s
+Variation 6 of slide 40 (What each spend reveals) · lens: Worked example end to end · deck `fcv-g-json-taproot` page 32 · 5 steps · script 137 words, about 60 s
 
 ## Script
 

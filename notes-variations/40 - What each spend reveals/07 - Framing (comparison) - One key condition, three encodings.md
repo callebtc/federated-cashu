@@ -1,6 +1,6 @@
 # 40.07 · One key condition, three encodings
 
-Variation 7 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Framing: comparison · deck `fcv-g-json-taproot` page 33 · 5 steps · script 139 words, about 60 s
+Variation 7 of slide 40 (What each spend reveals) · lens: Framing: comparison · deck `fcv-g-json-taproot` page 33 · 5 steps · script 139 words, about 60 s
 
 ## Script
 

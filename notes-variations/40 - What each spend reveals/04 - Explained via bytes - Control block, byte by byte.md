@@ -1,6 +1,6 @@
 # 40.04 · Control block, byte by byte
 
-Variation 4 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Explained via bytes · deck `fcv-g-json-taproot` page 30 · 5 steps · script 138 words, about 60 s
+Variation 4 of slide 40 (What each spend reveals) · lens: Explained via bytes · deck `fcv-g-json-taproot` page 30 · 5 steps · script 138 words, about 60 s
 
 ## Script
 

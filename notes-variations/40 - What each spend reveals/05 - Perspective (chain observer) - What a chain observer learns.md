@@ -1,6 +1,6 @@
 # 40.05 · What a chain observer learns
 
-Variation 5 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Perspective: chain observer · deck `fcv-g-json-taproot` page 31 · 4 steps · script 137 words, about 60 s
+Variation 5 of slide 40 (What each spend reveals) · lens: Perspective: chain observer · deck `fcv-g-json-taproot` page 31 · 4 steps · script 137 words, about 60 s
 
 ## Script
 

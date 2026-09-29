@@ -1,6 +1,6 @@
 # 40.08 · Key path signing: two parity adjustments
 
-Variation 8 of slide 40 (Key path and script path (BIP341, BIP342)) · lens: Focus: the key-path signing key · deck `fcv-g-json-taproot` page 34 · 5 steps · script 135 words, about 60 s
+Variation 8 of slide 40 (What each spend reveals) · lens: Focus: the key-path signing key · deck `fcv-g-json-taproot` page 34 · 5 steps · script 135 words, about 60 s
 
 ## Script
 

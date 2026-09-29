@@ -5374,6 +5374,271 @@ const TaprootSpend: Page = () => {
   );
 };
 
+const TrSBox = ({
+  x,
+  y,
+  w,
+  h,
+  label,
+  show = true,
+  tone = c.node,
+  fill = c.card,
+  font = 'sans',
+  size = 22,
+  color = c.ink,
+  dashed = false,
+  delay = 0,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  label?: ReactNode;
+  show?: boolean;
+  tone?: string;
+  fill?: string;
+  font?: 'sans' | 'mono' | 'math';
+  size?: number;
+  color?: string;
+  dashed?: boolean;
+  delay?: number;
+}) => (
+  <GFade show={show} delay={delay}>
+    <rect
+      x={x}
+      y={y}
+      width={w}
+      height={h}
+      rx={10}
+      style={{
+        fill,
+        stroke: tone,
+        strokeWidth: 1.75,
+        strokeDasharray: dashed ? '6 6' : 'none',
+        transition: `stroke 300ms ${EASE_OUT}, fill 300ms ${EASE_OUT}`,
+      }}
+    />
+    {label && (
+      <text
+        x={x + w / 2}
+        y={y + h / 2 + size * 0.34}
+        textAnchor="middle"
+        style={{
+          fontFamily: font === 'mono' ? MONO : font === 'math' ? MATH : SANS,
+          fontStyle: font === 'math' ? 'italic' : 'normal',
+          fontSize: size,
+          fill: color,
+        }}
+      >
+        {label}
+      </text>
+    )}
+  </GFade>
+);
+
+const TrNode = ({
+  x,
+  y,
+  r = 30,
+  label,
+  tone = c.node,
+  fill = c.card,
+  show = true,
+  faint = false,
+  dashed = false,
+  delay = 0,
+  size = 24,
+  font = 'mono',
+}: {
+  x: number;
+  y: number;
+  r?: number;
+  label?: ReactNode;
+  tone?: string;
+  fill?: string;
+  show?: boolean;
+  faint?: boolean;
+  dashed?: boolean;
+  delay?: number;
+  size?: number;
+  font?: 'mono' | 'math' | 'sans';
+}) => (
+  <g
+    style={{
+      opacity: show ? (faint ? 0.25 : 1) : 0,
+      transition: `opacity 450ms ${EASE_OUT} ${show ? delay : 0}ms`,
+    }}
+  >
+    <circle cx={x} cy={y} r={r} style={{ fill: c.card }} />
+    <circle
+      cx={x}
+      cy={y}
+      r={r}
+      style={{
+        fill,
+        stroke: tone,
+        strokeWidth: 2,
+        strokeDasharray: dashed ? '5 5' : 'none',
+        transition: `stroke 300ms ${EASE_OUT}, fill 300ms ${EASE_OUT}`,
+      }}
+    />
+    {label && (
+      <text
+        x={x}
+        y={y + size * 0.34}
+        textAnchor="middle"
+        style={{
+          fontFamily: font === 'mono' ? MONO : font === 'math' ? MATH : SANS,
+          fontStyle: font === 'math' ? 'italic' : 'normal',
+          fontSize: size,
+          fill: c.ink,
+        }}
+      >
+        {label}
+      </text>
+    )}
+  </g>
+);
+
+const TrMiniTree = ({ dx, mode, s }: { dx: number; mode: 'key' | 'script'; s: number }) => {
+  const on = mode === 'key' ? s >= 2 : s >= 3;
+  const key = mode === 'key';
+  const hidden = { faint: on, dashed: on };
+  const Q = { x: 510 + dx, y: 340 };
+  const P = { x: 330 + dx, y: 460 };
+  const R = { x: 690 + dx, y: 460 };
+  const A = { x: 560 + dx, y: 590 };
+  const BC = { x: 820 + dx, y: 590 };
+  const B = { x: 740 + dx, y: 720 };
+  const C = { x: 900 + dx, y: 720 };
+  return (
+    <g>
+      <line x1={P.x} y1={P.y} x2={Q.x} y2={Q.y} style={{ stroke: c.node, strokeWidth: 1.75, opacity: key && on ? 0.25 : 1, transition: `opacity 400ms ${EASE_OUT}` }} />
+      <line x1={R.x} y1={R.y} x2={Q.x} y2={Q.y} style={{ stroke: c.node, strokeWidth: 1.75, opacity: key && on ? 0.25 : 1, transition: `opacity 400ms ${EASE_OUT}` }} />
+      <line x1={A.x} y1={A.y} x2={R.x} y2={R.y} style={{ stroke: c.node, strokeWidth: 1.75, opacity: on ? 0.25 : 1, transition: `opacity 400ms ${EASE_OUT}` }} />
+      <line x1={BC.x} y1={BC.y} x2={R.x} y2={R.y} style={{ stroke: key && on ? c.node : on ? c.cool : c.node, strokeWidth: 1.75, opacity: key && on ? 0.25 : 1, transition: `opacity 400ms ${EASE_OUT}` }} />
+      <line x1={B.x} y1={B.y} x2={BC.x} y2={BC.y} style={{ stroke: !key && on ? c.cool : c.node, strokeWidth: 1.75, opacity: key && on ? 0.25 : 1, transition: `opacity 400ms ${EASE_OUT}` }} />
+      <line x1={C.x} y1={C.y} x2={BC.x} y2={BC.y} style={{ stroke: c.node, strokeWidth: 1.75, opacity: on ? 0.25 : 1, transition: `opacity 400ms ${EASE_OUT}` }} />
+      <TrNode x={Q.x} y={Q.y} r={34} label="Q" font="math" size={30} tone={c.clayHex} fill={on ? c.claySoft : c.card} />
+      <TrNode x={P.x} y={P.y} r={30} label="P" font="math" size={28} {...(key ? hidden : {})} tone={!key && on ? c.cool : c.node} fill={!key && on ? c.coolSoft : c.card} />
+      <TrNode x={R.x} y={R.y} r={26} {...(key ? hidden : {})} tone={!key && on ? c.cool : c.node} dashed={on} />
+      <TrNode x={A.x} y={A.y} r={on && !key ? 12 : 30} label={on && !key ? undefined : 'A'} {...(key ? hidden : {})} fill={on && !key ? c.node : c.card} />
+      <TrNode x={BC.x} y={BC.y} r={26} {...(key ? hidden : {})} tone={!key && on ? c.cool : c.node} dashed={on} />
+      <TrNode x={B.x} y={B.y} r={30} label="B" {...(key ? hidden : {})} tone={!key && on ? c.cool : c.node} fill={!key && on ? c.coolSoft : c.card} />
+      <TrNode x={C.x} y={C.y} r={on && !key ? 12 : 30} label={on && !key ? undefined : 'C'} {...(key ? hidden : {})} fill={on && !key ? c.node : c.card} />
+    </g>
+  );
+};
+
+const TapTags: Page = () => {
+  const proc = useProcess(5, 2000);
+  const s = proc.step;
+  const leafTone = c.cool;
+  const branchTone = c.violet;
+  const tweakTone = c.clayHex;
+  return (
+    <Shell n="2.2" eyebrow="Taproot" title="Three tags, one output key" proc={proc}>
+      <Canvas>
+        {/* edges */}
+        <Draw x1={460} y1={836} x2={460} y2={770} show={s >= 1} color={c.node} width={2} />
+        <Draw x1={1100} y1={836} x2={1100} y2={770} show={s >= 1} color={c.node} width={2} delay={60} />
+        <Draw x1={1440} y1={836} x2={1440} y2={770} show={s >= 1} color={c.node} width={2} delay={120} />
+        <Draw x1={1100} y1={714} x2={1250} y2={630} show={s >= 2} color={c.node} width={2} />
+        <Draw x1={1440} y1={714} x2={1290} y2={630} show={s >= 2} color={c.node} width={2} />
+        <Draw x1={470} y1={712} x2={835} y2={488} show={s >= 3} color={c.node} width={2} />
+        <Draw x1={1250} y1={572} x2={895} y2={482} show={s >= 3} color={c.node} width={2} />
+        <Draw x1={865} y1={426} x2={865} y2={366} show={s >= 4} color={c.node} width={2} />
+        <Draw x1={560} y1={330} x2={829} y2={330} show={s >= 4} color={c.node} width={2} />
+        <Arrow x1={901} y1={330} x2={1156} y2={330} show={s >= 5} color={tweakTone} />
+        {/* packets */}
+        <Packet x1={460} y1={836} x2={460} y2={770} run={proc.anim && s === 1} color={leafTone} r={7} />
+        <Packet x1={1100} y1={836} x2={1100} y2={770} run={proc.anim && s === 1} color={leafTone} r={7} delay={60} />
+        <Packet x1={1440} y1={836} x2={1440} y2={770} run={proc.anim && s === 1} color={leafTone} r={7} delay={120} />
+        <Packet x1={1100} y1={714} x2={1250} y2={630} run={proc.anim && s === 2} color={branchTone} r={7} />
+        <Packet x1={1440} y1={714} x2={1290} y2={630} run={proc.anim && s === 2} color={branchTone} r={7} />
+        <Packet x1={470} y1={712} x2={835} y2={488} run={proc.anim && s === 3} color={branchTone} r={7} />
+        <Packet x1={1250} y1={572} x2={895} y2={482} run={proc.anim && s === 3} color={branchTone} r={7} />
+        <Packet x1={865} y1={426} x2={865} y2={366} run={proc.anim && s === 4} color={tweakTone} r={7} />
+        <Packet x1={560} y1={330} x2={829} y2={330} run={proc.anim && s === 4} color={tweakTone} r={7} />
+        <Packet x1={901} y1={330} x2={1156} y2={330} run={proc.anim && s === 5} color={tweakTone} r={7} />
+        {/* scripts */}
+        <TrSBox x={380} y={836} w={160} h={56} label="script A" show={s >= 1} />
+        <TrSBox x={1020} y={836} w={160} h={56} label="script B" show={s >= 1} delay={60} />
+        <TrSBox x={1360} y={836} w={160} h={56} label="script C" show={s >= 1} delay={120} />
+        {/* hashes */}
+        <TrNode x={460} y={742} r={28} tone={leafTone} fill={c.coolSoft} show={s >= 1} delay={300} />
+        <TrNode x={1100} y={742} r={28} tone={leafTone} fill={c.coolSoft} show={s >= 1} delay={360} />
+        <TrNode x={1440} y={742} r={28} tone={leafTone} fill={c.coolSoft} show={s >= 1} delay={420} />
+        <TrNode x={1270} y={600} r={30} tone={branchTone} fill="rgba(122, 95, 166, 0.14)" show={s >= 2} delay={300} />
+        <TrNode x={865} y={456} r={32} tone={branchTone} fill="rgba(122, 95, 166, 0.14)" show={s >= 3} delay={300} />
+        <TrNode x={865} y={330} r={36} tone={tweakTone} fill={c.claySoft} show={s >= 4} delay={300} />
+        {/* keys */}
+        <TrSBox x={420} y={300} w={140} h={60} label="P" font="math" size={32} show={s >= 4} />
+        <TrSBox x={1160} y={296} w={330} h={68} label="Q = P + t·G" font="math" size={32} tone={tweakTone} show={s >= 5} delay={400} />
+        <T x={1325} y={404} font="mono" size={22} color={c.muted} show={s >= 5} delay={600}>
+          OP_1 &lt;x(Q)&gt;
+        </T>
+        {/* legend */}
+        <circle cx={1380} cy={512} r={12} style={{ fill: c.coolSoft, stroke: leafTone, strokeWidth: 2 }} />
+        <text x={1402} y={520} style={{ fontFamily: MONO, fontSize: 22, fill: c.ink }}>TapLeaf</text>
+        <circle cx={1580} cy={512} r={12} style={{ fill: 'rgba(122, 95, 166, 0.14)', stroke: branchTone, strokeWidth: 2 }} />
+        <text x={1602} y={520} style={{ fontFamily: MONO, fontSize: 22, fill: c.ink }}>TapBranch</text>
+        <circle cx={1380} cy={458} r={12} style={{ fill: c.claySoft, stroke: tweakTone, strokeWidth: 2 }} />
+        <text x={1402} y={466} style={{ fontFamily: MONO, fontSize: 22, fill: c.ink }}>TapTweak</text>
+      </Canvas>
+    </Shell>
+  );
+};
+
+const TapReveal: Page = () => {
+  const proc = useProcess(4, 2200);
+  const s = proc.step;
+  const B = 3; // px per byte
+  return (
+    <Shell n="2.2" eyebrow="Taproot" title="What each spend reveals" proc={proc}>
+      <Canvas>
+        <text x={510} y={284} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 26, fill: s >= 2 ? c.clayHex : c.muted, transition: `fill 300ms ${EASE_OUT}` }}>
+          key path
+        </text>
+        <text x={1370} y={284} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 26, fill: s >= 3 ? c.cool : c.muted, transition: `fill 300ms ${EASE_OUT}` }}>
+          script path
+        </text>
+        <TrMiniTree dx={0} mode="key" s={s} />
+        <TrMiniTree dx={860} mode="script" s={s} />
+        <GFade show={s >= 3}>
+          <circle cx={1000} cy={660} r={10} style={{ fill: c.node }} />
+          <text x={1022} y={668} style={{ fontFamily: SANS, fontSize: 22, fill: c.muted }}>
+            32-byte hash only
+          </text>
+          <circle cx={1000} cy={706} r={12} style={{ fill: c.card, stroke: c.cool, strokeWidth: 2, strokeDasharray: '5 5' }} />
+          <text x={1022} y={714} style={{ fontFamily: SANS, fontSize: 22, fill: c.muted }}>
+            recomputed
+          </text>
+        </GFade>
+        {/* witness bars */}
+        <GFade show={s >= 4}>
+          <rect x={414} y={826} width={64 * B} height={40} rx={6} style={{ fill: c.claySoft, stroke: c.clayHex, strokeWidth: 1.5 }} />
+          <text x={414 + 32 * B} y={900} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 21, fill: c.muted }}>
+            sig 64
+          </text>
+          <rect x={1060} y={826} width={64 * B} height={40} rx={6} style={{ fill: c.coolSoft, stroke: c.cool, strokeWidth: 1.5 }} />
+          <text x={1060 + 32 * B} y={900} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 21, fill: c.muted }}>
+            sig 64
+          </text>
+          <rect x={1262} y={826} width={120} height={40} rx={6} style={{ fill: c.card, stroke: c.cool, strokeWidth: 1.5 }} />
+          <text x={1322} y={900} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 21, fill: c.muted }}>
+            script
+          </text>
+          <rect x={1392} y={826} width={97 * B} height={40} rx={6} style={{ fill: c.card, stroke: c.node, strokeWidth: 1.5 }} />
+          <text x={1392 + 48 * B} y={900} textAnchor="middle" style={{ fontFamily: MONO, fontSize: 21, fill: c.muted }}>
+            control 97
+          </text>
+        </GFade>
+      </Canvas>
+    </Shell>
+  );
+};
+
 // ─── 2.3 Nutroot secrets ─────────────────────────────────────────────────────
 
 const PointSecret: Page = () => {
@@ -6497,8 +6762,8 @@ export default [
   JsonSecret,
   LockEnforce,
   SectionN2,
-  TaprootTree,
-  TaprootSpend,
+  TapTags,
+  TapReveal,
   SectionN3,
   PointSecret,
   NutrootTree,
@@ -6719,6 +6984,11 @@ export {
   Snake,
   LockToken,
   LockEnforce,
+  TrSBox,
+  TrNode,
+  TrMiniTree,
+  TapTags,
+  TapReveal,
 };
 export type {
   StepRegistration,

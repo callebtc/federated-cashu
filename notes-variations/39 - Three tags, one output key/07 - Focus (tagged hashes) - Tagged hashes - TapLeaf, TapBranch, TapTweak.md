@@ -1,6 +1,6 @@
 # 39.07 · Tagged hashes: TapLeaf, TapBranch, TapTweak
 
-Variation 7 of slide 39 (Taproot output keys (BIP341)) · lens: Focus: tagged hashes · deck `fcv-g-json-taproot` page 25 · 5 steps · script 134 words, about 55 s
+Variation 7 of slide 39 (Three tags, one output key) · lens: Focus: tagged hashes · deck `fcv-g-json-taproot` page 25 · 5 steps · script 134 words, about 55 s
 
 ## Script
 
