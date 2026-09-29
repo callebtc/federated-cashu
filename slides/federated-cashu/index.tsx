@@ -2401,65 +2401,157 @@ const ShareTag = ({ m, op }: { m: string; op: string }) => (
   </div>
 );
 
+const ORD_REQ = [
+  { m: 'm1', outs: 'A, B', tone: c.clayHex, x: 300, jx: 470, jy: 488, rot: -6 },
+  { m: 'm2', outs: 'B, C', tone: c.violet, x: 640, jx: 800, jy: 540, rot: 5 },
+  { m: 'm3', outs: 'C, A', tone: c.cool, x: 980, jx: 610, jy: 552, rot: -3 },
+];
+const ORD_CHIP_Y = 360;
+const ORD_BOX = { x: 330, y: 440, w: 620, h: 170 };
+const ORD_ROW_Y = [676, 746, 816];
+
+const OrdChip = ({ outs, tone, style }: { outs: string; tone: string; style?: CSSProperties }) => (
+  <div
+    style={{
+      position: 'absolute',
+      width: 170,
+      height: 52,
+      boxSizing: 'border-box',
+      border: `1.75px solid ${tone}`,
+      background: c.card,
+      borderRadius: 10,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: MONO,
+      fontSize: 28,
+      color: tone,
+      ...style,
+    }}
+  >
+    [{outs}]
+  </div>
+);
+
 const Consensus: Page = () => {
-  const proc = useProcess(4);
+  const proc = useProcess(4, 2000);
   const s = proc.step;
-  const ha = useSha256(ENV_A).slice(0, 4);
-  const hb = useSha256(ENV_B).slice(0, 4);
   return (
-    <Shell n="1.3" eyebrow="Ordering" title="Consensus before signing" proc={proc}>
-      <EnvChip op={ha} outs="A, B" color={c.clayHex} into={s >= 1} y={330} />
-      <EnvChip op={hb} outs="B, C" color={c.violet} into={s >= 1} y={430} />
+    <Shell n="1.3" eyebrow="Ordering" title="One order, replicated" proc={proc}>
+      <Canvas>
+        {ORD_REQ.map((r) => (
+          <Member key={r.m} x={r.x} y={290} r={38} label={r.m} />
+        ))}
+        <Arrow x1={640} y1={ORD_BOX.y + ORD_BOX.h + 4} x2={640} y2={ORD_ROW_Y[0] - 34} show={s >= 2} color={c.node} />
+      </Canvas>
       <div
         style={{
           position: 'absolute',
-          left: 470,
-          top: 300,
-          width: 320,
-          height: 220,
+          left: ORD_BOX.x,
+          top: ORD_BOX.y,
+          width: ORD_BOX.w,
+          height: ORD_BOX.h,
           boxSizing: 'border-box',
           border: `1.75px solid ${s >= 1 ? c.node : c.rule}`,
           background: c.panel,
           borderRadius: 18,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
           transition: `border-color 300ms ${EASE_OUT}`,
         }}
       >
-        <div style={{ fontFamily: SERIF, fontSize: 36 }}>AlephBFT</div>
-        <div style={{ fontSize: 22, color: c.muted, marginTop: 6 }}>total order</div>
+        <div style={{ position: 'absolute', right: 22, bottom: 12, fontFamily: SERIF, fontSize: 30, color: c.muted }}>
+          AlephBFT
+        </div>
       </div>
-      <Canvas>
-        <Arrow x1={800} y1={410} x2={860} y2={410} show={s >= 2} />
-      </Canvas>
-      <At x={880} y={300} w={420}>
-        <LogRow n="#41" op={ha} verdict="applied: quote issued" ok show={s >= 2} />
-        <LogRow n="#42" op={hb} verdict="fails at apply: quote already issued" ok={false} show={s >= 3} />
-      </At>
-      <At x={120} y={600} w={1180}>
+      {ORD_REQ.map((r) => (
+        <OrdChip
+          key={`ghost${r.m}`}
+          outs={r.outs}
+          tone={r.tone}
+          style={{ left: r.x - 85, top: ORD_CHIP_Y - 26, opacity: s >= 1 ? 0.3 : 0, transition: `opacity 400ms ${EASE_OUT}` }}
+        />
+      ))}
+      {ORD_REQ.map((r, i) => {
+        const inside = s >= 1;
+        const gone = s >= 2;
+        const dx = r.jx - r.x;
+        const dy = r.jy - ORD_CHIP_Y;
+        return (
+          <OrdChip
+            key={r.m}
+            outs={r.outs}
+            tone={r.tone}
+            style={{
+              left: r.x - 85,
+              top: ORD_CHIP_Y - 26,
+              opacity: gone ? 0 : 1,
+              transform: inside ? `translate(${dx}px, ${dy}px) rotate(${r.rot}deg)` : 'translate(0px, 0px)',
+              transition: `transform 900ms ${EASE_IO} ${i * 90}ms, opacity 400ms ${EASE_OUT}`,
+            }}
+          />
+        );
+      })}
+      {ORD_REQ.map((r, i) => {
+        const ok = i === 0;
+        const judged = s >= 3;
+        return (
+          <div
+            key={`row${r.m}`}
+            style={{
+              position: 'absolute',
+              left: 420,
+              top: ORD_ROW_Y[i] - 26,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 22,
+              opacity: s >= 2 ? (judged && !ok ? 0.55 : 1) : 0,
+              transform: s >= 2 || REDUCED ? 'translateY(0px)' : 'translateY(-60px)',
+              transition: `opacity 450ms ${EASE_OUT} ${s >= 2 ? 300 + i * 120 : 0}ms, transform 700ms ${EASE_IO} ${s >= 2 ? 300 + i * 120 : 0}ms`,
+            }}
+          >
+            <span style={{ fontFamily: MONO, fontSize: 26, color: c.muted, width: 44 }}>#{i + 1}</span>
+            <OrdChip outs={r.outs} tone={r.tone} style={{ position: 'relative' }} />
+            <span
+              style={{
+                fontSize: 28,
+                color: ok ? c.good : c.bad,
+                opacity: judged ? 1 : 0,
+                transition: `opacity 400ms ${EASE_OUT} ${judged ? 200 + i * 150 : 0}ms`,
+              }}
+            >
+              {ok ? 'applied' : 'quote already used'}
+            </span>
+          </div>
+        );
+      })}
+      <At x={1080} y={430} w={260}>
         <Fade show={s >= 4}>
-          <div style={{ display: 'flex', gap: 20 }}>
-            <ShareTag m="m1" op={ha} />
-            <ShareTag m="m2" op={ha} />
-            <ShareTag m="m3" op={ha} />
+          <Label>Paid</Label>
+          <div style={{ fontFamily: SERIF, fontSize: 96, lineHeight: 1.1 }}>2</div>
+          <div style={{ marginTop: 20 }}>
+            <Label>Signed</Label>
+          </div>
+          <div style={{ fontFamily: SERIF, fontSize: 96, lineHeight: 1.1, color: c.good }}>2</div>
+        </Fade>
+      </At>
+      <At x={120} y={880} w={1200}>
+        <Fade show={s >= 4}>
+          <div style={{ fontSize: 32 }}>
+            Every member signs only <M>A, B</M>. <M>C</M> gets no shares.
           </div>
         </Fade>
       </At>
-
       <StepList>
         <StepItem n={1} step={s}>
-          Submit, do not sign
+          Requests go in, unordered
         </StepItem>
         <StepItem n={2} step={s}>
-          One order for everyone
+          One order comes out
         </StepItem>
         <StepItem n={3} step={s}>
-          #42: quote already used
+          #1 wins, the rest fail
         </StepItem>
         <StepItem n={4} step={s}>
-          Sign accepted only
+          Paid 2, signed 2
         </StepItem>
       </StepList>
     </Shell>
@@ -2528,34 +2620,134 @@ const PipeArrows = ({ proc }: { proc: Proc }) => (
   </Canvas>
 );
 
+const FlowChip = ({
+  children,
+  tone,
+  fill = c.card,
+  struck = false,
+  dashed = false,
+}: {
+  children: ReactNode;
+  tone: string;
+  fill?: string;
+  struck?: boolean;
+  dashed?: boolean;
+}) => (
+  <span
+    style={{
+      display: 'inline-block',
+      border: `1.75px ${dashed ? 'dashed' : 'solid'} ${tone}`,
+      background: fill,
+      borderRadius: 8,
+      padding: '6px 16px',
+      marginRight: 12,
+      fontFamily: MONO,
+      fontSize: 28,
+      whiteSpace: 'nowrap',
+      textDecoration: struck ? 'line-through' : 'none',
+      opacity: struck ? 0.45 : 1,
+      transition: `opacity 400ms ${EASE_OUT}, border-color 300ms ${EASE_OUT}, background 300ms ${EASE_OUT}`,
+    }}
+  >
+    {children}
+  </span>
+);
+
+const SWAP_MY = [360, 600, 840];
+
 const Swap: Page = () => {
-  const proc = useProcess(5);
+  const proc = useProcess(5, 1700);
   const s = proc.step;
+  const w = { x: 230, y: 600 };
+  const mx = 680;
+  const bx = 1010;
   return (
     <Shell n="1.3" eyebrow="Ordering" title="Federated swap" proc={proc}>
-      <PipeArrows proc={proc} />
-      <PipeStage x={PIPE_X[0]} n={1} title="Request" step={s}>
-        same request to every member
-      </PipeStage>
-      <PipeStage x={PIPE_X[1]} n={2} title="Admission" step={s}>
-        proofs and conditions verify
-      </PipeStage>
-      <PipeStage x={PIPE_X[2]} n={3} title="Consensus" step={s}>
-        first swap of these inputs wins
-      </PipeStage>
-      <PipeStage x={PIPE_X[3]} n={4} title="Apply" step={s}>
-        mark spent, sign outputs
-      </PipeStage>
-      <PipeStage x={PIPE_X[4]} n={5} title="Aggregate" step={s} tone={c.cool}>
-        <M>t</M> shares → one signature
-      </PipeStage>
-      <At x={120} y={700} w={1680}>
-        <Fade show={s >= 4}>
-          <div style={{ fontSize: 34 }}>
-            A second swap of the same inputs fails: <Code>TokenAlreadySpent</Code>.
-          </div>
+      <Canvas>
+        {SWAP_MY.map((y, i) => (
+          <g key={`a${i}`}>
+            <Line x1={w.x + 60} y1={w.y} x2={mx - 44} y2={y} color={c.cool} opacity={s >= 1 ? 0.6 : 0.15} />
+            <Packet x1={w.x + 60} y1={w.y} x2={mx - 44} y2={y} run={proc.anim && s === 1} delay={i * 50} />
+            <Line x1={mx + 44} y1={y} x2={bx} y2={580 + i * 20} color={c.violet} opacity={s >= 2 ? 0.6 : 0.12} />
+            <Packet x1={mx + 44} y1={y} x2={bx} y2={580 + i * 20} run={proc.anim && s === 2} color={c.violet} delay={i * 60} />
+            <Packet x1={bx} y1={580 + i * 20} x2={mx + 44} y2={y} run={proc.anim && s === 3} color={c.violet} delay={i * 60} />
+            <Line x1={mx - 44} y1={y + 10} x2={w.x + 60} y2={w.y + 10} color={c.clayHex} opacity={s >= 4 ? 0.7 : 0} />
+            <Packet x1={mx - 44} y1={y + 10} x2={w.x + 60} y2={w.y + 10} run={proc.anim && s === 4} color={c.clayHex} delay={i * 60} />
+          </g>
+        ))}
+        <WalletNode x={w.x} y={w.y} r={60} />
+        {SWAP_MY.map((y, i) => (
+          <Member key={`m${i}`} x={mx} y={y} r={44} label={`m${i + 1}`} tone={s >= 3 ? 'on' : 'idle'} />
+        ))}
+      </Canvas>
+      <div
+        style={{
+          position: 'absolute',
+          left: bx,
+          top: 530,
+          width: 280,
+          height: 140,
+          boxSizing: 'border-box',
+          border: `1.75px solid ${s >= 2 ? c.violet : c.rule}`,
+          background: c.panel,
+          borderRadius: 16,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: `border-color 300ms ${EASE_OUT}`,
+        }}
+      >
+        <span style={{ fontFamily: SERIF, fontSize: 34 }}>AlephBFT</span>
+        <span style={{ fontFamily: MONO, fontSize: 26, color: c.violet, opacity: s >= 2 ? 1 : 0, transition: `opacity 400ms ${EASE_OUT}` }}>
+          #41
+        </span>
+      </div>
+      {SWAP_MY.map((y) => (
+        <At key={`sp${y}`} x={mx - 72} y={y + 52}>
+          <Fade show={s >= 3} delay={500}>
+            <span style={{ fontSize: 24, color: c.bad }}>P1 P2 spent</span>
+          </Fade>
+        </At>
+      ))}
+      <At x={110} y={420} w={260} style={{ textAlign: 'center' }}>
+        <FlowChip tone={c.cool} struck={s >= 3}>
+          P1
+        </FlowChip>
+        <FlowChip tone={c.cool} struck={s >= 3}>
+          P2
+        </FlowChip>
+      </At>
+      <At x={110} y={720} w={260} style={{ textAlign: 'center' }}>
+        <FlowChip tone={s >= 5 ? c.good : c.cool} fill={s >= 5 ? c.goodSoft : c.card} dashed={s < 5}>
+          A
+        </FlowChip>
+        <FlowChip tone={s >= 5 ? c.good : c.cool} fill={s >= 5 ? c.goodSoft : c.card} dashed={s < 5}>
+          B
+        </FlowChip>
+      </At>
+      <At x={80} y={810} w={340} style={{ textAlign: 'center' }}>
+        <Fade show={s >= 5}>
+          <M size={32}>C = r⁻¹·Σ λᵢ·C′ᵢ</M>
         </Fade>
       </At>
+      <StepList>
+        <StepItem n={1} step={s}>
+          Send to every member
+        </StepItem>
+        <StepItem n={2} step={s}>
+          Submit to AlephBFT
+        </StepItem>
+        <StepItem n={3} step={s}>
+          Apply: inputs spent
+        </StepItem>
+        <StepItem n={4} step={s}>
+          Shares come back
+        </StepItem>
+        <StepItem n={5} step={s}>
+          Combine: new tokens
+        </StepItem>
+      </StepList>
     </Shell>
   );
 };
@@ -5812,6 +6004,9 @@ export {
   SigAll,
   LEAF_TYPES,
   CapRow,
+  ORD_REQ,
+  OrdChip,
+  FlowChip,
 };
 export type {
   StepRegistration,

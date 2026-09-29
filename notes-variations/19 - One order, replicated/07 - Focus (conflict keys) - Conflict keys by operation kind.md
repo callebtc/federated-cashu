@@ -1,6 +1,6 @@
 # 19.07 · Conflict keys by operation kind
 
-Variation 7 of slide 19 (Consensus before signing) · lens: Focus: conflict keys · deck `fcv-c-ordering` page 25 · 4 steps · script 138 words, about 60 s
+Variation 7 of slide 19 (One order, replicated) · lens: Focus: conflict keys · deck `fcv-c-ordering` page 25 · 4 steps · script 138 words, about 60 s
 
 ## Script
 

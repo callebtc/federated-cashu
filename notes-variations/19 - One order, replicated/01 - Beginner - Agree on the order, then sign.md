@@ -1,6 +1,6 @@
 # 19.01 · Agree on the order, then sign
 
-Variation 1 of slide 19 (Consensus before signing) · lens: Beginner · deck `fcv-c-ordering` page 19 · 5 steps · script 127 words, about 55 s
+Variation 1 of slide 19 (One order, replicated) · lens: Beginner · deck `fcv-c-ordering` page 19 · 5 steps · script 127 words, about 55 s
 
 ## Script
 

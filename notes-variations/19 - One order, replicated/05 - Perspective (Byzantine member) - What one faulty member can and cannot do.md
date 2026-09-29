@@ -1,6 +1,6 @@
 # 19.05 · What one faulty member can and cannot do
 
-Variation 5 of slide 19 (Consensus before signing) · lens: Perspective: Byzantine member · deck `fcv-c-ordering` page 23 · 3 steps · script 139 words, about 60 s
+Variation 5 of slide 19 (One order, replicated) · lens: Perspective: Byzantine member · deck `fcv-c-ordering` page 23 · 3 steps · script 139 words, about 60 s
 
 ## Script
 

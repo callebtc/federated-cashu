@@ -1,6 +1,6 @@
 # 19.06 · Sign, then order versus order, then sign
 
-Variation 6 of slide 19 (Consensus before signing) · lens: Framing: order of the two steps · deck `fcv-c-ordering` page 24 · 4 steps · script 108 words, about 45 s
+Variation 6 of slide 19 (One order, replicated) · lens: Framing: order of the two steps · deck `fcv-c-ordering` page 24 · 4 steps · script 108 words, about 45 s
 
 ## Script
 

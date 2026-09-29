@@ -1,6 +1,6 @@
 # 19.04 · Lifecycle of one operation
 
-Variation 4 of slide 19 (Consensus before signing) · lens: Explained via state machine · deck `fcv-c-ordering` page 22 · 4 steps · script 136 words, about 60 s
+Variation 4 of slide 19 (One order, replicated) · lens: Explained via state machine · deck `fcv-c-ordering` page 22 · 4 steps · script 136 words, about 60 s
 
 ## Script
 

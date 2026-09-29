@@ -1,6 +1,6 @@
 # 19.03 · One order, replicated
 
-Variation 3 of slide 19 (Consensus before signing) · lens: Graphical · deck `fcv-c-ordering` page 21 · 4 steps · script 115 words, about 50 s
+Variation 3 of slide 19 (One order, replicated) · lens: Graphical · deck `fcv-c-ordering` page 21 · 4 steps · script 115 words, about 50 s
 
 ## Script
 

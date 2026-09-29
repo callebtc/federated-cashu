@@ -1,6 +1,6 @@
 # 19.02 · Quorum intersection and the two thresholds
 
-Variation 2 of slide 19 (Consensus before signing) · lens: Advanced · deck `fcv-c-ordering` page 20 · 4 steps · script 137 words, about 60 s
+Variation 2 of slide 19 (One order, replicated) · lens: Advanced · deck `fcv-c-ordering` page 20 · 4 steps · script 137 words, about 60 s
 
 ## Script
 
