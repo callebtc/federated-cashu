@@ -5002,6 +5002,189 @@ const JsonLimits: Page = () => {
   );
 };
 
+const LK = {
+  alice: { x: 260, y: 740 },
+  mint: { x: 700, y: 330 },
+  carol: { x: 1140, y: 740 },
+};
+const LK_TOK = {
+  alice: { x: 260, y: 575 },
+  mint: { x: 700, y: 520 },
+  carol: { x: 1140, y: 575 },
+};
+
+const Padlock = ({ color, size = 26 }: { color: string; size?: number }) => (
+  <svg width={size} height={size * 1.15} viewBox="0 0 20 23" style={{ display: 'block' }}>
+    <path d="M5 10 V6.5 a5 5 0 0 1 10 0 V10" style={{ fill: 'none', stroke: color, strokeWidth: 2.2 }} />
+    <rect x={2} y={10} width={16} height={12} rx={2.5} style={{ fill: color }} />
+  </svg>
+);
+
+const LockToken = ({
+  at,
+  show,
+  locked,
+  signed,
+  verdict,
+  delayMove = 0,
+  delayFade = 0,
+  scale = 1,
+}: {
+  at: { x: number; y: number };
+  show: boolean;
+  locked?: boolean;
+  signed?: boolean;
+  verdict?: 'found' | 'ok';
+  delayMove?: number;
+  delayFade?: number;
+  scale?: number;
+}) => {
+  const tone = verdict === 'ok' ? c.good : locked ? c.clayHex : c.cool;
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        left: 0,
+        top: 0,
+        width: 180,
+        height: 108,
+        boxSizing: 'border-box',
+        border: `2px solid ${tone}`,
+        background: verdict === 'ok' ? c.goodSoft : locked ? c.claySoft : c.coolSoft,
+        borderRadius: 16,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        transform: `translate(${at.x - 90}px, ${at.y - 54}px) scale(${show ? scale : 0.96})`,
+        opacity: show ? 1 : 0,
+        transition: `transform 1000ms ${EASE_IO} ${delayMove}ms, opacity 450ms ${EASE_OUT} ${delayFade}ms, border-color 300ms ${EASE_OUT}, background 300ms ${EASE_OUT}`,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {locked && <Padlock color={tone} />}
+        <span style={{ fontFamily: SERIF, fontSize: 34 }}>8 sat</span>
+      </div>
+      <div style={{ fontSize: 20, color: tone, height: 24 }}>{locked ? 'locked to Carol' : 'token'}</div>
+      <div
+        style={{
+          position: 'absolute',
+          right: -18,
+          bottom: -18,
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          background: signed ? (verdict === 'ok' ? c.good : c.violet) : 'transparent',
+          color: '#fff',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: SERIF,
+          fontStyle: 'italic',
+          fontSize: 24,
+          opacity: signed ? 1 : 0,
+          transform: signed || REDUCED ? 'scale(1)' : 'scale(0.6)',
+          transition: `opacity 400ms ${EASE_OUT}, transform 500ms ${EASE_OUT}, background 300ms ${EASE_OUT}`,
+        }}
+      >
+        {verdict === 'ok' ? '✓' : 'σ'}
+      </div>
+    </div>
+  );
+};
+
+const LockEnforce: Page = () => {
+  const proc = useProcess(7, 2200);
+  const s = proc.step;
+  // Locked token route: hidden at the mint, then Alice (2), Carol (3, 4), back to the mint (5, 6).
+  const lockedAt = s <= 1 ? LK_TOK.mint : s === 2 ? LK_TOK.alice : s <= 4 ? LK_TOK.carol : LK_TOK.mint;
+  const actor = (x: number, y: number, name: string, tone: string, on: boolean) => (
+    <g>
+      <circle cx={x} cy={y} r={58} style={{ fill: on ? c.coolSoft : c.card, stroke: tone, strokeWidth: 2, transition: `fill 300ms ${EASE_OUT}` }} />
+      <text x={x} y={y + 10} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 32, fill: c.ink }}>
+        {name}
+      </text>
+    </g>
+  );
+  return (
+    <Shell n="2.1" eyebrow="Spending conditions today" title="How a lock is enforced" proc={proc}>
+      <Canvas>
+        <line x1={LK.alice.x} y1={LK.alice.y} x2={LK.mint.x} y2={LK.mint.y} style={{ stroke: c.rule, strokeWidth: 1.5, strokeDasharray: '4 8' }} />
+        <line x1={LK.carol.x} y1={LK.carol.y} x2={LK.mint.x} y2={LK.mint.y} style={{ stroke: c.rule, strokeWidth: 1.5, strokeDasharray: '4 8' }} />
+        <line x1={LK.alice.x} y1={LK.alice.y} x2={LK.carol.x} y2={LK.carol.y} style={{ stroke: c.rule, strokeWidth: 1.5, strokeDasharray: '4 8' }} />
+        {actor(LK.alice.x, LK.alice.y, 'Alice', c.cool, s <= 3 && s >= 1)}
+        {actor(LK.carol.x, LK.carol.y, 'Carol', c.cool, s >= 3)}
+        <rect
+          x={LK.mint.x - 110}
+          y={LK.mint.y - 56}
+          width={220}
+          height={112}
+          rx={16}
+          style={{
+            fill: s === 5 ? c.claySoft : s === 6 ? c.goodSoft : c.panel,
+            stroke: s === 5 ? c.clayHex : s === 6 ? c.good : c.node,
+            strokeWidth: 2,
+            transition: `fill 300ms ${EASE_OUT}, stroke 300ms ${EASE_OUT}`,
+          }}
+        />
+        <text x={LK.mint.x} y={LK.mint.y + 12} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 36, fill: c.ink }}>
+          mint
+        </text>
+      </Canvas>
+      <At x={LK.mint.x + 130} y={LK.mint.y - 40} w={300}>
+        <div style={{ position: 'relative', height: 90 }}>
+          <Fade show={s === 5} style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ fontSize: 30, color: c.clayHex }}>lock found</div>
+            <div style={{ fontSize: 24, color: c.muted }}>needs Carol's signature</div>
+          </Fade>
+          <Fade show={s === 6} style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ fontSize: 30, color: c.good }}>signature valid</div>
+            <div style={{ fontSize: 24, color: c.muted }}>token spent</div>
+          </Fade>
+        </div>
+      </At>
+      {/* Alice's plain token: swapped away at step 2. */}
+      <LockToken at={s >= 2 ? LK_TOK.mint : LK_TOK.alice} show={s <= 1} delayFade={s >= 2 ? 700 : 0} />
+      {/* The locked token. */}
+      <LockToken
+        at={lockedAt}
+        show={s >= 2 && s <= 6}
+        locked
+        signed={s >= 4 && s <= 6}
+        verdict={s === 6 ? 'ok' : undefined}
+        delayMove={s === 2 ? 900 : 0}
+        delayFade={s === 2 ? 700 : 0}
+      />
+      {/* Carol's new token. */}
+      <LockToken at={s >= 7 ? LK_TOK.carol : LK_TOK.mint} show={s >= 7} delayMove={s >= 7 ? 600 : 0} delayFade={s >= 7 ? 300 : 0} />
+      <StepList>
+        <StepItem n={1} step={s}>
+          Alice holds a token
+        </StepItem>
+        <StepItem n={2} step={s}>
+          Swap: lock it to Carol
+        </StepItem>
+        <StepItem n={3} step={s}>
+          Send to Carol
+        </StepItem>
+        <StepItem n={4} step={s}>
+          Carol signs
+        </StepItem>
+        <StepItem n={5} step={s}>
+          The mint finds the lock
+        </StepItem>
+        <StepItem n={6} step={s}>
+          Signature checks out
+        </StepItem>
+        <StepItem n={7} step={s}>
+          New token for Carol
+        </StepItem>
+      </StepList>
+    </Shell>
+  );
+};
+
 // ─── 2.2 Taproot ─────────────────────────────────────────────────────────────
 
 type TapMode = 'build' | 'key' | 'script';
@@ -6312,7 +6495,7 @@ export default [
   Chapter2,
   SectionN1,
   JsonSecret,
-  JsonLimits,
+  LockEnforce,
   SectionN2,
   TaprootTree,
   TaprootSpend,
@@ -6534,6 +6717,8 @@ export {
   FrostDkg,
   OURO,
   Snake,
+  LockToken,
+  LockEnforce,
 };
 export type {
   StepRegistration,
