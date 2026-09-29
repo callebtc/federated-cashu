@@ -6,7 +6,7 @@ Variation 3 of slide 28 (Funding backends) · lens: Graphical · deck `fcv-e-mem
 
 Three lanes, five members.
 
-**[1]** The top lane is issuing eCash. Any three of the five members produce a signature; here m1, m3 and m4.
+**[1]** The top lane is issuing ecash. Any three of the five members produce a signature; here m1, m3 and m4.
 
 **[2]** The middle lane is reserves held in one Lightning or on-chain node. The five members are greyed out. The node holds one key, and whoever controls that key moves the reserves. The three-of-five rule from the top lane does not apply to it.
 

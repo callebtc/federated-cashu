@@ -1518,14 +1518,14 @@ const Cell = ({ children, head, w, color }: { children: ReactNode; head?: boolea
   </div>
 );
 
-const Row = ({ children, i, head }: { children: ReactNode; i: number; head?: boolean }) => {
+const Row = ({ children, i, head, h }: { children: ReactNode; i: number; head?: boolean; h?: number }) => {
   const on = useEntered();
   return (
     <div
       style={{
         display: 'flex',
         alignItems: 'center',
-        height: head ? 52 : 62,
+        height: head ? 52 : h ?? 62,
         borderBottom: `1px solid ${head ? c.line : c.rule}`,
         opacity: on ? 1 : 0,
         transform: on ? 'translateY(0px)' : 'translateY(6px)',
@@ -2798,7 +2798,7 @@ const DkgRounds: Page = () => {
           Members sign the public transcript hash.
         </StepItem>
         <StepItem n={7} step={s}>
-          All members confirm the finalized config. No eCash is signed before activation.
+          All members confirm the finalized config. No ecash is signed before activation.
         </StepItem>
       </StepList>
     </Shell>
@@ -3122,7 +3122,7 @@ const Funding: Page = () => {
         </Fade>
       </div>
       <At x={120} y={250}>
-        <Label color={c.clayHex}>eCash issuer · BLS threshold</Label>
+        <Label color={c.clayHex}>Ecash issuer · BLS threshold</Label>
       </At>
       <At x={120} y={780} w={1000}>
         <div style={{ position: 'relative', height: 150 }}>
@@ -3139,7 +3139,6 @@ const Funding: Page = () => {
               <div>
                 Spending requires <M>t</M> FROST signers from the same roster.
               </div>
-              <div>The treasury threshold is not weaker than the eCash threshold.</div>
             </Note>
           </Fade>
         </div>
@@ -3149,7 +3148,7 @@ const Funding: Page = () => {
           Federated issuance over a single-operator Lightning or on-chain backend.
         </StepItem>
         <StepItem n={2} step={s}>
-          Threshold custody: the members that sign eCash also sign treasury transactions.
+          Threshold custody: the members that sign ecash also sign treasury transactions.
         </StepItem>
         <Note style={{ marginTop: 26, fontSize: 22 }}>
           <div>Federated BDK: on-chain treasury.</div>
@@ -3268,7 +3267,7 @@ const KeyMaterial: Page = () => {
       <At x={120} y={352} w={520}>
         <Fade show={s >= 1} dimTo={0.3}>
           <div style={{ fontSize: 24 }}>
-            eCash: BLS12-381, <M>K</M> in G₂, per amount
+            ecash: BLS12-381, <M>K</M> in G₂, per amount
           </div>
         </Fade>
         <Fade show={s >= 2} dimTo={0.3} style={{ marginTop: 18 }}>
@@ -3829,63 +3828,41 @@ const InputsSign: Page = () => {
   );
 };
 
-const SW = [340, 640, 700];
+const SW = [460, 1220];
 const Summary: Page = () => (
   <Shell eyebrow="Summary" title="Federation components">
     <At x={120} y={262} w={1680}>
-      <Row i={0} head>
+      <Row h={66} i={0} head>
         <Cell head w={SW[0]}>Concern</Cell>
         <Cell head w={SW[1]}>Mechanism</Cell>
-        <Cell head w={SW[2]}>Code, branch bls-federation</Cell>
       </Row>
-      <Row i={1}>
+      <Row h={66} i={1}>
         <Cell w={SW[0]} color={c.muted}>Verification without k</Cell>
         <Cell w={SW[1]}>BLS12-381 pairings, keyset v3</Cell>
-        <Cell w={SW[2]}>
-          <Code>cashu/src/nuts/nut01/bls.rs</Code>
-        </Cell>
       </Row>
-      <Row i={2}>
+      <Row h={66} i={2}>
         <Cell w={SW[0]} color={c.muted}>Split signing key</Cell>
         <Cell w={SW[1]}>Shamir shares, wallet-side interpolation</Cell>
-        <Cell w={SW[2]}>
-          <Code>aggregate_blind_signature_shares</Code>
-        </Cell>
       </Row>
-      <Row i={3}>
+      <Row h={66} i={3}>
         <Cell w={SW[0]} color={c.muted}>Mix-and-match</Cell>
         <Cell w={SW[1]}>operation IDs, AlephBFT before signing</Cell>
-        <Cell w={SW[2]}>
-          <Code>cdk-axum/src/federation/</Code>
-        </Cell>
       </Row>
-      <Row i={4}>
+      <Row h={66} i={4}>
         <Cell w={SW[0]} color={c.muted}>Wallet fan-out</Cell>
         <Cell w={SW[1]}>per-member requests, share checks, aggregation</Cell>
-        <Cell w={SW[2]}>
-          <Code>cdk/src/wallet/federation.rs</Code>
-        </Cell>
       </Row>
-      <Row i={5}>
+      <Row h={66} i={5}>
         <Cell w={SW[0]} color={c.muted}>Key generation</Cell>
         <Cell w={SW[1]}>Pedersen DKG (BLS), FROST DKG (treasury)</Cell>
-        <Cell w={SW[2]}>
-          <Code>cdk-common/src/federation/dkg.rs</Code>
-        </Cell>
       </Row>
-      <Row i={6}>
+      <Row h={66} i={6}>
         <Cell w={SW[0]} color={c.muted}>Custody</Cell>
         <Cell w={SW[1]}>FROST-signed BDK and Bark treasuries</Cell>
-        <Cell w={SW[2]}>
-          <Code>cdk-frost</Code>
-        </Cell>
       </Row>
-      <Row i={7}>
+      <Row h={66} i={7}>
         <Cell w={SW[0]} color={c.muted}>Client intent</Cell>
         <Cell w={SW[1]}>every v3 input signs the TLV transaction transcript</Cell>
-        <Cell w={SW[2]}>
-          NUT-10, <Code>cashubtc/nuts#443</Code>
-        </Cell>
       </Row>
     </At>
     <At x={120} y={820} w={1680}>
@@ -5743,7 +5720,7 @@ export const notes: (string | undefined)[] = [
   // InputsSign
   `This is SIG_ALL for every v3 transaction. An unlocked token is a bare key with its private key in spend info; the mint never sees k.`,
   // Summary
-  `Where each federation mechanism lives in the code.`,
+  `Each federation concern and the mechanism behind it.`,
   // Chapter2
   `Nutroot: the v3 secret family. Spec PR cashubtc/nuts#443, on top of the BLS keyset PR #371.`,
   // SectionN1

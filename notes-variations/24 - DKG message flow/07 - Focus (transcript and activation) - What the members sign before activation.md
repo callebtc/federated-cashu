@@ -12,7 +12,7 @@ What the members sign before activation.
 
 **[3]** Each member signs with its identity key, BIP340, 64 bytes. The message is a 4-byte length, 42, the 42-byte domain string, a 4-byte length, 32, and the transcript hash, hashed with SHA-256. All n signatures must verify over the same hash.
 
-**[4]** Then each member sends a signed confirmation of ceremony ID, transcript hash and final config digest. Activation needs all n; no eCash is signed before.
+**[4]** Then each member sends a signed confirmation of ceremony ID, transcript hash and final config digest. Activation needs all n; no ecash is signed before.
 
 ## Background
 

@@ -4,11 +4,11 @@ Variation 1 of slide 28 (Funding backends) · lens: Beginner · deck `fcv-e-memb
 
 ## Script
 
-A mint has two halves: the issuer signs eCash, and the reserves hold the bitcoin.
+A mint has two halves: the issuer signs ecash, and the reserves hold the bitcoin.
 
-**[1]** A user deposits 1,000 sat into the reserves, and the issuer signs 1,000 sat of eCash.
+**[1]** A user deposits 1,000 sat into the reserves, and the issuer signs 1,000 sat of ecash.
 
-**[2]** The user melts 400 sat of eCash. The issuer takes those proofs, the eCash tokens, back, and the reserves pay 400 sat to the user's address. 600 sat remain on both sides.
+**[2]** The user melts 400 sat of ecash. The issuer takes those proofs, the ecash tokens, back, and the reserves pay 400 sat to the user's address. 600 sat remain on both sides.
 
 **[3]** The issuer is federated: two of three members contribute a signature share to each proof.
 
@@ -18,9 +18,9 @@ A mint has two halves: the issuer signs eCash, and the reserves hold the bitcoin
 
 ## Background
 
-- **eCash proof**: a token signed by the mint that represents an amount. It is backed only while the mint holds matching reserves.
-- **Mint and melt**: minting exchanges a payment into the mint for eCash (NUT-04). Melting exchanges eCash for a payment made by the mint (NUT-05).
-- **Signature share**: one member's part of an eCash signature. t shares combine into one signature.
-- **Reserves**: the bitcoin held by the mint, on-chain or in Lightning channels, that backs outstanding eCash.
+- **ecash proof**: a token signed by the mint that represents an amount. It is backed only while the mint holds matching reserves.
+- **Mint and melt**: minting exchanges a payment into the mint for ecash (NUT-04). Melting exchanges ecash for a payment made by the mint (NUT-05).
+- **Signature share**: one member's part of an ecash signature. t shares combine into one signature.
+- **Reserves**: the bitcoin held by the mint, on-chain or in Lightning channels, that backs outstanding ecash.
 - **FROST**: Flexible Round-Optimized Schnorr Threshold signatures. t of n members jointly produce one ordinary BIP340 Schnorr signature; the full private key is never assembled.
 - **Treasury key**: the secp256k1 key that controls the reserves. Under threshold custody each member holds a share sᵢ of it.

@@ -6,7 +6,7 @@ Original slide, deck `fcv-e-membership-custody` page 26 (main deck slide 29). Sa
 
 ## Script
 
-**[1]** The first ceremony gives each member BLS key shares kᵢ, one set per amount, for eCash on BLS12-381.
+**[1]** The first ceremony gives each member BLS key shares kᵢ, one set per amount, for ecash on BLS12-381.
 
 **[2]** The second gives each member a FROST share sᵢ of one treasury root key on secp256k1. Same roster, ceremony ID and threshold. Startup completes only when both finish, and the secrets never mix. FROST uses frost-secp256k1-tr 3.0.0: three rounds on the private plane, commitments, per-recipient packages, root confirmation. Each message binds federation, ceremony, epoch, threshold, roster, sender and receiver. Shares are sealed with AES-256-GCM.
 

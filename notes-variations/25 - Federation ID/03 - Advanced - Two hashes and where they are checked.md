@@ -18,9 +18,9 @@ Two hashes, and where each is checked.
 
 - **lp(x)**: x preceded by its length as a 4-byte big-endian integer. It keeps adjacent variable-length fields unambiguous.
 - **Config digest**: SHA-256 over a length-prefixed domain string and the length-prefixed serde_json encoding of the complete `FederationConfig`. Any change to a public setting, including keysets, changes it.
-- **f and the BFT bounds**: f = ⌊(n − 1)/3⌋ is the number of arbitrarily faulty members the federation is designed to tolerate. t ≥ f + 1 means f faulty members cannot produce an eCash signature alone. c ≥ n − f means any two ordering quorums share at least f + 1 members, so at least one honest member is in both. Example: n = 4 gives f = 1, t ≥ 2, c ≥ 3.
+- **f and the BFT bounds**: f = ⌊(n − 1)/3⌋ is the number of arbitrarily faulty members the federation is designed to tolerate. t ≥ f + 1 means f faulty members cannot produce an ecash signature alone. c ≥ n − f means any two ordering quorums share at least f + 1 members, so at least one honest member is in both. Example: n = 4 gives f = 1, t ≥ 2, c ≥ 3.
 - **Structural bounds**: independent of the BFT bounds, `validate` requires n ≥ 2 and 1 ≤ t ≤ c ≤ n.
 - **Envelope and operation ID**: every consensus operation is wrapped in an envelope with version, federation ID and payload. The operation ID is a domain-separated SHA-256 over its canonical bytes, so an operation for one federation cannot be replayed into another.
 - **Mint info (NUT-06)**: the `GET /v1/info` endpoint of a Cashu mint. In federation mode it also carries federation ID, member ID, config digest and wallet protocol version.
-- **Aggregation**: combining t BLS signature shares from different members into one eCash signature.
+- **Aggregation**: combining t BLS signature shares from different members into one ecash signature.
 - **KeysetRotation**: the consensus operation that adds or rotates a BLS keyset. It changes the config, not the roster.

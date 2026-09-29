@@ -19,5 +19,5 @@ This is the wallet's side of the two hashes.
 - **Mint info (NUT-06)**: the `GET /v1/info` endpoint of a Cashu mint. A federation member adds `federation_id`, `member_id`, `config_digest` and `wallet_protocol_version`.
 - **Config digest**: SHA-256 over the complete public config. A member whose local config differs in any field advertises a different digest.
 - **Exclusion**: a member that fails any check is left out of the set the wallet sends requests to and accepts shares from; the failure is recorded per member.
-- **Aggregation threshold**: the wallet needs signature shares from t valid members to build one eCash signature. With t = 2 of 3, one excluded member does not stop the wallet.
+- **Aggregation threshold**: the wallet needs signature shares from t valid members to build one ecash signature. With t = 2 of 3, one excluded member does not stop the wallet.
 - **Wallet protocol version**: the version of the wallet-facing federation protocol that the config requires. A mismatch is rejected like the other fields.

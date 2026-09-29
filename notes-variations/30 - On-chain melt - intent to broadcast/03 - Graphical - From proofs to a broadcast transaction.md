@@ -4,7 +4,7 @@ Variation 3 of slide 30 (On-chain melt - intent to broadcast) · lens: Graphical
 
 ## Script
 
-A melt from eCash to an on-chain payment, with five members.
+A melt from ecash to an on-chain payment, with five members.
 
 **[1]** The wallet sends its proofs. They enter consensus as a Melt operation and are reserved.
 

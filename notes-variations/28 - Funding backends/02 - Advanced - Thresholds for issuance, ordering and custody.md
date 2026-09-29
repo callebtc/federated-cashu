@@ -18,7 +18,7 @@ Threshold rules from the BDK and FROST architecture decision.
 
 - **Fail closed**: on a mismatch the member refuses to start or activate instead of continuing with weaker settings.
 - **f and BFT**: Byzantine fault tolerance means correct operation while up to f members behave arbitrarily. With f = ⌊(n − 1)/3⌋, n ≥ 3f + 1.
-- **t ≥ f + 1**: required in production, so f faulty members cannot produce an eCash signature or a treasury signature alone.
+- **t ≥ f + 1**: required in production, so f faulty members cannot produce an ecash signature or a treasury signature alone.
 - **Observation quorum q**: the number of matching member observations required before a payment or deposit counts. Production configs require q ≥ c.
 - **Tolerated**: the table's last column, n − c, is the number of members that can be offline while a spend is still ordered and signed.
 - **AlephBFT**: the consensus protocol that orders federation operations.

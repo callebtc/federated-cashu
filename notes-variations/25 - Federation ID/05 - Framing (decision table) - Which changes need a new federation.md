@@ -14,8 +14,8 @@ Each row is a change an operator might want, the hash that covers it, and its pa
 
 ## Background
 
-- **New setup**: a new proposal, approval by every member, a new setup authorization and federation ID, and new BLS and FROST DKGs. Existing eCash stays with the old federation; users move it.
-- **Dual DKG**: the two distributed key generation ceremonies run over one roster: BLS12-381 for eCash signing, FROST on secp256k1 for the treasury.
+- **New setup**: a new proposal, approval by every member, a new setup authorization and federation ID, and new BLS and FROST DKGs. Existing ecash stays with the old federation; users move it.
+- **Dual DKG**: the two distributed key generation ceremonies run over one roster: BLS12-381 for ecash signing, FROST on secp256k1 for the treasury.
 - **iroh**: a peer-to-peer transport addressed by endpoint IDs. A roster URL can use `iroh://`; the traffic is the same HTTP-shaped API carried over iroh instead of TCP.
 - **Why policy changes need a new setup**: the code has no operation that amends policy. The only config change applied through consensus is KeysetRotation.
 - **Immutable FROST root**: root refresh and in-place rotation are unsupported. Replacing the custody key requires a separate wallet and a threshold-authorized migration.

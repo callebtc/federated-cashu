@@ -10,7 +10,7 @@ Everything the current spec text covers, with the NUT that specifies it. Bearer 
 
 ## Background
 
-- **Nutzap**: eCash sent over Nostr, locked to the recipient's key and published as an event.
+- **Nutzap**: ecash sent over Nostr, locked to the recipient's key and published as an event.
 - **Auditable lock**: a lock any third party can verify from the disclosed K, u and tree, without keys or the mint: only the named key can spend it.
 - **NUT-20**: signature on mint quote. **NUT-29**: batched minting. **NUT-22**: blind authentication, tokens that authorize access to protected mint endpoints.
 - **`nutspA` / `nutrcA`**: transport-string prefixes for a signing package (collecting cosigner signatures) and a spend receipt.

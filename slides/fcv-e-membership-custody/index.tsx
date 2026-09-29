@@ -994,7 +994,7 @@ const VE_FidDns: Page = () => {
         The member's advertised config digest no longer matches the config the wallet imported.
       </VE_DnsRow>
       <VE_DnsRow y={666} show={s >= 4} ok attempt="New setup">
-        New proposal, authorization, federation ID and dual DKG. Users move their eCash to the new federation.
+        New proposal, authorization, federation ID and dual DKG. Users move their ecash to the new federation.
       </VE_DnsRow>
       <At x={120} y={806} w={1680}>
         <Fade show={s >= 4} delay={200}>
@@ -1624,7 +1624,7 @@ const VE_FundBeginner: Page = () => {
   const wy = 830;
   return (
     <VarShell of="1.5 Funding backends" lens="Beginner" title="Two halves of a mint" proc={proc}>
-      <VE_Box x={140} y={280} w={480} h={320} title="eCash issuer" tone={c.clayHex} />
+      <VE_Box x={140} y={280} w={480} h={320} title="Ecash issuer" tone={c.clayHex} />
       <VE_Box x={760} y={280} w={560} h={320} title="Reserves" tone={c.cool} />
       <Canvas>
         <Member x={260} y={380} r={34} label="m1" tone={s >= 3 ? 'on' : 'idle'} />
@@ -1639,7 +1639,7 @@ const VE_FundBeginner: Page = () => {
         <Packet x1={1200} y1={600} x2={1200} y2={wy - 30} run={proc.anim && s === 2} color={c.cool} delay={700} />
         <WalletNode x={wx} y={wy} r={50} />
         <T x={486} y={700} size={22} color={c.clayHex} anchor="end" show={s >= 1}>
-          eCash
+          ecash
         </T>
         <T x={950} y={700} size={22} color={c.cool} anchor="start" show={s >= 1}>
           sat in
@@ -1680,7 +1680,7 @@ const VE_FundBeginner: Page = () => {
         address
       </div>
       <At x={170} y={440} w={420}>
-        <VE_Label>eCash outstanding</VE_Label>
+        <VE_Label>ecash outstanding</VE_Label>
         <VE_Swap k={amt}>
           <VE_Big>{s >= 1 ? amt : '0 sat'}</VE_Big>
         </VE_Swap>
@@ -1706,10 +1706,10 @@ const VE_FundBeginner: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Mint: 1,000 sat arrive in the reserves; the issuer signs 1,000 sat of eCash.
+          Mint: 1,000 sat arrive in the reserves; the issuer signs 1,000 sat of ecash.
         </StepItem>
         <StepItem n={2} step={s}>
-          Melt: 400 sat of eCash come back; the reserves pay 400 sat out.
+          Melt: 400 sat of ecash come back; the reserves pay 400 sat out.
         </StepItem>
         <StepItem n={3} step={s}>
           The issuer is federated: 2 of 3 members sign each proof.
@@ -1831,7 +1831,7 @@ const VE_FundGraphical: Page = () => {
   return (
     <VarShell of="1.5 Funding backends" lens="Graphical" title="Who can move the reserves" proc={proc}>
       <At x={120} y={336} w={400} style={{ fontSize: 30, ...VE_enter(s >= 1, 0.2) }}>
-        issue eCash
+        issue ecash
       </At>
       <At x={120} y={560} w={400} style={{ fontSize: 30, ...VE_enter(s >= 2, 0.2) }}>
         <div>move reserves</div>
@@ -1980,7 +1980,7 @@ const VE_FundFailure: Page = () => {
           “paid”
         </T>
         <Band x1={M1 - 40} x2={M3 + 40} y={590} label="q = 3 observations, one source" show={s >= 2} />
-        <Arrow x1={M1} y1={650} x2={W + 6} y2={650} show={s >= 2} color={c.clayHex} label="eCash" font="sans" delay={300} />
+        <Arrow x1={M1} y1={650} x2={W + 6} y2={650} show={s >= 2} color={c.clayHex} label="ecash" font="sans" delay={300} />
         <Arrow x1={W} y1={730} x2={M1 - 6} y2={730} show={s >= 3} color={c.cool} label="melt" font="sans" />
         <Arrow x1={M1} y1={770} x2={N - 6} y2={770} show={s >= 3} color={c.node} label="pay invoice X" font="sans" delay={200} />
         <Arrow x1={N} y1={810} x2={1320} y2={810} show={s >= 3} color={c.bad} label="pays Y" font="sans" delay={400} />
@@ -1997,7 +1997,7 @@ const VE_FundFailure: Page = () => {
           <VE_NoWrap>
             <M>q</M> = 3
           </VE_NoWrap>{' '}
-          is reached from one source, eCash is issued.
+          is reached from one source, ecash is issued.
         </StepItem>
         <StepItem n={3} step={s}>
           Melt: the members order payment of invoice X; the node pays Y, or nothing.
@@ -2085,7 +2085,7 @@ const VE_FundConstraint: Page = () => {
         title="Mint · deposit"
         show={s >= 1}
         cause={<>Issuing needs <M>t</M> members, but one member can report a deposit that never arrived.</>}
-        effect="eCash is issued without reserves."
+        effect="Ecash is issued without reserves."
       />
       <VE_Case
         x={980}
@@ -2093,7 +2093,7 @@ const VE_FundConstraint: Page = () => {
         title="Mint · after issuance"
         show={s >= 2}
         cause={<>Issuing needs <M>t</M> members, but one member can later sweep the deposit.</>}
-        effect="Outstanding eCash is unbacked."
+        effect="Outstanding ecash is unbacked."
       />
       <VE_Case
         x={120}
@@ -2114,7 +2114,7 @@ const VE_FundConstraint: Page = () => {
       <At x={120} y={800} w={1680}>
         <Fade show={s >= 4} delay={200}>
           <div style={{ fontSize: 25, lineHeight: 1.45, borderLeft: `3px solid ${c.clayHex}`, paddingLeft: 18 }}>
-            <div>Required: same roster, same consensus history, custody threshold not weaker than the eCash threshold.</div>
+            <div>Required: same roster, same consensus history, custody threshold not weaker than the ecash threshold.</div>
             <div>
               In CDK the FROST signing threshold is exactly <M>t</M>.
             </div>
@@ -2775,7 +2775,7 @@ const VE_MeltBeginner: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          The wallet melts eCash for 40,000 sat, fee cap 2,000. The members order the Melt; the proofs are reserved.
+          The wallet melts ecash for 40,000 sat, fee cap 2,000. The members order the Melt; the proofs are reserved.
         </StepItem>
         <StepItem n={2} step={s}>
           One member drafts the transaction.
@@ -3333,7 +3333,7 @@ const VE_MeltReorg: Page = () => {
         <VE_C>MintQuotePayment</VE_C> quorum
       </VE_RChip>
       <VE_RChip i={2} y={B} show={s >= 3} delay={120} tone={c.clayHex}>
-        eCash issued
+        ecash issued
       </VE_RChip>
       <VE_RChip i={3} y={B} show={s >= 3} delay={180} tone={c.bad}>
         block disconnected
@@ -3546,7 +3546,7 @@ const PAGES: [Page, string | undefined][] = [
   ],
   [
     VE_FundFailure,
-    'Framing as a failure mode: a federated issuer over one CLN node. The node fakes a payment, three members observe the same lie and eCash is issued; then it pays the wrong invoice and sweeps the reserves.',
+    'Framing as a failure mode: a federated issuer over one CLN node. The node fakes a payment, three members observe the same lie and ecash is issued; then it pays the wrong invoice and sweeps the reserves.',
   ],
   [
     VE_FundMember,

@@ -6,7 +6,7 @@ Variation 1 of slide 30 (On-chain melt - intent to broadcast) · lens: Beginner 
 
 A user wants 40,000 sat on-chain from a federation of five.
 
-**[1]** The wallet melts, that is redeems, eCash for 40,000 sat with a fee cap of 2,000 sat. The members order the Melt operation and reserve the proofs. No bitcoin has moved.
+**[1]** The wallet melts, that is redeems, ecash for 40,000 sat with a fee cap of 2,000 sat. The members order the Melt operation and reserve the proofs. No bitcoin has moved.
 
 **[2]** One member drafts the transaction. It spends one federation coin of 100,000 sat, pays 40,000 sat to the user's address, returns 58,800 sat as change to a federation address, and leaves 1,200 sat as fee.
 
@@ -18,7 +18,7 @@ A user wants 40,000 sat on-chain from a federation of five.
 
 ## Background
 
-- **Melt**: redeeming eCash for a payment made by the mint (NUT-05); here an on-chain payment to the user's address.
+- **Melt**: redeeming ecash for a payment made by the mint (NUT-05); here an on-chain payment to the user's address.
 - **Fee cap**: the maximum fee the user accepted in the melt quote (`maximum_fee_sat` per payment intent).
 - **Change output**: the part of the input that goes back to a new federation address.
 - **Value conservation**: inputs equal outputs plus fee: 100,000 = 40,000 + 58,800 + 1,200.

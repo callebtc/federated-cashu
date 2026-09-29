@@ -18,7 +18,7 @@ The messages of one ceremony.
 
 **[6]** Every member signs the public transcript hash with its identity key.
 
-**[7]** Activation: all members confirm the same transcript hash and final config digest. No eCash is signed before activation. The FROST treasury rounds follow.
+**[7]** Activation: all members confirm the same transcript hash and final config digest. No ecash is signed before activation. The FROST treasury rounds follow.
 
 There is no broadcast channel. Every message is a signed request to every member.
 

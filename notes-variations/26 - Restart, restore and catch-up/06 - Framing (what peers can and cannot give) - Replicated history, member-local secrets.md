@@ -19,7 +19,7 @@ A restoring member, m2, gets two kinds of material from two different places.
 - **Finalized AlephBFT items**: the ordered output of the consensus protocol. The journal is derived from them deterministically, so peers can supply them and m2 can check them.
 - **Quorum-signed checkpoint**: a commitment to the journal order digest, finalized-item digest, application digest and materialized-state digest at one boundary, signed by at least c distinct members with their identity keys. It replaces the earlier range-based catch-up certificates.
 - **Identity secret key**: signs m2's messages on the private member-to-member plane. Without it, peers cannot authenticate m2.
-- **BLS key shares**: m2's shares of the eCash signing keys, one set per keyset, including keysets that were rotated out.
+- **BLS key shares**: m2's shares of the ecash signing keys, one set per keyset, including keysets that were rotated out.
 - **Sealed FROST root share**: m2's share of the treasury key, stored encrypted with AES-256-GCM. The sealing key is needed to open it.
 - **Bark receive secrets**: member-local secrets needed to claim incoming Lightning payments when the Bark backend is enabled.
 - **Why copying fails**: another member's secrets belong to a different seat; activation and proof-of-possession checks fail.

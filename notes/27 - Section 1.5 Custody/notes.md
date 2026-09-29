@@ -8,4 +8,4 @@ Section 1.5: custody. Where the reserves are held, and how the same members cont
 
 ## Background
 
-- **Custody**: control over the bitcoin that backs the issued eCash.
+- **Custody**: control over the bitcoin that backs the issued ecash.

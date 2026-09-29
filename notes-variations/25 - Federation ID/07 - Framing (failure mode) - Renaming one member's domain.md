@@ -12,7 +12,7 @@ m2's domain, mint-a.example.com, expires, and its operator wants mint-a.net.
 
 **[3]** If wallets are told the new URL, the member's advertised config digest no longer matches the config the wallet imported.
 
-**[4]** The only path is a new setup, with new proposal, authorization, federation ID and dual DKG; users move their eCash. A raw IP after a server move, or a regenerated iroh endpoint ID, ends the same way. An open question: hash only member ID and identity key, and publish URLs as an authenticated, rotatable advertisement. Not specified.
+**[4]** The only path is a new setup, with new proposal, authorization, federation ID and dual DKG; users move their ecash. A raw IP after a server move, or a regenerated iroh endpoint ID, ends the same way. An open question: hash only member ID and identity key, and publish URLs as an authenticated, rotatable advertisement. Not specified.
 
 ## Background
 

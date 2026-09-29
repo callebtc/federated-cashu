@@ -8,7 +8,7 @@ A federation is defined by its roster, the list of its members.
 
 **[1]** Each member has an ID, a public URL where wallets reach it, and an identity key: a public key that authenticates the member to its peers.
 
-**[2]** The roster also fixes two thresholds. t equals 2: two members must contribute a share to each eCash signature. c equals 3: three members must agree before an operation is ordered.
+**[2]** The roster also fixes two thresholds. t equals 2: two members must contribute a share to each ecash signature. c equals 3: three members must agree before an operation is ordered.
 
 **[3]** Here the roster is written out as one string. This encoding is illustrative; the real byte encoding is on the next variation.
 
@@ -20,7 +20,7 @@ A federation is defined by its roster, the list of its members.
 
 - **Roster**: the fixed list of members of one federation. For each member it records a numeric member ID, a public mint URL for wallets, a federation API URL for member-to-member traffic, and an identity public key.
 - **Identity key**: a secp256k1 key pair per member. Peers verify signatures made with it on member-to-member messages. It is separate from the member's BLS and FROST key shares.
-- **t (signature threshold)**: the number of members whose BLS signature shares are combined into one eCash signature.
+- **t (signature threshold)**: the number of members whose BLS signature shares are combined into one ecash signature.
 - **c (consensus threshold)**: the number of members that must take part for an operation to be ordered.
 - **SHA-256**: a hash function that maps any input to 32 bytes. Equal inputs give equal outputs; changing one character gives an output with no usable relation to the previous one; finding two inputs with the same output is infeasible.
 - **Federation ID**: the SHA-256 hash that identifies a federation. Consensus messages, DKG results and wallet checks all carry it, so a changed input produces a federation that the old members and wallets do not accept.

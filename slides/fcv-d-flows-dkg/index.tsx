@@ -3267,7 +3267,7 @@ const VD_RndTranscript: Page = () => {
         <VD_Cap>Activation</VD_Cap>
         <div style={{ fontSize: 23, lineHeight: 1.45, marginTop: 8 }}>
           Each member then sends a signed confirmation of ceremony ID, transcript hash and final config digest.
-          Activation needs one from every member; no eCash is signed before.
+          Activation needs one from every member; no ecash is signed before.
         </div>
       </VD_Box>
       <At x={780} y={262} w={575}>
