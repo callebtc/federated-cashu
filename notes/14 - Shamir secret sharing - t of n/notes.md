@@ -16,6 +16,7 @@ The federation uses one polynomial per amount in the keyset. Issuance never rebu
 
 ## Background
 
+- **The icons**: a person with a key is a member holding a key share. The group with one key at x = 0 stands for the federation's private key k, which no single member holds.
 - **Polynomial of degree t − 1**: f(x) = k + a₁x + … + aₜ₋₁xᵗ⁻¹ with random coefficients. Degree 1 is a line, degree 2 a parabola.
 - **Why t points fix it**: a polynomial of degree t − 1 has t unknown coefficients; t points give t equations with exactly one solution.
 - **Secrecy with fewer than t shares**: every possible value of k is equally consistent with the shares held.

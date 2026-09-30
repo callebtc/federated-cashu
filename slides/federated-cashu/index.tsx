@@ -954,50 +954,172 @@ const ring = (cx: number, cy: number, r: number, i: number, n = 5) => {
 // Opening
 // ═════════════════════════════════════════════════════════════════════════════
 
+// Cover: random 3-of-5 quorums send partial signatures in varying rhythms, over constant peer gossip.
+const COVER = { cx: 1440, cy: 560, R: 270 };
+const COVER_RHYTHMS = [
+  [0, 70, 140],
+  [0, 300, 600],
+  [0, 140, 760],
+  [0, 460, 920],
+  [0, 90, 520],
+  [0, 220, 260],
+];
+type CoverRound = { start: number; end: number; signers: number[]; depart: number[]; arrive: number[]; done: number };
+type CoverGossip = { t: number; a: number; b: number; dur: number };
+
+const coverSchedule = () => {
+  let seed = 7;
+  const rnd = () => {
+    seed = (seed * 1664525 + 1013904223) >>> 0;
+    return seed / 2 ** 32;
+  };
+  const shuffle = <X,>(xs: X[]) => {
+    for (let i = xs.length - 1; i > 0; i--) {
+      const j = Math.floor(rnd() * (i + 1));
+      [xs[i], xs[j]] = [xs[j], xs[i]];
+    }
+    return xs;
+  };
+  const combos: number[][] = [];
+  for (let a = 0; a < 5; a++) for (let b = a + 1; b < 5; b++) for (let d = b + 1; d < 5; d++) combos.push([a, b, d]);
+  shuffle(combos);
+  const rounds: CoverRound[] = [];
+  let t = 0;
+  combos.forEach((cb, i) => {
+    const rh = COVER_RHYTHMS[i % COVER_RHYTHMS.length];
+    const signers = shuffle([...cb]);
+    const depart = rh.map((d) => 380 + d);
+    const arrive = depart.map((d) => d + 780 + rnd() * 380);
+    const done = Math.max(...arrive);
+    const end = done + 1000 + rnd() * 900;
+    rounds.push({ start: t, end, signers, depart, arrive, done });
+    t += end;
+  });
+  const gossip: CoverGossip[] = [];
+  for (let g = 0; g < t; g += 140 + rnd() * 460) {
+    const a = Math.floor(rnd() * 5);
+    let b = Math.floor(rnd() * 4);
+    if (b >= a) b++;
+    gossip.push({ t: g, a, b, dur: 650 + rnd() * 450 });
+  }
+  return { rounds, gossip, period: t };
+};
+const COVER_PLAN = coverSchedule();
+
+const easeIO = (x: number) => (x < 0.5 ? 4 * x * x * x : 1 - (-2 * x + 2) ** 3 / 2);
+const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+
+/** Milliseconds since the page became active, via requestAnimationFrame (the editor freezes CSS animations). */
+const useClock = (live: boolean, still: number) => {
+  const [t, setT] = useState(still);
+  useEffect(() => {
+    if (!live) {
+      setT(still);
+      return;
+    }
+    const t0 = performance.now();
+    let raf = 0;
+    const frame = (now: number) => {
+      setT(still + now - t0);
+      raf = requestAnimationFrame(frame);
+    };
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, [live, still]);
+  return t;
+};
+
+/** Envelope whose signature is assembled from three parts of two humps each. */
+const PartsEnvelope = ({ parts, bright }: { parts: number[]; bright: number }) => {
+  const line = { fill: 'none', stroke: c.muted, strokeWidth: 2.4, strokeLinejoin: 'round' as const };
+  return (
+    <g>
+      <rect x={-75} y={-50} width={150} height={100} rx={8} style={{ ...line, fill: c.card }} />
+      <rect x={-75} y={-50} width={150} height={100} rx={8} style={{ fill: c.claySoft, opacity: bright }} />
+      <path d="M -75 -50 L 0 4 L 75 -50" style={line} />
+      <path d={sigHumps(0, 6)} style={{ fill: 'none', stroke: c.rule, strokeWidth: 2, strokeDasharray: '3 5' }} />
+      {parts.map((o, k) => (
+        <path key={k} d={sigHumps(k * 2, k * 2 + 2)} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 3.4, strokeLinecap: 'round', opacity: o }} />
+      ))}
+    </g>
+  );
+};
+
 const CoverFigure = () => {
   const live = useIsActivePage() && !REDUCED;
-  const cx = 1440;
-  const cy = 560;
-  const pts = [0, 1, 2, 3, 4].map((i) => ring(cx, cy, 230, i));
-  const signers = [0, 2, 3];
+  const { cx, cy, R } = COVER;
+  const { rounds, gossip, period } = COVER_PLAN;
+  const t = useClock(live, 1250) % period;
+  const pts = [0, 1, 2, 3, 4].map((i) => ring(cx, cy, R, i));
+  const rd = rounds.find((r) => t >= r.start && t < r.start + r.end) ?? rounds[0];
+  const u = t - rd.start;
+  const fadeOut = clamp01((rd.end - u) / 450);
+  const lit = (i: number) => (rd.signers.includes(i) ? clamp01(u / 300) * fadeOut : 0);
+  // Part k is the share of rd.signers[k]; it lands on the center envelope on arrival.
+  const partOn = rd.signers.map((_, k) => clamp01((u - rd.arrive[k]) / 160) * fadeOut);
+  const since = u - rd.done;
+  const pulse = since >= 0 && since < 700 ? Math.sin((since / 700) * Math.PI) : 0;
+  const ripple = since >= 0 && since < 1100 ? since / 1100 : -1;
+  const complete = since >= 0 ? fadeOut : 0;
   return (
     <Canvas>
+      <circle cx={cx} cy={cy} r={R} style={{ fill: 'none', stroke: c.rule, strokeWidth: 1.2, strokeDasharray: '2 8' }} />
       {pts.map((p, i) => (
-        <line key={`l${i}`} x1={p.x} y1={p.y} x2={cx} y2={cy} style={{ stroke: c.rule, strokeWidth: 1.5 }} />
-      ))}
-      <circle
-        cx={cx}
-        cy={cy}
-        r={56}
-        style={{
-          fill: c.claySoft,
-          stroke: c.clayHex,
-          strokeWidth: 2,
-          animation: live ? `fc-glow 4000ms ${EASE_IO} infinite` : 'none',
-        }}
-      />
-      <T x={cx} y={cy + 14} size={44} font="math">
-        C′
-      </T>
-      {signers.map((i, k) => (
-        <circle
-          key={`p${i}`}
-          cx={pts[i].x}
-          cy={pts[i].y}
-          r={8}
-          style={
-            {
-              fill: c.clayHex,
-              opacity: 0,
-              '--dx': `${cx - pts[i].x}px`,
-              '--dy': `${cy - pts[i].y}px`,
-              animation: live ? `fc-cycle 4000ms ${EASE_IO} ${k * 60}ms infinite` : 'none',
-            } as CSSProperties
-          }
+        <line
+          key={`l${i}`}
+          x1={p.x}
+          y1={p.y}
+          x2={cx}
+          y2={cy}
+          style={{ stroke: lit(i) > 0 ? c.clayHex : c.rule, strokeWidth: 1.5, opacity: 0.35 + 0.4 * lit(i) }}
         />
       ))}
+      {gossip
+        .filter((g) => t >= g.t && t < g.t + g.dur)
+        .map((g) => {
+          const e = easeIO((t - g.t) / g.dur);
+          const a = pts[g.a];
+          const b = pts[g.b];
+          const o = Math.sin(((t - g.t) / g.dur) * Math.PI);
+          return <circle key={`g${g.t}`} cx={a.x + (b.x - a.x) * e} cy={a.y + (b.y - a.y) * e} r={6} style={{ fill: c.node, opacity: 0.8 * o }} />;
+        })}
+      {ripple >= 0 && (
+        <circle cx={cx} cy={cy} r={90 + 150 * (1 - (1 - ripple) ** 3)} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 2, opacity: 0.5 * (1 - ripple) }} />
+      )}
+      <g transform={`translate(${cx} ${cy}) scale(${0.72 * (1 + 0.08 * pulse)})`}>
+        <PartsEnvelope parts={partOn} bright={complete} />
+      </g>
+      {rd.signers.map((m, k) => {
+        const dur = rd.arrive[k] - rd.depart[k];
+        const q = (u - rd.depart[k]) / dur;
+        if (q < 0 || q > 1) return null;
+        const e = easeIO(q);
+        const p = pts[m];
+        const ang = Math.atan2(cy - p.y, cx - p.x);
+        const sx = p.x + 58 * Math.cos(ang);
+        const sy = p.y + 58 * Math.sin(ang);
+        const o = clamp01(q / 0.12) * clamp01((1 - q) / 0.12);
+        return (
+          <g
+            key={`s${k}`}
+            transform={`translate(${sx + (cx - sx) * e} ${sy + (cy - sy) * e}) scale(${0.3 + 0.12 * e})`}
+            style={{ opacity: o }}
+          >
+            <PartsEnvelope parts={[0, 1, 2].map((j) => (j === k ? 1 : 0))} bright={0} />
+          </g>
+        );
+      })}
       {pts.map((p, i) => (
-        <Member key={`m${i}`} x={p.x} y={p.y} r={40} label={`m${i + 1}`} tone={signers.includes(i) ? 'on' : 'idle'} />
+        <g key={`m${i}`} transform={`translate(${p.x} ${p.y})`}>
+          <circle r={44} style={{ fill: c.card, stroke: c.node, strokeWidth: 1.75 }} />
+          <circle r={44} style={{ fill: c.claySoft, stroke: c.clayHex, strokeWidth: 2.5, opacity: lit(i) }} />
+          <g transform="translate(0 2) scale(0.96)">
+            <PersonIcon color={c.muted} />
+          </g>
+          <g transform="translate(0 2) scale(0.96)" style={{ opacity: lit(i) }}>
+            <PersonIcon color={c.clayHex} />
+          </g>
+        </g>
       ))}
     </Canvas>
   );
@@ -1272,7 +1394,9 @@ const Model: Page = () => {
             transition: `opacity 450ms ${EASE_OUT}, transform 450ms ${EASE_OUT}`,
           }}
         >
-          <BankIcon color={c.ink} />
+          <g transform="scale(2.6)">
+            <PersonIcon color={c.ink} />
+          </g>
         </g>
         {pts.map((p, i) => {
           const bad = quorum && i === faulty;
@@ -2268,13 +2392,35 @@ const Multisig: Page = () => (
 // 02 · Threshold issuance
 // ═════════════════════════════════════════════════════════════════════════════
 
+/** Key drawn in SVG user space, bow at the origin, pointing right. */
+const KeyMark = ({ color, x = 0, y = 0, scale = 1 }: { color: string; x?: number; y?: number; scale?: number }) => (
+  <g transform={`translate(${x} ${y}) scale(${scale})`} style={{ fill: 'none', stroke: color, strokeWidth: 2.6, strokeLinecap: 'round', transition: `stroke 300ms ${EASE_OUT}` }}>
+    <circle cx={0} cy={0} r={6.5} />
+    <path d="M 6.5 0 H 26 M 21 0 V 5.5 M 16 0 V 4.5" />
+  </g>
+);
+
 const ShareMember = ({ x, y, show, tone, delay = 0 }: { x: number; y: number; show: boolean; tone: string; delay?: number }) => (
   <GFade show={show} delay={delay}>
-    <g transform={`translate(${x} ${y + 50})`}>
-      <circle r={22} style={{ fill: c.card, stroke: tone, strokeWidth: 1.75 }} />
-      <g transform="scale(0.62)">
-        <PersonIcon color={tone} />
+    <g transform={`translate(${x - 12} ${y + 58})`}>
+      <PersonIcon color={tone} />
+      <KeyMark color={tone} x={22} y={12} scale={1.15} />
+    </g>
+  </GFade>
+);
+
+/** Several members behind one aggregate key. */
+const GroupKey = ({ x, y, show }: { x: number; y: number; show: boolean }) => (
+  <GFade show={show}>
+    <g transform={`translate(${x} ${y})`}>
+      <g transform="translate(-20 -4) scale(0.8)">
+        <PersonIcon color={c.dim} />
       </g>
+      <g transform="translate(20 -4) scale(0.8)">
+        <PersonIcon color={c.dim} />
+      </g>
+      <PersonIcon color={c.clayHex} />
+      <KeyMark color={c.clayHex} x={-16} y={42} scale={1.2} />
     </g>
   </GFade>
 );
@@ -2311,6 +2457,7 @@ const Shamir: Page = () => {
           </T>
         </GFade>
         <Dot x={X(0)} y={Y(f(0))} r={11} ring show={s >= 1 && s !== 3} />
+        <GroupKey x={110} y={Y(f(0)) - 6} show={s >= 1 && s !== 3} />
         <T x={190} y={Y(f(0)) + 14} size={42} anchor="end" font="math" color={c.clayHex} show={s >= 1 && s !== 3}>
           k
         </T>
@@ -4095,7 +4242,7 @@ const Recovery: Page = () => {
           >
             ready: serving and signing
           </span>
-          <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>Federations are are inherently robust.</Note>
+          <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>Federations are inherently robust.</Note>
         </Fade>
       </At>
       <StepList>
@@ -7612,7 +7759,6 @@ export default [
   WhyDkg,
   Dkg,
   DkgOverview,
-  DkgRounds,
   Recovery,
   Section5,
   FedParts,
