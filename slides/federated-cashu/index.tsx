@@ -2189,109 +2189,106 @@ const Lagrange: Page = () => {
   );
 };
 
+const TS_R = 110;
+const TS_CENTER = { x: 560, y: 600 };
+const TS_MEMBERS = [
+  { label: 'm1', y: 330, share: 0 },
+  { label: 'm2', y: 510, share: 1 },
+  { label: 'm3', y: 690, share: -1 },
+  { label: 'm4', y: 870, share: 2 },
+];
+const TS_MX = 1150;
+
+/** One third of a disc around the origin, starting at `a0` degrees. */
+const thirdPath = (r: number, a0: number) => {
+  const p = (a: number) => [r * Math.cos((a * Math.PI) / 180), r * Math.sin((a * Math.PI) / 180)];
+  const [x0, y0] = p(a0);
+  const [x1, y1] = p(a0 + 120);
+  return `M 0 0 L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
+};
+
 const ThresholdSign: Page = () => {
-  const proc = useProcess(7);
+  const proc = useProcess(4, 2200);
   const s = proc.step;
-  const w = { x: 300, y: 540 };
-  const m = [
-    { x: 1000, y: 340 },
-    { x: 1000, y: 540 },
-    { x: 1000, y: 740 },
-  ];
+  const w = { x: 250, y: TS_CENTER.y };
+  const merged = s >= 4;
   return (
     <Shell n="1.2" eyebrow="Threshold issuance" title="Threshold blind signing" proc={proc}>
       <Canvas>
-        <Line x1={w.x} y1={w.y} x2={m[0].x} y2={m[0].y} color={s >= 2 ? c.cool : c.rule} opacity={s >= 2 ? 0.6 : 1} />
-        <Line
-          x1={w.x}
-          y1={w.y}
-          x2={m[1].x}
-          y2={m[1].y}
-          color={s >= 2 ? c.cool : c.rule}
-          opacity={s >= 4 ? 0.2 : s >= 2 ? 0.6 : 1}
-          dash={s >= 4 ? '5 7' : undefined}
-        />
-        <Line x1={w.x} y1={w.y} x2={m[2].x} y2={m[2].y} color={s >= 2 ? c.cool : c.rule} opacity={s >= 2 ? 0.6 : 1} />
-        <Packet x1={w.x} y1={w.y} x2={m[0].x} y2={m[0].y} run={proc.anim && s === 2} />
-        <Packet x1={w.x} y1={w.y} x2={m[1].x} y2={m[1].y} run={proc.anim && s === 2} delay={50} />
-        <Packet x1={w.x} y1={w.y} x2={m[2].x} y2={m[2].y} run={proc.anim && s === 2} delay={100} />
-        <Packet x1={m[0].x} y1={m[0].y} x2={w.x} y2={w.y} run={proc.anim && s === 4} color={c.clayHex} />
-        <Packet x1={m[2].x} y1={m[2].y} x2={w.x} y2={w.y} run={proc.anim && s === 4} color={c.clayHex} delay={120} />
-        <T x={650} y={410} size={34} font="math" color={c.cool} show={s >= 2}>
-          B′
-        </T>
+        {TS_MEMBERS.map((m, i) => (
+          <g key={m.label}>
+            <Line x1={w.x + 60} y1={w.y} x2={TS_MX - 46} y2={m.y} color={c.cool} opacity={s >= 3 ? 0.08 : s >= 1 ? (m.share < 0 && s >= 2 ? 0.15 : 0.5) : 0.12} dash={m.share < 0 && s >= 2 ? '5 7' : undefined} />
+            <Packet x1={w.x + 60} y1={w.y} x2={TS_MX - 46} y2={m.y} run={proc.anim && s === 1} delay={i * 70} />
+          </g>
+        ))}
         <WalletNode x={w.x} y={w.y} r={60} />
-        <Member x={m[0].x} y={m[0].y} label="m1" r={44} tone={s >= 3 ? 'on' : 'idle'} />
-        <Member x={m[1].x} y={m[1].y} label="m2" r={44} tone={s >= 4 ? 'off' : s >= 3 ? 'on' : 'idle'} />
-        <Member x={m[2].x} y={m[2].y} label="m3" r={44} tone={s >= 3 ? 'on' : 'idle'} />
+        {TS_MEMBERS.map((m) => (
+          <Member key={m.label} x={TS_MX} y={m.y} r={44} label={m.label} tone={s >= 2 ? (m.share < 0 ? 'off' : 'on') : 'idle'} />
+        ))}
+        {/* ghost outline of the full signature */}
+        <circle
+          cx={TS_CENTER.x}
+          cy={TS_CENTER.y}
+          r={TS_R}
+          style={{ fill: 'none', stroke: c.rule, strokeWidth: 2, strokeDasharray: '6 8', opacity: s >= 3 && !merged ? 1 : 0, transition: `opacity 400ms ${EASE_OUT}` }}
+        />
+        {TS_MEMBERS.filter((m) => m.share >= 0).map((m) => {
+          const a0 = m.share * 120 - 90;
+          const mid = ((a0 + 60) * Math.PI) / 180;
+          const gap = merged ? 0 : 16;
+          const atWallet = s >= 3;
+          // centroid of a 120° sector sits 0.551·r from the disc center, along the bisector
+          const sc = atWallet ? 1 : 0.6;
+          const cd = 0.551 * TS_R * sc;
+          const x = atWallet ? TS_CENTER.x + gap * Math.cos(mid) : TS_MX - 140 - cd * Math.cos(mid);
+          const y = atWallet ? TS_CENTER.y + gap * Math.sin(mid) : m.y - cd * Math.sin(mid);
+          const shown = s >= 2;
+          return (
+            <g
+              key={`share${m.label}`}
+              style={{
+                transform: `translate(${x}px, ${y}px) scale(${shown ? sc : sc * 0.9})`,
+                opacity: shown ? 1 : 0,
+                transition: `transform 1100ms ${EASE_IO} ${atWallet && !merged ? m.share * 140 : 0}ms, opacity 450ms ${EASE_OUT} ${shown && !atWallet ? m.share * 120 : 0}ms`,
+              }}
+            >
+              <path
+                d={thirdPath(TS_R, a0)}
+                style={{
+                  fill: merged ? c.clayHex : c.claySoft,
+                  stroke: c.clayHex,
+                  strokeWidth: 2.5,
+                  strokeLinejoin: 'round',
+                  transition: `fill 600ms ${EASE_OUT} 300ms`,
+                }}
+              />
+            </g>
+          );
+        })}
+        <GFade show={merged} delay={700}>
+          <circle cx={TS_CENTER.x} cy={TS_CENTER.y} r={TS_R + 14} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 2, opacity: 0.5 }} />
+          <text x={TS_CENTER.x} y={TS_CENTER.y + TS_R + 70} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 36, fill: c.ink }}>
+            one signature
+          </text>
+        </GFade>
+        <GFade show={s >= 2}>
+          <text x={TS_MX + 70} y={TS_MEMBERS[2].y + 8} style={{ fontFamily: SANS, fontSize: 24, fill: c.dim }}>
+            offline
+          </text>
+        </GFade>
       </Canvas>
-      <At x={120} y={330} w={400}>
-        <Fade show={s >= 1}>
-          <M size={34}>
-            B′ = r·<Up>H</Up>(x)
-          </M>
-        </Fade>
-      </At>
-      <At x={1066} y={318} w={300}>
-        <Fade show={s >= 3}>
-          <M size={34}>C′₁ = k₁·B′</M>
-        </Fade>
-      </At>
-      <At x={1066} y={518} w={300}>
-        <Fade show={s >= 3} delay={50}>
-          <span style={{ opacity: s >= 4 ? 0.3 : 1, transition: `opacity 300ms ${EASE_OUT}` }}>
-            <M size={34}>C′₂ = k₂·B′</M>
-          </span>
-        </Fade>
-      </At>
-      <At x={1066} y={570} w={300}>
-        <Fade show={s >= 4}>
-          <span style={{ fontSize: 20, color: c.dim }}>no response, not needed</span>
-        </Fade>
-      </At>
-      <At x={1066} y={718} w={300}>
-        <Fade show={s >= 3} delay={100}>
-          <M size={34}>C′₃ = k₃·B′</M>
-        </Fade>
-      </At>
-      <At x={120} y={730} w={800}>
-        <Fade show={s >= 5}>
-          <M size={32}>
-            <Up>e</Up>(C′₁, G₂) = <Up>e</Up>(B′, K₁),&nbsp; <Up>e</Up>(C′₃, G₂) = <Up>e</Up>(B′, K₃)
-          </M>
-        </Fade>
-        <Fade show={s >= 6} style={{ marginTop: 20 }}>
-          <M size={34}>
-            C′ = λ₁·C′₁ + λ₃·C′₃ = <Hi>k·B′</Hi>
-          </M>
-        </Fade>
-        <Fade show={s >= 7} style={{ marginTop: 20 }}>
-          <M size={34}>
-            C = r⁻¹·C′,&nbsp; <Up>e</Up>(C, G₂) = <Up>e</Up>(<Up>H</Up>(x), K)
-          </M>
-        </Fade>
-      </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Blind once
+          Wallet asks all 4
         </StepItem>
         <StepItem n={2} step={s}>
-          Send to every member
+          3 members answer
         </StepItem>
         <StepItem n={3} step={s}>
-          Each returns <M>kᵢ·B′</M>
+          Shares go to the wallet
         </StepItem>
         <StepItem n={4} step={s}>
-          m2 silent: 2 are enough
-        </StepItem>
-        <StepItem n={5} step={s}>
-          Check each share
-        </StepItem>
-        <StepItem n={6} step={s}>
-          Combine the shares
-        </StepItem>
-        <StepItem n={7} step={s}>
-          Unblind, verify with <M>K</M>
+          3 of 4 = one signature
         </StepItem>
       </StepList>
     </Shell>
