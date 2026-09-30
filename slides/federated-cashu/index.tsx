@@ -2147,7 +2147,7 @@ const Shamir: Page = () => {
   const fB = fan(-0.15);
   const fC = fan(-0.42);
   return (
-    <Shell n="1.2" eyebrow="Threshold issuance" title="Splitting the key: t of n" proc={proc}>
+    <Shell n="1.2" eyebrow="Threshold issuance" title="Shamir secret sharing: t of n" proc={proc}>
       <Canvas>
         <Line x1={220} y1={900} x2={1250} y2={900} color={c.node} />
         <Line x1={220} y1={900} x2={220} y2={330} color={c.node} />
@@ -2170,17 +2170,25 @@ const Shamir: Page = () => {
         <T x={190} y={Y(f(0)) + 14} size={42} anchor="end" font="math" color={c.clayHex} show={s >= 1 && s !== 3}>
           k
         </T>
+        <T x={X(0) + 26} y={Y(f(0)) + 52} size={22} anchor="start" color={c.clayHex} show={s >= 1 && s !== 3}>
+          private key
+        </T>
         <g style={{ opacity: s === 3 ? 0.15 : 1, transition: `opacity 500ms ${EASE_OUT}` }}>
           <Dot x={X(1)} y={Y(f(1))} color={s >= 4 ? c.clayHex : c.cool} ring={s >= 4} show={s >= 2} />
-          <Dot x={X(3)} y={Y(f(3))} color={s >= 4 ? c.clayHex : c.cool} ring={s >= 4} show={s >= 2} delay={100} />
           <T x={X(1)} y={Y(f(1)) - 30} size={32} font="math" show={s >= 2}>
             k₁
           </T>
+          <T x={X(1)} y={Y(f(1)) - 72} size={22} color={c.muted} show={s >= 2}>
+            secret share
+          </T>
+        </g>
+        <g style={{ opacity: s >= 3 ? 0.15 : 1, transition: `opacity 500ms ${EASE_OUT}` }}>
+          <Dot x={X(3)} y={Y(f(3))} color={c.cool} show={s >= 2} delay={100} />
           <T x={X(3)} y={Y(f(3)) - 30} size={32} font="math" show={s >= 2} delay={100}>
             k₃
           </T>
         </g>
-        <Dot x={X(2)} y={Y(f(2))} color={c.cool} show={s >= 2} delay={50} />
+        <Dot x={X(2)} y={Y(f(2))} color={s >= 4 ? c.clayHex : c.cool} ring={s >= 4} show={s >= 2} delay={50} />
         <T x={X(2)} y={Y(f(2)) - 30} size={32} font="math" show={s >= 2} delay={50}>
           k₂
         </T>
