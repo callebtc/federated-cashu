@@ -1438,6 +1438,7 @@ const FedParts: Page = () => {
 
 const Decentralize: Page = () => {
   const on = useEntered();
+  const beat = useBeats(1);
   return (
     <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
       <Fade show={on}>
@@ -1445,7 +1446,7 @@ const Decentralize: Page = () => {
           We'll decentralize later*!
         </div>
       </Fade>
-      <Fade show={on} delay={400} style={{ marginTop: 48 }}>
+      <Fade show={beat >= 1} style={{ marginTop: 48 }}>
         <div style={{ fontFamily: SERIF, fontSize: 44, color: c.muted }}>* when AI is good enough</div>
       </Fade>
       <Footer />
