@@ -287,11 +287,6 @@ const Heading = ({ children }: { children: ReactNode }) => (
       margin: '14px 0 0',
     }}
   >
-    {/* @slide-comment id="c-3bed480b" ts="2026-09-29T20:02:52.647Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
-    {/* @slide-comment id="c-fcec6e0c" ts="2026-09-29T20:01:50.810Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
-    {/* @slide-comment id="c-73eaa891" ts="2026-09-29T20:01:31.393Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
-    {/* @slide-comment id="c-5ffc5c66" ts="2026-09-29T20:01:25.941Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
-    {/* @slide-comment id="c-cfa45fa6" ts="2026-09-29T20:00:03.850Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgZW50aXJlIHBhZ2UifQ" */}
     {children}
   </h2>
 );
@@ -1020,7 +1015,6 @@ const SECTION_TITLES: Record<string, string> = {
   '2.0': 'Spending conditions today',
   '2.1': 'Taproot',
   '2.2': 'Nutroot secrets',
-  '2.3': 'Using nutroot',
 };
 
 const OUTLINE_TOP = 382;
@@ -1099,7 +1093,6 @@ const Outline = ({ active }: { active?: SectionRef }) => {
         <OutlineRow n="2.1" title="Spending conditions today" state={st(2, 0)} />
         <OutlineRow n="2.2" title="Taproot" state={st(2, 1)} />
         <OutlineRow n="2.3" title="Nutroot secrets" state={st(2, 2)} />
-        <OutlineRow n="2.4" title="Using nutroot" state={st(2, 3)} />
       </At>
     </Shell>
   );
@@ -2379,7 +2372,7 @@ const MixMatch: Page = () => {
   return (
     <Shell n="1.3" eyebrow="Ordering" title="Mix-and-match across members" proc={proc}>
       <div style={{ fontSize: 32, marginTop: 14 }}>
-        <M>t = 2</M>, <M>n = 3</M>. Paid for two outputs. Each member gets a different pair.
+        <M>t = 2</M>, <M>n = 3</M>. Paid for two outputs. Each member receives a different output pair.
       </div>
       <At x={colX[0] - 75} y={316} w={150} style={{ textAlign: 'center' }}>
         <M size={38}>A</M>
@@ -2631,7 +2624,7 @@ const Consensus: Page = () => {
   const proc = useProcess(4, 2000);
   const s = proc.step;
   return (
-    <Shell n="1.3" eyebrow="Ordering" title="One order, replicated" proc={proc}>
+    <Shell n="1.3" eyebrow="Ordering" title="Consensus is required" proc={proc}>
       <Canvas>
         {ORD_REQ.map((r) => (
           <Member key={r.m} x={r.x} y={290} r={38} label={r.m} />
@@ -4732,7 +4725,6 @@ const Fig = ({
       transformOrigin: 'top left',
     }}
   >
-    {/* @slide-comment id="c-498e902f" ts="2026-09-29T20:00:35.191Z" text="eyJub3RlIjoicmVtb3ZlIHRoaXMgcGFnZSJ9" */}
     {children}
   </div>
 );
@@ -6750,7 +6742,6 @@ export default [
   MixMatch,
   Consensus,
   Swap,
-  Topology,
   Section4,
   Dkg,
   DkgOverview,
@@ -6774,16 +6765,7 @@ export default [
   PointSecret,
   LeafEncoding,
   NutrootTree,
-  FoldShapes,
   NutrootSpends,
-  ScriptVerify,
-  InternalKey,
-  SectionN4,
-  SpendInfo,
-  ReceiverKeyed,
-  Capabilities,
-  VsBip341,
-  Comparison,
   End,
 ] satisfies Page[];
 
