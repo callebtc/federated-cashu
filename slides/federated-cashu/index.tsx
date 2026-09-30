@@ -3444,106 +3444,158 @@ const DKG_ROWS: [string, number, number, number, number][] = [
 ];
 
 const Dkg: Page = () => {
-  const proc = useProcess(4, 2000);
+  const proc = useProcess(5, 2200);
   const s = proc.step;
-  // Toy example: f₁ = 2 + x, f₂ = 4 − x, f₃ = 1 + x, sum f = 7 + x.
-  const X = (x: number) => 200 + 180 * x;
-  const Y = (y: number) => 900 - 48 * y;
-  const f1 = (x: number) => 2 + x;
-  const f2 = (x: number) => 4 - x;
-  const f3 = (x: number) => 1 + x;
-  const sum = (x: number) => f1(x) + f2(x) + f3(x);
-  const lineOp = s >= 3 ? 0.3 : 1;
-  const sub = ['₁', '₂', '₃'];
+  // Toy example: f₁ = 2 + x, f₂ = 4 − x, f₃ = 1 + x; the sum is f = 7 + x.
+  const X = (x: number) => 220 + 190 * x;
+  const Y = (y: number) => 900 - 44 * y;
+  const fs = [(x: number) => 2 + x, (x: number) => 4 - x, (x: number) => 1 + x];
   const cols = [c.cool, c.violet, c.good];
+  const names = ['f₁ = 2 + x', 'f₂ = 4 − x', 'f₃ = 1 + x'];
+  const sum = (x: number) => fs.reduce((a, f) => a + f(x), 0);
+  const members = [1, 2, 3];
+  const stacked = s >= 4;
+  const goal = s >= 1;
+  const goalSolid = s >= 5 || s === 1;
+  const lineOp = s >= 4 ? 0.2 : 1;
   return (
     <Shell n="1.4" eyebrow="Keys and membership" title="Distributed key generation" proc={proc}>
       <Canvas>
-        <Line x1={200} y1={900} x2={900} y2={900} color={c.node} />
-        <Line x1={200} y1={900} x2={200} y2={330} color={c.node} />
-        <Draw x1={X(0)} y1={Y(f1(0))} x2={X(3.5)} y2={Y(f1(3.5))} show={s >= 1} color={c.cool} width={2.5} opacity={lineOp} />
-        <Draw x1={X(0)} y1={Y(f2(0))} x2={X(3.5)} y2={Y(f2(3.5))} show={s >= 1} color={c.violet} width={2.5} delay={80} opacity={lineOp} />
-        <Draw x1={X(0)} y1={Y(f3(0))} x2={X(3.5)} y2={Y(f3(3.5))} show={s >= 1} color={c.good} width={2.5} delay={160} opacity={lineOp} />
-        <T x={X(3.5) + 14} y={Y(f1(3.5)) + 10} size={28} font="math" anchor="start" color={c.cool} show={s >= 1}>
-          f₁ = 2 + x
-        </T>
-        <T x={X(3.5) + 14} y={Y(f2(3.5)) + 10} size={28} font="math" anchor="start" color={c.violet} show={s >= 1}>
-          f₂ = 4 − x
-        </T>
-        <T x={X(3.5) + 14} y={Y(f3(3.5)) - 6} size={28} font="math" anchor="start" color={c.good} show={s >= 1}>
-          f₃ = 1 + x
-        </T>
-        {[1, 2, 3].map((i) => (
-          <g key={`g${i}`}>
-            <GFade show={s >= 2} delay={i * 60} to={0.8}>
-              <line x1={X(i)} y1={900} x2={X(i)} y2={Y(sum(i)) - 18} style={{ stroke: c.line, strokeWidth: 1.5, strokeDasharray: '4 6' }} />
-            </GFade>
-            <Dot x={X(i)} y={Y(f1(i))} r={6} color={c.cool} show={s >= 2} delay={i * 60} />
-            <Dot x={X(i)} y={Y(f2(i))} r={6} color={c.violet} show={s >= 2} delay={i * 60} />
-            <Dot x={X(i)} y={Y(f3(i))} r={6} color={c.good} show={s >= 2} delay={i * 60} />
-            <T x={X(i)} y={940} size={22} font="mono" color={c.muted} show={s >= 2} delay={i * 60}>
-              {`m${i}`}
-            </T>
-            <Dot x={X(i)} y={Y(sum(i))} r={9} show={s >= 3} delay={400 + i * 60} />
-            <T x={X(i)} y={Y(sum(i)) - 24} size={30} font="math" show={s >= 3} delay={400 + i * 60}>
-              {`k${sub[i - 1]} = ${sum(i)}`}
+        <Line x1={220} y1={900} x2={940} y2={900} color={c.node} />
+        <Line x1={220} y1={900} x2={220} y2={360} color={c.node} />
+        {/* the goal: the combined line */}
+        <line
+          x1={X(0)}
+          y1={Y(sum(0))}
+          x2={X(3.6)}
+          y2={Y(sum(3.6))}
+          style={{
+            stroke: c.clayHex,
+            strokeWidth: 3,
+            strokeDasharray: goalSolid ? 'none' : '8 8',
+            opacity: goal ? (goalSolid ? 1 : 0.35) : 0,
+            transition: `opacity 600ms ${EASE_OUT} ${s >= 5 ? 400 : 0}ms`,
+          }}
+        />
+        <GFade show={goal}>
+          <circle cx={X(0)} cy={Y(sum(0))} r={16} style={{ fill: c.card, stroke: c.clayHex, strokeWidth: 2.5, strokeDasharray: '4 4' }} />
+          <text x={X(0) - 30} y={Y(sum(0)) + 14} textAnchor="end" style={{ fontFamily: MATH, fontStyle: 'italic', fontSize: 44, fill: c.clayHex }}>
+            k
+          </text>
+        </GFade>
+        {/* each member's own line */}
+        {fs.map((f, j) => (
+          <g key={`l${j}`}>
+            <Draw x1={X(0)} y1={Y(f(0))} x2={X(3.6)} y2={Y(f(3.6))} show={s >= 2} color={cols[j]} width={2.5} delay={j * 120} opacity={lineOp} />
+            <T x={X(3.6) + 14} y={Y(f(3.6)) + (j === 2 ? -4 : 10)} size={26} font="math" anchor="start" color={cols[j]} show={s >= 2} delay={j * 120}>
+              {names[j]}
             </T>
           </g>
         ))}
-        <Draw x1={X(0)} y1={Y(sum(0))} x2={X(3.5)} y2={Y(sum(3.5))} show={s >= 3} width={3} />
-        <T x={X(3.5) + 14} y={Y(sum(3.5)) + 10} size={28} font="math" anchor="start" color={c.clayHex} show={s >= 3}>
-          f = 7 + x
-        </T>
-        <GFade show={s >= 4}>
-          <circle cx={X(0)} cy={Y(sum(0))} r={18} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 2, strokeDasharray: '4 5' }} />
-          <T x={X(0) + 30} y={Y(sum(0)) + 44} size={30} font="math" anchor="start" color={c.clayHex}>
-            k = 2 + 4 + 1 = 7
-          </T>
-        </GFade>
+        {/* member columns */}
+        {members.map((i) => (
+          <g key={`col${i}`}>
+            <GFade show={s >= 3} delay={i * 60} to={0.8}>
+              <line x1={X(i)} y1={900} x2={X(i)} y2={Y(sum(i)) - 20} style={{ stroke: c.line, strokeWidth: 1.5, strokeDasharray: '4 6' }} />
+            </GFade>
+            <GFade show={s >= 3} delay={i * 60}>
+              <g transform={`translate(${X(i)} 952)`}>
+                <circle r={22} style={{ fill: c.card, stroke: c.node, strokeWidth: 1.75 }} />
+                <g transform="scale(0.62)">
+                  <PersonIcon color={c.muted} />
+                </g>
+              </g>
+            </GFade>
+          </g>
+        ))}
+        {/* stacked segments: the values add up */}
+        {members.map((i) =>
+          fs.map((f, j) => {
+            const below = fs.slice(0, j).reduce((a, g) => a + g(i), 0);
+            const top = Y(below + f(i));
+            const h = Y(below) - top;
+            return (
+              <rect
+                key={`seg${i}${j}`}
+                x={X(i) - 9}
+                y={top}
+                width={18}
+                height={h}
+                rx={3}
+                style={{
+                  fill: cols[j],
+                  opacity: stacked ? 0.85 : 0,
+                  transformBox: 'fill-box',
+                  transformOrigin: 'bottom',
+                  transform: stacked || REDUCED ? 'scaleY(1)' : 'scaleY(0)',
+                  transition: `transform 700ms ${EASE_OUT} ${stacked ? 200 + i * 160 + j * 140 : 0}ms, opacity 300ms ${EASE_OUT} ${stacked ? 200 + i * 160 + j * 140 : 0}ms`,
+                }}
+              />
+            );
+          }),
+        )}
+        {/* dots: on each line first, then riding up to the top of their segment */}
+        {members.map((i) =>
+          fs.map((f, j) => {
+            const below = fs.slice(0, j).reduce((a, g) => a + g(i), 0);
+            const dy = stacked ? Y(below + f(i)) - Y(f(i)) : 0;
+            return (
+              <circle
+                key={`dot${i}${j}`}
+                cx={X(i)}
+                cy={Y(f(i))}
+                r={7}
+                style={{
+                  fill: cols[j],
+                  stroke: c.card,
+                  strokeWidth: 2,
+                  opacity: s >= 3 ? (stacked ? 0 : 1) : 0,
+                  transform: `translateY(${dy}px)`,
+                  transition: `transform 900ms ${EASE_IO} ${stacked ? 200 + i * 160 + j * 140 : 0}ms, opacity 400ms ${EASE_OUT} ${stacked ? 900 + i * 160 + j * 140 : i * 60}ms`,
+                }}
+              />
+            );
+          }),
+        )}
+        {/* the resulting shares on the combined line */}
+        {members.map((i) => (
+          <g key={`k${i}`}>
+            <Dot x={X(i)} y={Y(sum(i))} r={10} show={stacked} delay={900 + i * 160} />
+            <T x={X(i) - 36} y={Y(sum(i)) - 14} size={28} font="math" anchor="end" show={stacked} delay={950 + i * 160}>
+              {`k${['₁', '₂', '₃'][i - 1]} = ${sum(i)}`}
+            </T>
+          </g>
+        ))}
       </Canvas>
-      <At x={1010} y={330} w={330}>
-        <Fade show={s >= 2}>
-          <div style={{ display: 'flex', fontSize: 24, color: c.muted }}>
-            <span style={{ width: 80 }} />
-            {['f₁', 'f₂', 'f₃'].map((f, j) => (
-              <span key={f} style={{ width: 80, textAlign: 'center', fontFamily: MATH, fontStyle: 'italic', color: cols[j] }}>
-                {f}
-              </span>
-            ))}
-          </div>
-          {DKG_ROWS.map(([m, a, b, d, k]) => (
-            <div key={m} style={{ display: 'flex', alignItems: 'baseline', height: 64, borderBottom: `1px solid ${c.rule}` }}>
-              <span style={{ width: 80, fontFamily: MONO, fontSize: 22, color: c.muted }}>{m}</span>
-              {[a, b, d].map((v, j) => (
-                <span key={j} style={{ width: 80, textAlign: 'center' }}>
-                  <M size={32}>{v}</M>
-                </span>
-              ))}
+      <At x={930} y={300} w={420}>
+        <div style={{ position: 'relative', height: 200 }}>
+          <Fade show={s === 1} style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ fontFamily: SERIF, fontSize: 38, lineHeight: 1.25 }}>
+              How do we get this line without anyone knowing <M>k</M>?
             </div>
-          ))}
-        </Fade>
-        <Fade show={s >= 3} style={{ marginTop: 18 }}>
-          {DKG_ROWS.map(([m, , , , k], i) => (
-            <div key={m} style={{ fontSize: 28, height: 44 }}>
-              <M size={30}>
-                k{sub[i]} = {DKG_ROWS[i][1]} + {DKG_ROWS[i][2]} + {DKG_ROWS[i][3]} = <Hi>{k}</Hi>
-              </M>
+          </Fade>
+          <Fade show={s >= 5} style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ fontFamily: SERIF, fontSize: 38, lineHeight: 1.25 }}>
+              Same line. Nobody ever computed <M>k</M>.
             </div>
-          ))}
-        </Fade>
+          </Fade>
+        </div>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Each picks a random line
+          The goal: one shared line
         </StepItem>
         <StepItem n={2} step={s}>
-          Send <M>fⱼ(i)</M> to member <M>i</M>
+          Each picks a random line
         </StepItem>
         <StepItem n={3} step={s}>
-          Add what you received
+          Values for each member
         </StepItem>
         <StepItem n={4} step={s}>
-          <M>k = f(0)</M>: never computed
+          Each member adds them up
+        </StepItem>
+        <StepItem n={5} step={s}>
+          The sums form the goal line
         </StepItem>
       </StepList>
     </Shell>
