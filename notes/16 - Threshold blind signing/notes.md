@@ -1,7 +1,5 @@
 # 16 · Threshold blind signing
 
-Original slide, deck `fcv-b-threshold` page 27 (main deck slide 16). Same text as `notes/16 - Threshold blind signing/notes.md`.
-
 1.2 Threshold issuance · 4 steps · script 128 words, about 55 s
 
 ## Script
