@@ -5817,81 +5817,387 @@ const TapReveal: Page = () => {
 
 // ─── 2.3 Nutroot secrets ─────────────────────────────────────────────────────
 
+const KeyGlyph = ({ color, size = 44 }: { color: string; size?: number }) => (
+  <svg width={size * 1.9} height={size} viewBox="0 0 38 20" style={{ display: 'block' }}>
+    <circle cx={8} cy={10} r={6.5} style={{ fill: 'none', stroke: color, strokeWidth: 2.4 }} />
+    <path d="M14.5 10 H36 M30 10 V15 M25 10 V14" style={{ fill: 'none', stroke: color, strokeWidth: 2.4, strokeLinecap: 'round' }} />
+  </svg>
+);
+
+const SecretToken = ({
+  x,
+  show,
+  label,
+  keyOn,
+  hot,
+  script,
+  delay = 0,
+}: {
+  x: number;
+  show: boolean;
+  label: string;
+  keyOn: boolean;
+  hot: boolean;
+  script?: boolean;
+  delay?: number;
+}) => (
+  <Fade show={show} delay={delay} style={{ position: 'absolute', left: x, top: 300, width: 500 }}>
+    <div style={{ fontSize: 24, letterSpacing: '0.1em', textTransform: 'uppercase', color: c.muted, height: 40, textAlign: 'center' }}>{label}</div>
+    <div
+      style={{
+        position: 'relative',
+        height: 380,
+        boxSizing: 'border-box',
+        border: `2px solid ${c.node}`,
+        background: c.card,
+        borderRadius: 22,
+        padding: '30px 36px',
+      }}
+    >
+      <div style={{ fontFamily: SERIF, fontSize: 48 }}>8 sat</div>
+      <div style={{ fontSize: 22, color: c.muted, marginTop: 2 }}>ecash token</div>
+      <div
+        style={{
+          position: 'relative',
+          marginTop: 30,
+          height: 120,
+          borderRadius: 14,
+          border: `2px solid ${hot ? c.clayHex : c.rule}`,
+          background: hot ? c.claySoft : c.panel,
+          transition: `border-color 400ms ${EASE_OUT}, background 400ms ${EASE_OUT}`,
+        }}
+      >
+        <div style={{ position: 'absolute', left: 22, top: 12, fontSize: 21, letterSpacing: '0.1em', textTransform: 'uppercase', color: hot ? c.clayHex : c.muted }}>
+          secret
+        </div>
+        <Fade show={!keyOn} style={{ position: 'absolute', left: 22, top: 52 }}>
+          <span style={{ fontFamily: MONO, fontSize: 26, color: c.muted }}>a random string</span>
+        </Fade>
+        <Fade show={keyOn} delay={keyOn ? 250 : 0} style={{ position: 'absolute', left: 22, top: 48, display: 'flex', alignItems: 'center', gap: 18 }}>
+          <KeyGlyph color={c.clayHex} size={40} />
+          <span style={{ fontSize: 30 }}>a public key</span>
+        </Fade>
+      </div>
+      <div style={{ fontSize: 22, color: c.muted, marginTop: 22 }}>+ the mint's signature</div>
+      {script && (
+        <svg
+          width={150}
+          height={90}
+          viewBox="0 0 150 90"
+          style={{ position: 'absolute', right: 30, top: 34, opacity: hot ? 0.9 : 0, transition: `opacity 600ms ${EASE_OUT} 300ms` }}
+        >
+          <line x1={75} y1={14} x2={35} y2={50} style={{ stroke: c.clayHex, strokeWidth: 1.75, strokeDasharray: '4 4' }} />
+          <line x1={75} y1={14} x2={115} y2={50} style={{ stroke: c.clayHex, strokeWidth: 1.75, strokeDasharray: '4 4' }} />
+          <line x1={115} y1={50} x2={95} y2={80} style={{ stroke: c.clayHex, strokeWidth: 1.75, strokeDasharray: '4 4' }} />
+          <line x1={115} y1={50} x2={135} y2={80} style={{ stroke: c.clayHex, strokeWidth: 1.75, strokeDasharray: '4 4' }} />
+          {[
+            [75, 14],
+            [35, 50],
+            [115, 50],
+            [95, 80],
+            [135, 80],
+          ].map(([cx, cy]) => (
+            <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={6} style={{ fill: c.card, stroke: c.clayHex, strokeWidth: 1.75 }} />
+          ))}
+        </svg>
+      )}
+    </div>
+  </Fade>
+);
+
 const PointSecret: Page = () => {
-  const proc = useProcess(3, 2200);
+  const proc = useProcess(4, 2200);
   const s = proc.step;
   return (
     <Shell n="2.3" eyebrow="Nutroot secrets" title="The secret is a public key" proc={proc}>
-      <At x={120} y={266} w={1220}>
-        <Label>Keysets v1, v2: a string</Label>
-        <div
-          style={{
-            marginTop: 10,
-            fontFamily: MONO,
-            fontSize: 26,
-            opacity: s >= 1 ? 0.45 : 1,
-            transition: `opacity 500ms ${EASE_OUT}`,
-          }}
-        >
-          407915bc…768a7837<span style={{ color: c.dim, fontFamily: SANS }}>{'   or   '}</span>["P2PK",{"{…}"}]
+      <SecretToken x={120} show label="normal" keyOn={s >= 2} hot={s === 2} />
+      <SecretToken x={740} show={s >= 3} label="with a script" keyOn={s >= 3} hot={s >= 4} script delay={100} />
+      <At x={120} y={800} w={1220}>
+        <div style={{ position: 'relative', height: 60 }}>
+          <Fade show={s === 3} style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ fontSize: 34 }}>Both look exactly the same.</div>
+          </Fade>
+          <Fade show={s >= 4} style={{ position: 'absolute', inset: 0 }}>
+            <div style={{ fontSize: 34 }}>The script is hidden inside the key.</div>
+          </Fade>
         </div>
-      </At>
-      <At x={120} y={450} w={1220}>
-        <Fade show={s >= 1}>
-          <Label color={c.clayHex}>Keyset v3: a compressed secp256k1 point, 33 bytes</Label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 10 }}>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: 24,
-                background: c.claySoft,
-                border: `1.5px solid ${c.clayHex}`,
-                borderRadius: 10,
-                padding: '10px 18px',
-              }}
-            >
-              02d310a4d661e3158e7d360617e739d6bacbf015431b24a43168db0ab99ef8f828
-            </span>
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <M size={34}>
-              Y = <Up>hash_to_curve_G1</Up>(33 bytes)
-            </M>
-          </div>
-        </Fade>
-      </At>
-      <At x={120} y={690} w={1220}>
-        <Fade show={s >= 2}>
-          <div style={{ display: 'flex', gap: 30 }}>
-            <div style={{ flex: 1 }}>
-              <Label>No conditions</Label>
-              <div style={{ marginTop: 8 }}>
-                <M size={36}>secret = K = k·G</M>
-              </div>
-            </div>
-            <div style={{ flex: 1 }}>
-              <Label>With conditions</Label>
-              <div style={{ marginTop: 8 }}>
-                <M size={36}>secret = P = K + t·G</M>
-              </div>
-            </div>
-          </div>
-        </Fade>
-        <Fade show={s >= 3} style={{ marginTop: 26 }}>
-          <div style={{ fontSize: 34 }}>A locked secret looks like an unlocked one.</div>
-        </Fade>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          33-byte public key
+          A token has a secret
         </StepItem>
         <StepItem n={2} step={s}>
-          Conditions in the tweak
+          Now: a public key
         </StepItem>
         <StepItem n={3} step={s}>
-          Same look on the wire
+          With a script: same look
+        </StepItem>
+        <StepItem n={4} step={s}>
+          Script hidden in the key
         </StepItem>
       </StepList>
+    </Shell>
+  );
+};
+
+type WK_Tone = 'idle' | 'on' | 'cool' | 'dim' | 'calc' | 'good' | 'bad' | 'violet';
+const WK_BORDER: Record<WK_Tone, string> = {
+  idle: c.node,
+  on: c.clayHex,
+  cool: c.cool,
+  dim: c.rule,
+  calc: c.clayHex,
+  good: c.good,
+  bad: c.bad,
+  violet: c.violet,
+};
+const WK_BG: Record<WK_Tone, string> = {
+  idle: c.card,
+  on: c.claySoft,
+  cool: c.coolSoft,
+  dim: c.card,
+  calc: c.card,
+  good: c.goodSoft,
+  bad: c.badSoft,
+  violet: 'rgba(122, 95, 166, 0.10)',
+};
+
+
+const WK_enter = (show: boolean, delay = 0, dimTo = 0): CSSProperties => ({
+  opacity: show ? 1 : dimTo,
+  transform: show || REDUCED || dimTo > 0 ? 'translateY(0px)' : 'translateY(6px)',
+  transition: `opacity 450ms ${EASE_OUT} ${show ? delay : 0}ms, transform 450ms ${EASE_OUT} ${show ? delay : 0}ms, border-color 300ms ${EASE_OUT}, background 300ms ${EASE_OUT}`,
+});
+
+const WK_Hex = ({ children, size = 21, color }: { children: ReactNode; size?: number; color?: string }) => (
+  <span style={{ fontFamily: MONO, fontSize: size, color, transition: `color 300ms ${EASE_OUT}` }}>{children}</span>
+);
+
+/** Centered node in page coordinates. */
+const WK_Node = ({
+  x,
+  y,
+  w = 200,
+  h = 72,
+  title,
+  sub,
+  tone = 'idle',
+  show = true,
+  delay = 0,
+  dashed = false,
+  titleSize = 22,
+  label,
+}: {
+  x: number;
+  y: number;
+  w?: number;
+  h?: number;
+  title: ReactNode;
+  sub?: ReactNode;
+  tone?: WK_Tone;
+  show?: boolean;
+  delay?: number;
+  dashed?: boolean;
+  titleSize?: number;
+  label?: string;
+}) => (
+  <div
+    style={{
+      position: 'absolute',
+      left: x - w / 2,
+      top: y - h / 2,
+      width: w,
+      height: h,
+      boxSizing: 'border-box',
+      border: `1.75px ${dashed || tone === 'calc' ? 'dashed' : 'solid'} ${WK_BORDER[tone]}`,
+      background: WK_BG[tone],
+      borderRadius: 10,
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      textAlign: 'center',
+      ...WK_enter(show, delay),
+    }}
+  >
+    {label && (
+      <div style={{ position: 'absolute', left: 0, right: 0, top: -34, fontSize: 21, letterSpacing: '0.1em', textTransform: 'uppercase', color: c.muted }}>
+        {label}
+      </div>
+    )}
+    <div style={{ fontSize: titleSize, lineHeight: 1.2 }}>{title}</div>
+    {sub && <div style={{ fontFamily: MONO, fontSize: 21, color: c.muted, marginTop: 3, lineHeight: 1.25 }}>{sub}</div>}
+  </div>
+);
+
+/** Absolutely positioned card. */
+const WK_Card = ({
+  x,
+  y,
+  w,
+  h,
+  tone = 'dim',
+  show = true,
+  delay = 0,
+  dimTo = 0,
+  pad = '14px 20px',
+  children,
+}: {
+  x: number;
+  y: number;
+  w: number;
+  h?: number;
+  tone?: WK_Tone;
+  show?: boolean;
+  delay?: number;
+  dimTo?: number;
+  pad?: string;
+  children: ReactNode;
+}) => (
+  <div
+    style={{
+      position: 'absolute',
+      left: x,
+      top: y,
+      width: w,
+      height: h,
+      boxSizing: 'border-box',
+      border: `1.5px ${tone === 'calc' ? 'dashed' : 'solid'} ${WK_BORDER[tone]}`,
+      background: WK_BG[tone],
+      borderRadius: 12,
+      padding: pad,
+      ...WK_enter(show, delay, dimTo),
+    }}
+  >
+    {children}
+  </div>
+);
+
+/** Byte segment with a caption (captions at 20 px). */
+
+const WireKeys: Page = () => {
+  const proc = useProcess(5, 2000);
+  const s = proc.step;
+  const run = (n: number) => proc.anim && s === n;
+  return (
+    <Shell n="2.3" eyebrow="Nutroot secrets" title="Bare key and tweaked key on the wire" proc={proc}>
+      <Canvas>
+        <GFade show={s >= 1}>
+          <circle cx={220} cy={620} r={46} style={{ fill: c.card, stroke: c.ink, strokeWidth: 1.75 }} />
+        </GFade>
+        <T x={220} y={633} font="math" size={40} show={s >= 1}>
+          k
+        </T>
+        <T x={220} y={706} size={21} color={c.muted} show={s >= 1}>
+          PRIVATE
+        </T>
+        <Arrow x1={268} y1={620} x2={346} y2={620} show={s >= 1} />
+        <T x={307} y={600} font="math" size={28} color={c.muted} show={s >= 1} delay={250}>
+          ·G
+        </T>
+
+        <GFade show={s >= 2}>
+          <line x1={590} y1={272} x2={620} y2={318} style={{ stroke: c.node, strokeWidth: 1.75 }} />
+          <line x1={650} y1={272} x2={620} y2={318} style={{ stroke: c.node, strokeWidth: 1.75 }} />
+          <line x1={710} y1={272} x2={710} y2={318} style={{ stroke: c.cool, strokeWidth: 1.75, strokeDasharray: '4 5' }} />
+          <line x1={620} y1={318} x2={665} y2={364} style={{ stroke: c.node, strokeWidth: 1.75 }} />
+          <line x1={710} y1={318} x2={665} y2={364} style={{ stroke: c.node, strokeWidth: 1.75 }} />
+          <circle cx={590} cy={272} r={9} style={{ fill: c.card, stroke: c.ink, strokeWidth: 1.75 }} />
+          <circle cx={650} cy={272} r={9} style={{ fill: c.card, stroke: c.ink, strokeWidth: 1.75 }} />
+          <circle cx={710} cy={272} r={9} style={{ fill: c.card, stroke: c.ink, strokeWidth: 1.75 }} />
+          <circle cx={620} cy={318} r={7} style={{ fill: c.card, stroke: c.node, strokeWidth: 1.75 }} />
+          <circle cx={710} cy={318} r={7} style={{ fill: c.coolSoft, stroke: c.cool, strokeWidth: 1.75, strokeDasharray: '3 3' }} />
+          <circle cx={665} cy={364} r={11} style={{ fill: c.clayHex, stroke: c.clayHex, strokeWidth: 1.75 }} />
+        </GFade>
+        <Arrow x1={665} y1={378} x2={665} y2={414} show={s >= 2} color={c.clayHex} />
+        <T x={688} y={404} font="math" size={30} color={c.clayHex} anchor="start" show={s >= 2}>
+          t
+        </T>
+        <T x={740} y={300} size={21} color={c.muted} anchor="start" show={s >= 2}>
+          SCRIPTS
+        </T>
+
+        <Draw x1={430} y1={580} x2={430} y2={440} show={s >= 3} color={c.node} width={2} dur={500} />
+        <Arrow x1={430} y1={440} x2={639} y2={440} show={s >= 3} delay={350} />
+        <T x={534} y={424} size={22} color={c.muted} show={s >= 3} delay={400}>
+          tweaked
+        </T>
+        <GFade show={s >= 3} delay={500}>
+          <circle cx={665} cy={440} r={24} style={{ fill: c.card, stroke: c.clayHex, strokeWidth: 2 }} />
+          <text x={665} y={450} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 30, fill: c.clayHex }}>
+            +
+          </text>
+        </GFade>
+        <Arrow x1={689} y1={440} x2={748} y2={440} show={s >= 3} delay={650} />
+        <Packet run={run(3)} x1={440} y1={440} x2={640} y2={440} color={c.clayHex} delay={300} />
+
+        <Draw x1={430} y1={658} x2={430} y2={800} show={s >= 4} color={c.node} width={2} dur={500} />
+        <Arrow x1={430} y1={800} x2={998} y2={800} show={s >= 4} delay={350} />
+        <T x={700} y={786} size={22} color={c.muted} show={s >= 4} delay={400}>
+          bare
+        </T>
+        <Arrow x1={952} y1={440} x2={998} y2={440} show={s >= 4} />
+        <Packet run={run(4)} x1={440} y1={800} x2={998} y2={800} color={c.cool} delay={300} />
+        <Packet run={run(4)} x1={952} y1={440} x2={998} y2={440} color={c.clayHex} delay={300} />
+        <GFade show={s >= 4} delay={600}>
+          <line x1={1170} y1={488} x2={1170} y2={598} style={{ stroke: c.clayHex, strokeWidth: 1.5, strokeDasharray: '5 6' }} />
+          <line x1={1170} y1={650} x2={1170} y2={756} style={{ stroke: c.clayHex, strokeWidth: 1.5, strokeDasharray: '5 6' }} />
+        </GFade>
+        <T x={1170} y={633} size={28} color={c.clayHex} show={s >= 4} delay={600}>
+          indistinguishable
+        </T>
+
+        <Arrow x1={1340} y1={440} x2={1458} y2={440} show={s >= 5} />
+        <Arrow x1={1340} y1={800} x2={1458} y2={800} show={s >= 5} />
+        <T x={1398} y={424} size={22} color={c.muted} show={s >= 5} delay={300}>
+          sig
+        </T>
+        <T x={1398} y={784} size={22} color={c.muted} show={s >= 5} delay={300}>
+          sig
+        </T>
+        <Packet run={run(5)} x1={1340} y1={440} x2={1460} y2={440} color={c.clayHex} delay={200} />
+        <Packet run={run(5)} x1={1340} y1={800} x2={1460} y2={800} color={c.cool} delay={200} />
+      </Canvas>
+
+      <WK_Node x={430} y={620} w={170} h={76} label="key" title={<M size={32}>K = k·G</M>} show={s >= 1} delay={300} />
+      <WK_Node x={850} y={440} w={200} h={76} label="tweaked" title={<M size={30}>P = K + t·G</M>} tone="on" show={s >= 3} delay={800} />
+      <WK_Node
+        x={1170}
+        y={440}
+        w={340}
+        h={84}
+        label="secret"
+        title={<WK_Hex size={24}>02d310a4…9ef8f828</WK_Hex>}
+        sub="33 B"
+        tone={s >= 4 ? 'on' : 'idle'}
+        show={s >= 4}
+        delay={200}
+      />
+      <WK_Node
+        x={1170}
+        y={800}
+        w={340}
+        h={84}
+        label="secret"
+        title={<WK_Hex size={24}>03a3e12c…3a419e51</WK_Hex>}
+        sub="33 B"
+        tone={s >= 4 ? 'cool' : 'idle'}
+        show={s >= 4}
+        delay={500}
+      />
+      <WK_Card x={1460} y={400} w={340} h={440} show={s >= 5} delay={150} pad="26px 24px">
+        <Label>mint</Label>
+        <div style={{ marginTop: 22 }}>
+          <M size={28}>Y =</M>
+        </div>
+        <div>
+          <M size={28}>
+            <Up>hash_to_curve_G1</Up>(33 B)
+          </M>
+        </div>
+        <div style={{ height: 1.5, background: c.rule, margin: '30px 0' }} />
+        <div style={{ fontSize: 24, lineHeight: 1.4 }}>one BIP-340 signature, checked against x(secret)</div>
+      </WK_Card>
     </Shell>
   );
 };
@@ -6940,9 +7246,9 @@ export default [
   TapTags,
   SectionN3,
   PointSecret,
+  WireKeys,
   LeafEncoding,
   NutrootTree,
-  NutrootSpends,
   End,
 ] satisfies Page[];
 
@@ -7156,6 +7462,8 @@ export {
   TapReveal,
   FundCard,
   FundingSources,
+  WireKeys,
+  SecretToken,
 };
 export type {
   StepRegistration,
