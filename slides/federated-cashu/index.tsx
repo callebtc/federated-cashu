@@ -1450,6 +1450,23 @@ const Decentralize: Page = () => {
   );
 };
 
+const WhyFederation: Page = () => {
+  const on = useEntered();
+  return (
+    <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+      <Fade show={on}>
+        <Label color={c.clayHex}>Question</Label>
+      </Fade>
+      <Fade show={on} delay={60}>
+        <div style={{ fontFamily: SERIF, fontSize: 130, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.1, margin: '28px 0 0', maxWidth: 1500 }}>
+          Why do we need a federation at all?
+        </div>
+      </Fade>
+      <Footer />
+    </div>
+  );
+};
+
 const Paper: Page = () => (
   <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
     <div style={{ marginTop: 40 }}>
@@ -2189,8 +2206,7 @@ const Lagrange: Page = () => {
   );
 };
 
-const TS_R = 110;
-const TS_CENTER = { x: 560, y: 600 };
+const TS_CENTER = { x: 360, y: 600 };
 const TS_MEMBERS = [
   { label: 'm1', y: 330, share: 0 },
   { label: 'm2', y: 510, share: 1 },
@@ -2199,48 +2215,55 @@ const TS_MEMBERS = [
 ];
 const TS_MX = 1150;
 
-/** One third of a disc around the origin, starting at `a0` degrees. */
-const thirdPath = (r: number, a0: number) => {
-  const p = (a: number) => [r * Math.cos((a * Math.PI) / 180), r * Math.sin((a * Math.PI) / 180)];
-  const [x0, y0] = p(a0);
-  const [x1, y1] = p(a0 + 120);
-  return `M 0 0 L ${x0.toFixed(2)} ${y0.toFixed(2)} A ${r} ${r} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)} Z`;
+/** One third of a ring around the origin (inner radius ri, outer ro), starting at `a0` degrees. */
+const thirdPath = (ri: number, ro: number, a0: number) => {
+  const p = (r: number, a: number) => `${(r * Math.cos((a * Math.PI) / 180)).toFixed(2)} ${(r * Math.sin((a * Math.PI) / 180)).toFixed(2)}`;
+  const a1 = a0 + 120;
+  return `M ${p(ro, a0)} A ${ro} ${ro} 0 0 1 ${p(ro, a1)} L ${p(ri, a1)} A ${ri} ${ri} 0 0 0 ${p(ri, a0)} Z`;
 };
+const TS_RI = 76;
+const TS_RO = 102;
+// centroid of a 120° annular sector: (2/3)(ro³ − ri³)/(ro² − ri²) · sin(60°)/(π/3)
+const TS_CD = ((2 / 3) * (TS_RO ** 3 - TS_RI ** 3)) / (TS_RO ** 2 - TS_RI ** 2) * (Math.sin(Math.PI / 3) / (Math.PI / 3));
 
 const ThresholdSign: Page = () => {
   const proc = useProcess(4, 2200);
   const s = proc.step;
-  const w = { x: 250, y: TS_CENTER.y };
+  const w = TS_CENTER;
   const merged = s >= 4;
   return (
     <Shell n="1.2" eyebrow="Threshold issuance" title="Threshold blind signing" proc={proc}>
       <Canvas>
-        {TS_MEMBERS.map((m, i) => (
+        {TS_MEMBERS.map((m, i) => {
+          const a = Math.atan2(m.y - w.y, TS_MX - w.x);
+          const sx = w.x + (TS_RO + 12) * Math.cos(a);
+          const sy = w.y + (TS_RO + 12) * Math.sin(a);
+          return (
           <g key={m.label}>
-            <Line x1={w.x + 60} y1={w.y} x2={TS_MX - 46} y2={m.y} color={c.cool} opacity={s >= 3 ? 0.08 : s >= 1 ? (m.share < 0 && s >= 2 ? 0.15 : 0.5) : 0.12} dash={m.share < 0 && s >= 2 ? '5 7' : undefined} />
-            <Packet x1={w.x + 60} y1={w.y} x2={TS_MX - 46} y2={m.y} run={proc.anim && s === 1} delay={i * 70} />
+            <Line x1={sx} y1={sy} x2={TS_MX - 46} y2={m.y} color={c.cool} opacity={s >= 3 ? 0.08 : s >= 1 ? (m.share < 0 && s >= 2 ? 0.15 : 0.5) : 0.12} dash={m.share < 0 && s >= 2 ? '5 7' : undefined} />
+            <Packet x1={sx} y1={sy} x2={TS_MX - 46} y2={m.y} run={proc.anim && s === 1} delay={i * 70} />
           </g>
-        ))}
+          );
+        })}
         <WalletNode x={w.x} y={w.y} r={60} />
         {TS_MEMBERS.map((m) => (
           <Member key={m.label} x={TS_MX} y={m.y} r={44} label={m.label} tone={s >= 2 ? (m.share < 0 ? 'off' : 'on') : 'idle'} />
         ))}
-        {/* ghost outline of the full signature */}
+        {/* ghost track of the full signature */}
         <circle
           cx={TS_CENTER.x}
           cy={TS_CENTER.y}
-          r={TS_R}
-          style={{ fill: 'none', stroke: c.rule, strokeWidth: 2, strokeDasharray: '6 8', opacity: s >= 3 && !merged ? 1 : 0, transition: `opacity 400ms ${EASE_OUT}` }}
+          r={(TS_RI + TS_RO) / 2}
+          style={{ fill: 'none', stroke: c.rule, strokeWidth: TS_RO - TS_RI, opacity: s >= 1 && !merged ? 0.55 : 0, transition: `opacity 500ms ${EASE_OUT}` }}
         />
         {TS_MEMBERS.filter((m) => m.share >= 0).map((m) => {
           const a0 = m.share * 120 - 90;
           const mid = ((a0 + 60) * Math.PI) / 180;
-          const gap = merged ? 0 : 16;
+          const gap = merged ? 0 : 10;
           const atWallet = s >= 3;
-          // centroid of a 120° sector sits 0.551·r from the disc center, along the bisector
-          const sc = atWallet ? 1 : 0.6;
-          const cd = 0.551 * TS_R * sc;
-          const x = atWallet ? TS_CENTER.x + gap * Math.cos(mid) : TS_MX - 140 - cd * Math.cos(mid);
+          const sc = atWallet ? 1 : 0.62;
+          const cd = TS_CD * sc;
+          const x = atWallet ? TS_CENTER.x + gap * Math.cos(mid) : TS_MX - 120 - cd * Math.cos(mid);
           const y = atWallet ? TS_CENTER.y + gap * Math.sin(mid) : m.y - cd * Math.sin(mid);
           const shown = s >= 2;
           return (
@@ -2253,11 +2276,11 @@ const ThresholdSign: Page = () => {
               }}
             >
               <path
-                d={thirdPath(TS_R, a0)}
+                d={thirdPath(TS_RI, TS_RO, a0)}
                 style={{
                   fill: merged ? c.clayHex : c.claySoft,
                   stroke: c.clayHex,
-                  strokeWidth: 2.5,
+                  strokeWidth: 2,
                   strokeLinejoin: 'round',
                   transition: `fill 600ms ${EASE_OUT} 300ms`,
                 }}
@@ -2266,8 +2289,7 @@ const ThresholdSign: Page = () => {
           );
         })}
         <GFade show={merged} delay={700}>
-          <circle cx={TS_CENTER.x} cy={TS_CENTER.y} r={TS_R + 14} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 2, opacity: 0.5 }} />
-          <text x={TS_CENTER.x} y={TS_CENTER.y + TS_R + 70} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 36, fill: c.ink }}>
+          <text x={TS_CENTER.x} y={TS_CENTER.y + TS_RO + 64} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 36, fill: c.ink }}>
             one signature
           </text>
         </GFade>
@@ -2607,7 +2629,19 @@ const ORD_CHIP_Y = 360;
 const ORD_BOX = { x: 330, y: 440, w: 620, h: 170 };
 const ORD_ROW_Y = [676, 746, 816];
 
-const OrdChip = ({ outs, tone, style }: { outs: string; tone: string; style?: CSSProperties }) => (
+const OrdChip = ({
+  outs,
+  tone,
+  style,
+  strike,
+  strikeDelay = 0,
+}: {
+  outs: string;
+  tone: string;
+  style?: CSSProperties;
+  strike?: boolean;
+  strikeDelay?: number;
+}) => (
   <div
     style={{
       position: 'absolute',
@@ -2627,6 +2661,21 @@ const OrdChip = ({ outs, tone, style }: { outs: string; tone: string; style?: CS
     }}
   >
     [{outs}]
+    <span
+      style={{
+        position: 'absolute',
+        left: 10,
+        right: 10,
+        top: '50%',
+        height: 2.5,
+        marginTop: -1,
+        background: c.bad,
+        borderRadius: 2,
+        transformOrigin: 'left center',
+        transform: strike || REDUCED ? `scaleX(${strike ? 1 : 0})` : 'scaleX(0)',
+        transition: `transform 450ms ${EASE_OUT} ${strike ? strikeDelay : 0}ms`,
+      }}
+    />
   </div>
 );
 
@@ -2706,7 +2755,7 @@ const Consensus: Page = () => {
             }}
           >
             <span style={{ fontFamily: MONO, fontSize: 26, color: c.muted, width: 44 }}>#{i + 1}</span>
-            <OrdChip outs={r.outs} tone={r.tone} style={{ position: 'relative' }} />
+            <OrdChip outs={r.outs} tone={r.tone} style={{ position: 'relative' }} strike={judged && !ok} strikeDelay={700 + i * 150} />
             <span
               style={{
                 fontSize: 28,
@@ -6848,6 +6897,7 @@ export default [
   Shamir,
   ThresholdSign,
   Section3,
+  WhyFederation,
   MixMatch,
   Consensus,
   Swap,
