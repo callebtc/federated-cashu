@@ -1532,6 +1532,117 @@ const WhyFederation: Page = () => {
   );
 };
 
+const SWAP_OUTS: { id: string; amt: number }[][] = [
+  [
+    { id: 'A', amt: 4 },
+    { id: 'B', amt: 4 },
+  ],
+  [
+    { id: 'C', amt: 4 },
+    { id: 'D', amt: 4 },
+  ],
+  [{ id: 'E', amt: 8 }],
+];
+
+const TxChip = ({ amt, id, tone, dashed, delay = 0 }: { amt: number; id: string; tone: string; dashed?: boolean; delay?: number }) => (
+  <div
+    style={{
+      width: 230,
+      height: 96,
+      boxSizing: 'border-box',
+      border: `2px ${dashed ? 'dashed' : 'solid'} ${tone}`,
+      background: dashed ? c.card : c.coolSoft,
+      borderRadius: 14,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: '0 26px',
+      animation: REDUCED ? 'none' : `fc-in 500ms ${EASE_OUT} ${delay}ms both`,
+    }}
+  >
+    <span style={{ fontFamily: SERIF, fontSize: 40 }}>{amt} sat</span>
+    <span style={{ fontFamily: MONO, fontSize: 26, color: tone }}>{id}</span>
+  </div>
+);
+
+const SwapTx: Page = () => {
+  const proc = useProcess(5, 2200);
+  const s = proc.step;
+  const idx = Math.min(Math.max(s - 2, 0), 2);
+  const set = SWAP_OUTS[idx];
+  return (
+    <Shell n="1.3" eyebrow="Ordering" title="A Cashu swap" proc={proc}>
+      <div
+        style={{
+          position: 'absolute',
+          left: 120,
+          top: 290,
+          width: 1200,
+          height: 420,
+          boxSizing: 'border-box',
+          border: `1.75px solid ${c.rule}`,
+          borderRadius: 24,
+          background: c.panel,
+        }}
+      >
+        <div style={{ position: 'absolute', left: 30, top: 20, fontSize: 21, letterSpacing: '0.1em', textTransform: 'uppercase', color: c.muted }}>
+          transaction
+        </div>
+        <div style={{ position: 'absolute', left: 90, top: 70, fontSize: 21, letterSpacing: '0.1em', textTransform: 'uppercase', color: c.cool }}>
+          inputs
+        </div>
+        <div style={{ position: 'absolute', left: 860, top: 70, fontSize: 21, letterSpacing: '0.1em', textTransform: 'uppercase', color: c.violet }}>
+          outputs
+        </div>
+        <Fade show={s >= 1} style={{ position: 'absolute', left: 90, top: 110, display: 'flex', flexDirection: 'column', gap: 28 }}>
+          <TxChip amt={4} id="P1" tone={c.cool} />
+          <TxChip amt={4} id="P2" tone={c.cool} delay={80} />
+        </Fade>
+        <div style={{ position: 'absolute', left: 860, top: set.length === 1 ? 172 : 110, display: 'flex', flexDirection: 'column', gap: 28, opacity: s >= 2 ? 1 : 0, transition: `opacity 400ms ${EASE_OUT}` }}>
+          {set.map((o, i) => (
+            <TxChip key={`${idx}-${o.id}`} amt={o.amt} id={o.id} tone={c.violet} dashed delay={i * 90} />
+          ))}
+        </div>
+      </div>
+      <Canvas>
+        <Arrow x1={470} y1={510} x2={960} y2={510} show={s >= 2} color={c.node} />
+        <GFade show={s >= 2}>
+          <text x={715} y={492} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 34, fill: c.ink }}>
+            swap
+          </text>
+        </GFade>
+        <GFade show={s >= 3}>
+          <text x={715} y={558} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 24, fill: c.muted }}>
+            any outputs that add up to 8
+          </text>
+        </GFade>
+      </Canvas>
+      <At x={120} y={790} w={1220}>
+        <Fade show={s >= 5}>
+          <div style={{ fontSize: 38 }}>All members must see transactions in the same order.</div>
+        </Fade>
+      </At>
+      <StepList>
+        <StepItem n={1} step={s}>
+          Inputs: tokens you hold
+        </StepItem>
+        <StepItem n={2} step={s}>
+          Outputs: new tokens
+        </StepItem>
+        <StepItem n={3} step={s}>
+          Swap in other outputs
+        </StepItem>
+        <StepItem n={4} step={s}>
+          Or others again
+        </StepItem>
+        <StepItem n={5} step={s}>
+          Same order for all
+        </StepItem>
+      </StepList>
+    </Shell>
+  );
+};
+
 const WhyDkg: Page = () => {
   const on = useEntered();
   return (
@@ -7346,6 +7457,7 @@ export default [
   ThresholdSign,
   Section3,
   WhyFederation,
+  SwapTx,
   MixMatch,
   Consensus,
   Swap,
@@ -7592,6 +7704,8 @@ export {
   WalletIcon,
   EcashIcon,
   ShareMember,
+  TxChip,
+  SwapTx,
 };
 export type {
   StepRegistration,
