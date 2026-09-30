@@ -558,28 +558,34 @@ const Member = ({
         transition: `stroke 300ms ${EASE_OUT}`,
       }}
     />
-    <text
-      x={x}
-      y={y + 8}
-      textAnchor="middle"
-      style={{
-        fontFamily: MONO,
-        fontSize: 22,
-        fill: tone === 'off' ? c.dim : tone === 'bad' ? c.bad : c.ink,
-        transition: `fill 300ms ${EASE_OUT}`,
-      }}
-    >
-      {label}
-    </text>
+    {/^m\d+$/.test(label) ? (
+      <g transform={`translate(${x} ${y + 2}) scale(${(r / 48) * 1.05})`}>
+        <PersonIcon color={tone === 'off' ? c.dim : tone === 'bad' ? c.bad : tone === 'on' ? c.clayHex : c.muted} />
+      </g>
+    ) : (
+      <text
+        x={x}
+        y={y + 8}
+        textAnchor="middle"
+        style={{
+          fontFamily: MONO,
+          fontSize: 22,
+          fill: tone === 'off' ? c.dim : tone === 'bad' ? c.bad : c.ink,
+          transition: `fill 300ms ${EASE_OUT}`,
+        }}
+      >
+        {label}
+      </text>
+    )}
   </g>
 );
 
 const WalletNode = ({ x, y, r = 52 }: { x: number; y: number; r?: number }) => (
   <g>
-    <circle cx={x} cy={y} r={r} style={{ fill: c.card, stroke: c.cool, strokeWidth: 2.5 }} />
-    <text x={x} y={y + 8} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 22, fill: c.cool }}>
-      wallet
-    </text>
+    <circle cx={x} cy={y} r={r} style={{ fill: c.coolSoft, stroke: c.cool, strokeWidth: 2.5 }} />
+    <g transform={`translate(${x} ${y + 2}) scale(${r / 52})`}>
+      <WalletIcon color={c.cool} />
+    </g>
   </g>
 );
 
@@ -900,9 +906,25 @@ const Lifeline = ({
   color?: string;
 }) => (
   <g>
-    <text x={x} y={top - 16} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 24, fill: color }}>
-      {label}
-    </text>
+    {/^m\d+$/.test(label) ? (
+      <g transform={`translate(${x} ${top - 30})`}>
+        <circle r={24} style={{ fill: c.card, stroke: color === c.ink ? c.node : color, strokeWidth: 1.75 }} />
+        <g transform="scale(0.62)">
+          <PersonIcon color={color === c.ink ? c.muted : color} />
+        </g>
+      </g>
+    ) : /^wallet$/i.test(label) ? (
+      <g transform={`translate(${x} ${top - 30})`}>
+        <circle r={26} style={{ fill: c.coolSoft, stroke: color, strokeWidth: 1.75 }} />
+        <g transform="scale(0.6)">
+          <WalletIcon color={color} />
+        </g>
+      </g>
+    ) : (
+      <text x={x} y={top - 16} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 24, fill: color }}>
+        {label}
+      </text>
+    )}
     <line x1={x} y1={top} x2={x} y2={bottom} style={{ stroke: c.line, strokeWidth: 1.5, strokeDasharray: '4 6' }} />
   </g>
 );
@@ -2469,87 +2491,86 @@ const TS_MEMBERS = [
 ];
 const TS_MX = 1150;
 
-/** One third of a ring around the origin (inner radius ri, outer ro), starting at `a0` degrees. */
-const thirdPath = (ri: number, ro: number, a0: number) => {
-  const p = (r: number, a: number) => `${(r * Math.cos((a * Math.PI) / 180)).toFixed(2)} ${(r * Math.sin((a * Math.PI) / 180)).toFixed(2)}`;
-  const a1 = a0 + 120;
-  return `M ${p(ro, a0)} A ${ro} ${ro} 0 0 1 ${p(ro, a1)} L ${p(ri, a1)} A ${ri} ${ri} 0 0 0 ${p(ri, a0)} Z`;
+/** Six humps of a handwritten signature; a share draws two of them. */
+const sigHumps = (from: number, to: number) => {
+  let d = '';
+  for (let i = from; i < to; i++) d += `M ${-54 + i * 18} 16 c 5 -18 13 18 18 0 `;
+  return d;
 };
-const TS_RI = 76;
-const TS_RO = 102;
-// centroid of a 120° annular sector: (2/3)(ro³ − ri³)/(ro² − ri²) · sin(60°)/(π/3)
-const TS_CD = ((2 / 3) * (TS_RO ** 3 - TS_RI ** 3)) / (TS_RO ** 2 - TS_RI ** 2) * (Math.sin(Math.PI / 3) / (Math.PI / 3));
+
+const SigEnvelope = ({ part, bright }: { part: number | 'full'; bright?: boolean }) => {
+  const ink = c.muted;
+  const line = { fill: 'none', stroke: ink, strokeWidth: 2.4, strokeLinejoin: 'round' as const };
+  const sig = part === 'full' ? sigHumps(0, 6) : sigHumps(part * 2, part * 2 + 2);
+  return (
+    <g>
+      <rect x={-75} y={-50} width={150} height={100} rx={8} style={{ ...line, fill: bright ? c.claySoft : c.card, transition: `fill 400ms ${EASE_OUT}` }} />
+      <path d="M -75 -50 L 0 4 L 75 -50" style={line} />
+      {part !== 'full' && <path d={sigHumps(0, 6)} style={{ fill: 'none', stroke: c.rule, strokeWidth: 2, strokeDasharray: '3 5' }} />}
+      <path d={sig} style={{ fill: 'none', stroke: c.clayHex, strokeWidth: 3.4, strokeLinecap: 'round' }} />
+    </g>
+  );
+};
 
 const ThresholdSign: Page = () => {
   const proc = useProcess(4, 2200);
   const s = proc.step;
-  const w = TS_CENTER;
+  const w = { x: 230, y: TS_CENTER.y };
+  const target = { x: 540, y: TS_CENTER.y };
   const merged = s >= 4;
   return (
     <Shell n="1.2" eyebrow="Threshold issuance" title="Threshold blind signing" proc={proc}>
       <Canvas>
         {TS_MEMBERS.map((m, i) => {
           const a = Math.atan2(m.y - w.y, TS_MX - w.x);
-          const sx = w.x + (TS_RO + 12) * Math.cos(a);
-          const sy = w.y + (TS_RO + 12) * Math.sin(a);
+          const sx = w.x + 70 * Math.cos(a);
+          const sy = w.y + 70 * Math.sin(a);
           return (
-          <g key={m.label}>
-            <Line x1={sx} y1={sy} x2={TS_MX - 46} y2={m.y} color={c.cool} opacity={s >= 3 ? 0.08 : s >= 1 ? (m.share < 0 && s >= 2 ? 0.15 : 0.5) : 0.12} dash={m.share < 0 && s >= 2 ? '5 7' : undefined} />
-            <Packet x1={sx} y1={sy} x2={TS_MX - 46} y2={m.y} run={proc.anim && s === 1} delay={i * 70} />
-          </g>
+            <g key={m.label}>
+              <Line x1={sx} y1={sy} x2={TS_MX - 46} y2={m.y} color={c.cool} opacity={s >= 3 ? 0.08 : s >= 1 ? (m.share < 0 && s >= 2 ? 0.15 : 0.5) : 0.12} dash={m.share < 0 && s >= 2 ? '5 7' : undefined} />
+              <Packet x1={sx} y1={sy} x2={TS_MX - 46} y2={m.y} run={proc.anim && s === 1} delay={i * 70} />
+            </g>
           );
         })}
         <WalletNode x={w.x} y={w.y} r={60} />
         {TS_MEMBERS.map((m) => (
           <Member key={m.label} x={TS_MX} y={m.y} r={44} label={m.label} tone={s >= 2 ? (m.share < 0 ? 'off' : 'on') : 'idle'} />
         ))}
-        {/* ghost track of the full signature */}
-        <circle
-          cx={TS_CENTER.x}
-          cy={TS_CENTER.y}
-          r={(TS_RI + TS_RO) / 2}
-          style={{ fill: 'none', stroke: c.rule, strokeWidth: TS_RO - TS_RI, opacity: s >= 1 && !merged ? 0.55 : 0, transition: `opacity 500ms ${EASE_OUT}` }}
-        />
-        {TS_MEMBERS.filter((m) => m.share >= 0).map((m) => {
-          const a0 = m.share * 120 - 90;
-          const mid = ((a0 + 60) * Math.PI) / 180;
-          const gap = merged ? 0 : 10;
-          const atWallet = s >= 3;
-          const sc = atWallet ? 1 : 0.62;
-          const cd = TS_CD * sc;
-          const x = atWallet ? TS_CENTER.x + gap * Math.cos(mid) : TS_MX - 120 - cd * Math.cos(mid);
-          const y = atWallet ? TS_CENTER.y + gap * Math.sin(mid) : m.y - cd * Math.sin(mid);
-          const shown = s >= 2;
-          return (
-            <g
-              key={`share${m.label}`}
-              style={{
-                transform: `translate(${x}px, ${y}px) scale(${shown ? sc : sc * 0.9})`,
-                opacity: shown ? 1 : 0,
-                transition: `transform 1100ms ${EASE_IO} ${atWallet && !merged ? m.share * 140 : 0}ms, opacity 450ms ${EASE_OUT} ${shown && !atWallet ? m.share * 120 : 0}ms`,
-              }}
-            >
-              <path
-                d={thirdPath(TS_RI, TS_RO, a0)}
-                style={{
-                  fill: merged ? c.clayHex : c.claySoft,
-                  stroke: c.clayHex,
-                  strokeWidth: 2,
-                  strokeLinejoin: 'round',
-                  transition: `fill 600ms ${EASE_OUT} 300ms`,
-                }}
-              />
-            </g>
-          );
-        })}
-        <GFade show={merged} delay={700}>
-          <text x={TS_CENTER.x} y={TS_CENTER.y + TS_RO + 64} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 36, fill: c.ink }}>
-            one signature
-          </text>
-        </GFade>
         <GFade show={s >= 2}>
           <text x={TS_MX + 70} y={TS_MEMBERS[2].y + 8} style={{ fontFamily: SANS, fontSize: 24, fill: c.dim }}>
             offline
+          </text>
+        </GFade>
+        {TS_MEMBERS.filter((m) => m.share >= 0).map((m) => {
+          const atWallet = s >= 3;
+          const x = atWallet ? target.x + (merged ? 0 : (m.share - 1) * 14) : TS_MX - 170;
+          const y = atWallet ? target.y + (merged ? 0 : (m.share - 1) * 14) : m.y;
+          const sc = atWallet ? 1.2 : 0.72;
+          return (
+            <g
+              key={`env${m.label}`}
+              style={{
+                transform: `translate(${x}px, ${y}px) scale(${s >= 2 ? sc : sc * 0.92})`,
+                opacity: s >= 2 && !merged ? 1 : 0,
+                transition: `transform 1100ms ${EASE_IO} ${atWallet && !merged ? m.share * 140 : 0}ms, opacity 450ms ${EASE_OUT} ${s === 2 ? m.share * 120 : 0}ms`,
+              }}
+            >
+              <SigEnvelope part={m.share} />
+            </g>
+          );
+        })}
+        <g
+          style={{
+            transform: `translate(${target.x}px, ${target.y}px) scale(${merged ? 1.3 : 1.15})`,
+            opacity: merged ? 1 : 0,
+            transition: `transform 600ms ${EASE_OUT} 150ms, opacity 500ms ${EASE_OUT} 150ms`,
+          }}
+        >
+          <SigEnvelope part="full" bright />
+        </g>
+        <GFade show={merged} delay={500}>
+          <text x={target.x} y={target.y + 120} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 36, fill: c.ink }}>
+            one signature
           </text>
         </GFade>
       </Canvas>
@@ -2633,12 +2654,15 @@ const RequestRow = ({ y, label, window, show }: { y: number; label: string; wind
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontFamily: MONO,
-        fontSize: 22,
         transition: `border-color 300ms ${EASE_OUT}`,
       }}
+      title={label}
     >
-      {label}
+      <svg width={56} height={56} viewBox="-28 -28 56 56">
+        <g transform="scale(1.05)">
+          <PersonIcon color={show ? c.clayHex : c.muted} />
+        </g>
+      </svg>
     </div>
     <div style={{ fontFamily: MONO, fontSize: 24, color: show ? c.ink : c.dim, transition: `color 300ms ${EASE_OUT}` }}>
       sign [{window}]
@@ -2704,13 +2728,13 @@ const MixMatch: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          m1 signs A, B
+          First signs A, B
         </StepItem>
         <StepItem n={2} step={s}>
-          m2 signs B, C
+          Second signs B, C
         </StepItem>
         <StepItem n={3} step={s}>
-          m3 signs C, A
+          Third signs C, A
         </StepItem>
         <StepItem n={4} step={s}>
           3 signatures, 2 paid
@@ -3874,8 +3898,13 @@ const Block = ({ i, row, filled, tone = c.node, delay = 0 }: { i: number; row: n
 
 const Journal = ({ row, label, have, extra, extraOn }: { row: number; label: string; have: number; extra?: number; extraOn?: boolean }) => (
   <>
-    <At x={120} y={row - 16} style={{ fontFamily: MONO, fontSize: 24 }}>
-      {label}
+    <At x={120} y={row - 28}>
+      <svg width={56} height={56} viewBox="-28 -28 56 56" aria-label={label}>
+        <circle r={25} style={{ fill: c.card, stroke: c.node, strokeWidth: 1.75 }} />
+        <g transform="scale(0.66)">
+          <PersonIcon color={c.muted} />
+        </g>
+      </svg>
     </At>
     {Array.from({ length: 12 }, (_, i) => {
       const own = i < have;
@@ -3949,7 +3978,7 @@ const Recovery: Page = () => {
               fontSize: 22,
             }}
           >
-            m2 ready: serving and signing
+            ready: serving and signing
           </span>
         </Fade>
         <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>Federations are are inherently robust.</Note>
@@ -5512,7 +5541,10 @@ const LockEnforce: Page = () => {
   const actor = (x: number, y: number, name: string, tone: string, on: boolean) => (
     <g>
       <circle cx={x} cy={y} r={58} style={{ fill: on ? c.coolSoft : c.card, stroke: tone, strokeWidth: 2, transition: `fill 300ms ${EASE_OUT}` }} />
-      <text x={x} y={y + 10} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 32, fill: c.ink }}>
+      <g transform={`translate(${x} ${y + 2}) scale(1.15)`}>
+        <WalletIcon color={tone} />
+      </g>
+      <text x={x} y={y + 98} textAnchor="middle" style={{ fontFamily: SERIF, fontSize: 32, fill: c.ink }}>
         {name}
       </text>
     </g>
