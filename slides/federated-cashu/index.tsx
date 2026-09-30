@@ -1331,33 +1331,66 @@ const WalletIcon = ({ color }: { color: string }) => (
   </g>
 );
 
-const FED_FAULTY = [-1, -1, 2, 4, 0, -1];
+const FED_FAULTY = [-1, -1, -1, -1, -1, 2, 4, 0, -1];
 const FED_CAPTION = [
   'Everyone trusts one operator.',
-  'Five independent members.',
+  'Several independent members.',
+  'Three members.',
+  'Twenty-one members.',
+  'Five members, for this talk.',
   'Any 4 of 5 keep the mint honest.',
   'Any 4 of 5 keep the mint honest.',
   'Any 4 of 5 keep the mint honest.',
   'The wallet talks to every member.',
 ];
+/** Federation size shown at each step: 5, then 3, then 21, then back to 5. */
+const FED_N = [5, 5, 3, 21, 5, 5, 5, 5, 5];
+const FED_MAX = 21;
+const FED_R: Record<number, number> = { 3: 230, 5: 250, 21: 290 };
+
+const fedPairs = (n: number) => {
+  const out: [number, number][] = [];
+  for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) out.push([i, j]);
+  return out;
+};
 
 const Model: Page = () => {
-  const proc = useProcess(5, 2200);
+  const proc = useProcess(8, 2000);
   const s = proc.step;
   const cx = 700;
   const cy = 580;
-  const R = 250;
+  const R = FED_R[5];
   const wallet = { x: 190, y: cy };
   const faulty = FED_FAULTY[s];
-  const quorum = s >= 2 && s <= 4;
+  const quorum = s >= 5 && s <= 7;
+  const n = FED_N[s];
   const pts = [0, 1, 2, 3, 4].map((i) => ring(cx, cy, R, i));
-  const pairs: [number, number][] = [];
-  for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) pairs.push([i, j]);
+  const at = (k: number) => Array.from({ length: k }, (_, i) => ring(cx, cy, FED_R[k], i, k));
+  const mesh = (k: number, show: boolean, dense: boolean) => {
+    const ps = at(k);
+    return (
+      <g style={{ opacity: show ? 1 : 0, transition: `opacity ${show ? 420 : 160}ms ${EASE_OUT} ${show ? 380 : 0}ms` }}>
+        {fedPairs(k).map(([i, j]) => (
+          <line
+            key={`e${k}-${i}-${j}`}
+            x1={ps[i].x}
+            y1={ps[i].y}
+            x2={ps[j].x}
+            y2={ps[j].y}
+            style={{ stroke: c.rule, strokeWidth: dense ? 0.9 : 1.5, opacity: dense ? 0.55 : 1 }}
+          />
+        ))}
+      </g>
+    );
+  };
   return (
     <Shell eyebrow="Setting" title="What is a federation" proc={proc}>
       <Canvas>
-        {pairs.map(([i, j]) => {
+        {mesh(3, n === 3 && s >= 1, false)}
+        {mesh(21, n === 21, true)}
+        {fedPairs(5).map(([i, j]) => {
           const inQ = quorum && i !== faulty && j !== faulty;
+          const show = s >= 1 && n === 5;
           return (
             <line
               key={`e${i}${j}`}
@@ -1368,8 +1401,8 @@ const Model: Page = () => {
               style={{
                 stroke: inQ ? c.clayHex : c.rule,
                 strokeWidth: inQ ? 2.5 : 1.5,
-                opacity: s >= 5 ? 0.3 : s >= 1 ? (quorum && !inQ ? 0.35 : 1) : 0,
-                transition: `opacity 500ms ${EASE_OUT} ${s === 1 ? 500 : 0}ms, stroke 400ms ${EASE_OUT}`,
+                opacity: !show ? 0 : s >= 8 ? 0.3 : quorum && !inQ ? 0.35 : 1,
+                transition: `opacity ${show ? 420 : 160}ms ${EASE_OUT} ${show && (s === 1 || s === 4) ? 380 : 0}ms, stroke 400ms ${EASE_OUT}`,
               }}
             />
           );
@@ -1381,10 +1414,10 @@ const Model: Page = () => {
               y1={wallet.y}
               x2={p.x - 52 * Math.cos(Math.atan2(p.y - wallet.y, p.x - wallet.x))}
               y2={p.y - 52 * Math.sin(Math.atan2(p.y - wallet.y, p.x - wallet.x))}
-              style={{ stroke: c.cool, strokeWidth: 2, opacity: s >= 5 ? 0.5 : 0, transition: `opacity 500ms ${EASE_OUT} ${i * 50}ms` }}
+              style={{ stroke: c.cool, strokeWidth: 2, opacity: s >= 8 ? 0.5 : 0, transition: `opacity 500ms ${EASE_OUT} ${i * 50}ms` }}
             />
-            <Packet x1={wallet.x + 52} y1={wallet.y} x2={p.x} y2={p.y} run={proc.anim && s === 5} delay={300 + i * 60} />
-            <Packet x1={p.x} y1={p.y} x2={wallet.x + 52} y2={wallet.y} run={proc.anim && s === 5} color={c.clayHex} delay={1200 + i * 60} />
+            <Packet x1={wallet.x + 52} y1={wallet.y} x2={p.x} y2={p.y} run={proc.anim && s === 8} delay={300 + i * 60} />
+            <Packet x1={p.x} y1={p.y} x2={wallet.x + 52} y2={wallet.y} run={proc.anim && s === 8} color={c.clayHex} delay={1200 + i * 60} />
           </g>
         ))}
         <g
@@ -1398,39 +1431,50 @@ const Model: Page = () => {
             <PersonIcon color={c.ink} />
           </g>
         </g>
-        {pts.map((p, i) => {
+        {Array.from({ length: FED_MAX }, (_, i) => {
+          const on = s >= 1 && i < n;
+          const p = on ? ring(cx, cy, FED_R[n], i, n) : { x: cx, y: cy };
+          const k = n === 21 ? 0.46 : 1;
           const bad = quorum && i === faulty;
-          const on = quorum && !bad;
+          const lit = quorum && !bad && i < 5;
           return (
             <g
               key={`m${i}`}
               style={{
-                opacity: s >= 1 ? 1 : 0,
-                transform: s >= 1 ? `translate(${p.x}px, ${p.y}px)` : `translate(${cx}px, ${cy}px) scale(0.9)`,
-                transition: `transform 900ms ${EASE_IO} ${i * 50}ms, opacity 400ms ${EASE_OUT} ${i * 50}ms`,
+                opacity: on ? 1 : 0,
+                transform: `translate(${p.x}px, ${p.y}px) scale(${on ? k : 0.3})`,
+                transition: `transform 620ms ${EASE_OUT} ${(i % 21) * 14}ms, opacity ${on ? 300 : 220}ms ${EASE_OUT} ${on ? (i % 21) * 14 : 0}ms`,
               }}
             >
               <circle
                 r={48}
                 style={{
-                  fill: bad ? c.badSoft : on ? c.claySoft : c.card,
-                  stroke: bad ? c.bad : on ? c.clayHex : c.node,
-                  strokeWidth: 2,
+                  fill: bad ? c.badSoft : lit ? c.claySoft : c.card,
+                  stroke: bad ? c.bad : lit ? c.clayHex : c.node,
+                  strokeWidth: n === 21 ? 3 : 2,
                   strokeDasharray: bad ? '5 6' : 'none',
                   transition: `fill 350ms ${EASE_OUT}, stroke 350ms ${EASE_OUT}`,
                 }}
               />
-              <PersonIcon color={bad ? c.bad : on ? c.clayHex : c.muted} />
+              <PersonIcon color={bad ? c.bad : lit ? c.clayHex : c.muted} />
             </g>
           );
         })}
-        <g style={{ opacity: s >= 5 ? 1 : 0, transition: `opacity 450ms ${EASE_OUT}` }}>
+        <g style={{ opacity: s >= 8 ? 1 : 0, transition: `opacity 450ms ${EASE_OUT}` }}>
           <circle cx={wallet.x} cy={wallet.y} r={52} style={{ fill: c.coolSoft, stroke: c.cool, strokeWidth: 2 }} />
           <g transform={`translate(${wallet.x} ${wallet.y})`}>
             <WalletIcon color={c.cool} />
           </g>
         </g>
       </Canvas>
+      <At x={1180} y={540} w={200}>
+        <Fade show={s >= 1 && s <= 4}>
+          <div key={n} style={{ fontFamily: SERIF, fontSize: 96, lineHeight: 1, animation: REDUCED ? 'none' : `fc-in 380ms ${EASE_OUT} both` }}>
+            {n}
+          </div>
+          <Label>members</Label>
+        </Fade>
+      </At>
       <At x={120} y={880} w={1220}>
         <div key={FED_CAPTION[s]} style={{ fontSize: 36, animation: REDUCED ? 'none' : `fc-in 450ms ${EASE_OUT} both` }}>
           {FED_CAPTION[s]}
@@ -1438,18 +1482,27 @@ const Model: Page = () => {
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Split into 5 members
+          Split into members
         </StepItem>
         <StepItem n={2} step={s}>
-          A quorum of 4
+          Three members
         </StepItem>
         <StepItem n={3} step={s}>
-          Another quorum
+          Twenty-one members
         </StepItem>
         <StepItem n={4} step={s}>
-          Any 4 will do
+          Back to five
         </StepItem>
         <StepItem n={5} step={s}>
+          A quorum of 4
+        </StepItem>
+        <StepItem n={6} step={s}>
+          Another quorum
+        </StepItem>
+        <StepItem n={7} step={s}>
+          Any 4 will do
+        </StepItem>
+        <StepItem n={8} step={s}>
           The wallet asks all
         </StepItem>
       </StepList>
@@ -5392,7 +5445,7 @@ const Summary: Page = () => (
       </Row>
     </At>
     <At x={120} y={800} w={1680}>
-      <div style={{ fontSize: 32 }}>Status: not production-ready.</div>
+      <div style={{ fontSize: 32 }}>Status: not production-ready, but it works!</div>
     </At>
   </Shell>
 );
