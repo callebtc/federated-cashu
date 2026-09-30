@@ -1996,7 +1996,7 @@ const Shamir: Page = () => {
   const fB = fan(-0.15);
   const fC = fan(-0.42);
   return (
-    <Shell n="1.2" eyebrow="Threshold issuance" title="Shamir secret sharing, t = 2" proc={proc}>
+    <Shell n="1.2" eyebrow="Threshold issuance" title="Splitting the key: t of n" proc={proc}>
       <Canvas>
         <Line x1={220} y1={900} x2={1250} y2={900} color={c.node} />
         <Line x1={220} y1={900} x2={220} y2={330} color={c.node} />
