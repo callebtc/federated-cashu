@@ -1439,11 +1439,14 @@ const FedParts: Page = () => {
 const Decentralize: Page = () => {
   const on = useEntered();
   return (
-    <div style={{ ...pageStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+    <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
       <Fade show={on}>
         <div style={{ fontFamily: SERIF, fontSize: 150, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-          We'll decentralize later!
+          We'll decentralize later*!
         </div>
+      </Fade>
+      <Fade show={on} delay={400} style={{ marginTop: 48 }}>
+        <div style={{ fontFamily: SERIF, fontSize: 44, color: c.muted }}>* when AI is good enough</div>
       </Fade>
       <Footer />
     </div>
