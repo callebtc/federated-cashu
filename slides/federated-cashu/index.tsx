@@ -1086,7 +1086,6 @@ const Outline = ({ active }: { active?: SectionRef }) => {
         <OutlineRow n="1.3" title="Ordering" state={st(1, 2)} />
         <OutlineRow n="1.4" title="Keys and membership" state={st(1, 3)} />
         <OutlineRow n="1.5" title="Custody" state={st(1, 4)} />
-        <OutlineRow n="1.6" title="Client intent" state={st(1, 5)} />
       </At>
       <At x={OUTLINE_COL[1]} y={258} w={800}>
         <ChapterHead n={2} title="Nutroot" dim={at !== undefined && at.ch !== 2} />
@@ -4786,12 +4785,6 @@ const Summary: Page = () => (
         <Cell w={SW[0]} color={c.muted}>Reserves</Cell>
         <Cell w={SW[1]}>FROST threshold custody</Cell>
       </Row>
-      <Row h={66} i={5}>
-        <Cell w={SW[0]} color={c.muted}>Malleability</Cell>
-        <Cell w={SW[1]}>
-          <Code>SIG_ALL</Code> always on (v3)
-        </Cell>
-      </Row>
     </At>
     <At x={120} y={800} w={1680}>
       <div style={{ fontSize: 32 }}>Status: not production-ready.</div>
@@ -6856,9 +6849,6 @@ export default [
   CustodyQuorum,
   FrostDkg,
   FundingSources,
-  Section6,
-  Rewrite,
-  SigAll,
   Summary,
   Chapter2,
   SectionN1,
