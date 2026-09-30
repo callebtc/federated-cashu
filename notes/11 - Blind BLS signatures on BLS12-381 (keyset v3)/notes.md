@@ -16,6 +16,7 @@
 
 ## Background
 
+- **The envelope icons (for a non-technical audience)**: blinding is putting a paper in an envelope; the mint signs the envelope from the outside without seeing the paper; unblinding is taking the paper out, and the signature is on it. This is the classic picture from Chaum's original description of blind signatures.
 - **BLS12-381**: a "pairing-friendly" elliptic curve, also used in Ethereum's consensus layer and Zcash. It comes with two groups of points, G₁ (48 bytes per compressed point) and G₂ (96 bytes). "BLS" in the curve name refers to Barreto–Lynn–Scott; the signature scheme "BLS" refers to Boneh–Lynn–Shacham. A BLS signature on a message is k·H(message).
 - **Pairing e(·,·)**: a function that takes one point from G₁ and one from G₂ and returns an element of a third group. Its key property: e(a·P, b·Q) = e(P, Q)^(a·b). This lets anyone check that two hidden multipliers match, using only public points.
 - **Why the checks work**: see the next slide.

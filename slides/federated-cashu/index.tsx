@@ -1713,6 +1713,43 @@ const Lanes = () => (
   </>
 );
 
+// Classic ecash picture for blind signing: paper into an envelope, the mint signs the
+// envelope from the outside, the signature shows through on the paper.
+const EcashIcon = ({ kind }: { kind: 'blind' | 'sign' | 'unblind' }) => {
+  const ink = c.muted;
+  const sig = c.clayHex;
+  const stroke = { fill: 'none', stroke: ink, strokeWidth: 2, strokeLinejoin: 'round' as const, strokeLinecap: 'round' as const };
+  const squiggle = 'M 0 0 c 4 -7 7 7 11 0 s 7 -7 11 0 s 6 5 9 -2';
+  return (
+    <svg width={62} height={40} viewBox="0 0 62 40" style={{ display: 'inline-block', verticalAlign: 'middle', marginLeft: 14, opacity: 0.9 }}>
+      {kind === 'blind' && (
+        <g>
+          <rect x={18} y={2} width={26} height={24} rx={2} style={{ ...stroke, fill: c.card }} />
+          <line x1={23} y1={9} x2={39} y2={9} style={stroke} />
+          <line x1={23} y1={14} x2={36} y2={14} style={stroke} />
+          <rect x={8} y={16} width={46} height={22} rx={3} style={{ ...stroke, fill: c.panel }} />
+          <path d="M 8 16 L 31 30 L 54 16" style={stroke} />
+        </g>
+      )}
+      {kind === 'sign' && (
+        <g>
+          <rect x={8} y={8} width={46} height={28} rx={3} style={{ ...stroke, fill: c.panel }} />
+          <path d="M 8 8 L 31 23 L 54 8" style={stroke} />
+          <path d={squiggle} transform="translate(16 30)" style={{ fill: 'none', stroke: sig, strokeWidth: 2.4, strokeLinecap: 'round' }} />
+        </g>
+      )}
+      {kind === 'unblind' && (
+        <g>
+          <rect x={16} y={2} width={30} height={36} rx={2} style={{ ...stroke, fill: c.card }} />
+          <line x1={21} y1={9} x2={41} y2={9} style={stroke} />
+          <line x1={21} y1={15} x2={38} y2={15} style={stroke} />
+          <path d={squiggle} transform="translate(19 29) scale(0.78)" style={{ fill: 'none', stroke: sig, strokeWidth: 2.4, strokeLinecap: 'round' }} />
+        </g>
+      )}
+    </svg>
+  );
+};
+
 const Bdhke: Page = () => {
   const proc = useProcess(7);
   const s = proc.step;
@@ -1769,18 +1806,21 @@ const Bdhke: Page = () => {
         </StepItem>
         <StepItem n={2} step={s}>
           Blind with <M>r</M>
+          <EcashIcon kind="blind" />
         </StepItem>
         <StepItem n={3} step={s}>
           Send <M>B′</M>
         </StepItem>
         <StepItem n={4} step={s}>
           Sign with <M>k</M>
+          <EcashIcon kind="sign" />
         </StepItem>
         <StepItem n={5} step={s}>
           Return <M>C′</M>
         </StepItem>
         <StepItem n={6} step={s}>
           Unblind
+          <EcashIcon kind="unblind" />
         </StepItem>
         <StepItem n={7} step={s}>
           Verifying needs <M>k</M>
@@ -1848,18 +1888,21 @@ const BlsFlow: Page = () => {
         </StepItem>
         <StepItem n={2} step={s}>
           Blind: <M>r·Y</M>
+          <EcashIcon kind="blind" />
         </StepItem>
         <StepItem n={3} step={s}>
           Send <M>B′</M>
         </StepItem>
         <StepItem n={4} step={s}>
           Sign with <M>k</M>
+          <EcashIcon kind="sign" />
         </StepItem>
         <StepItem n={5} step={s}>
           Check with a pairing
         </StepItem>
         <StepItem n={6} step={s}>
           Unblind, verify with <M>K</M>
+          <EcashIcon kind="unblind" />
         </StepItem>
       </StepList>
     </Shell>
@@ -7525,6 +7568,7 @@ export {
   BankIcon,
   PersonIcon,
   WalletIcon,
+  EcashIcon,
 };
 export type {
   StepRegistration,

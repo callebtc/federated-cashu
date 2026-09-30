@@ -18,6 +18,7 @@
 
 ## Background
 
+- **The envelope icons (for a non-technical audience)**: blinding is putting a paper in an envelope; the mint signs the envelope from the outside without seeing the paper; unblinding is taking the paper out, and the signature is on it. This is the classic picture from Chaum's original description of blind signatures.
 - **secp256k1**: the elliptic curve Bitcoin uses. Points on it can be added. Multiplying a point by a whole number (a "scalar") means adding the point to itself that many times. Computing k·G from k is fast; recovering k from k·G is infeasible. This is the discrete logarithm problem.
 - **G**: a fixed, publicly known base point. A public key is K = k·G for a private key k.
 - **hash_to_curve**: a function that turns arbitrary bytes into a curve point, in a way that nobody knows the private key of that point.
