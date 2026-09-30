@@ -6856,7 +6856,6 @@ export default [
   LockEnforce,
   SectionN2,
   TapTags,
-  TapReveal,
   SectionN3,
   PointSecret,
   LeafEncoding,
