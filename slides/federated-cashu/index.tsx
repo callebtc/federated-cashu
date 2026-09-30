@@ -1159,93 +1159,154 @@ const FedRow = ({ k, show, delay = 0, children }: { k: ReactNode; show: boolean;
   </Fade>
 );
 
+const BankIcon = ({ color }: { color: string }) => (
+  <g style={{ fill: 'none', stroke: color, strokeWidth: 4, strokeLinejoin: 'round', strokeLinecap: 'round' }}>
+    <path d="M -70 -28 L 0 -70 L 70 -28 Z" />
+    <line x1={-62} y1={-18} x2={62} y2={-18} />
+    {[-44, -15, 15, 44].map((x) => (
+      <line key={x} x1={x} y1={-8} x2={x} y2={42} />
+    ))}
+    <line x1={-62} y1={52} x2={62} y2={52} />
+    <line x1={-72} y1={66} x2={72} y2={66} />
+  </g>
+);
+
+const PersonIcon = ({ color }: { color: string }) => (
+  <g style={{ fill: color, transition: `fill 300ms ${EASE_OUT}` }}>
+    <circle cx={0} cy={-11} r={10} />
+    <path d="M -19 20 C -19 5 -10 -1 0 -1 C 10 -1 19 5 19 20 Z" />
+  </g>
+);
+
+const WalletIcon = ({ color }: { color: string }) => (
+  <g style={{ fill: 'none', stroke: color, strokeWidth: 3.5, strokeLinejoin: 'round' }}>
+    <rect x={-30} y={-20} width={60} height={42} rx={8} />
+    <path d="M -30 -10 L 16 -30 L 20 -20" />
+    <rect x={10} y={-6} width={22} height={16} rx={5} style={{ fill: c.card }} />
+    <circle cx={18} cy={2} r={2.5} style={{ fill: color, stroke: 'none' }} />
+  </g>
+);
+
+const FED_FAULTY = [-1, -1, 2, 4, 0, -1];
+const FED_CAPTION = [
+  'Everyone trusts one operator.',
+  'Five independent members.',
+  'Any 4 of 5 keep the mint honest.',
+  'Any 4 of 5 keep the mint honest.',
+  'Any 4 of 5 keep the mint honest.',
+  'The wallet talks to every member.',
+];
+
 const Model: Page = () => {
-  const proc = useProcess(2);
+  const proc = useProcess(5, 2200);
   const s = proc.step;
-  const cx = 660;
-  const cy = 590;
-  const w1 = { x: 180, y: 380 };
-  const w2 = { x: 180, y: 800 };
+  const cx = 700;
+  const cy = 580;
+  const R = 250;
+  const wallet = { x: 190, y: cy };
+  const faulty = FED_FAULTY[s];
+  const quorum = s >= 2 && s <= 4;
+  const pts = [0, 1, 2, 3, 4].map((i) => ring(cx, cy, R, i));
   const pairs: [number, number][] = [];
   for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) pairs.push([i, j]);
   return (
     <Shell eyebrow="Setting" title="What is a federation" proc={proc}>
       <Canvas>
         {pairs.map(([i, j]) => {
-          const a = ring(cx, cy, 230, i);
-          const b = ring(cx, cy, 230, j);
+          const inQ = quorum && i !== faulty && j !== faulty;
           return (
-            <GFade key={`e${i}${j}`} show={s >= 1} delay={500}>
-              <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} style={{ stroke: c.rule, strokeWidth: 1.5 }} />
-            </GFade>
+            <line
+              key={`e${i}${j}`}
+              x1={pts[i].x}
+              y1={pts[i].y}
+              x2={pts[j].x}
+              y2={pts[j].y}
+              style={{
+                stroke: inQ ? c.clayHex : c.rule,
+                strokeWidth: inQ ? 2.5 : 1.5,
+                opacity: s >= 5 ? 0.3 : s >= 1 ? (quorum && !inQ ? 0.35 : 1) : 0,
+                transition: `opacity 500ms ${EASE_OUT} ${s === 1 ? 500 : 0}ms, stroke 400ms ${EASE_OUT}`,
+              }}
+            />
           );
         })}
-        {[0, 1, 2, 3, 4].map((i) => {
-          const p = ring(cx, cy, 230, i);
-          return (
-            <g key={`w${i}`}>
-              <GFade show={s >= 2} delay={i * 40}>
-                <line x1={w1.x} y1={w1.y} x2={p.x} y2={p.y} style={{ stroke: c.cool, strokeWidth: 1.5, opacity: 0.45 }} />
-                <line x1={w2.x} y1={w2.y} x2={p.x} y2={p.y} style={{ stroke: c.cool, strokeWidth: 1.5, opacity: 0.45 }} />
-              </GFade>
-              <Packet x1={w1.x} y1={w1.y} x2={p.x} y2={p.y} run={proc.anim && s === 2} delay={300 + i * 50} />
-            </g>
-          );
-        })}
+        {pts.map((p, i) => (
+          <g key={`w${i}`}>
+            <line
+              x1={wallet.x + 52}
+              y1={wallet.y}
+              x2={p.x - 52 * Math.cos(Math.atan2(p.y - wallet.y, p.x - wallet.x))}
+              y2={p.y - 52 * Math.sin(Math.atan2(p.y - wallet.y, p.x - wallet.x))}
+              style={{ stroke: c.cool, strokeWidth: 2, opacity: s >= 5 ? 0.5 : 0, transition: `opacity 500ms ${EASE_OUT} ${i * 50}ms` }}
+            />
+            <Packet x1={wallet.x + 52} y1={wallet.y} x2={p.x} y2={p.y} run={proc.anim && s === 5} delay={300 + i * 60} />
+            <Packet x1={p.x} y1={p.y} x2={wallet.x + 52} y2={wallet.y} run={proc.anim && s === 5} color={c.clayHex} delay={1200 + i * 60} />
+          </g>
+        ))}
         <g
           style={{
             opacity: s >= 1 ? 0 : 1,
-            transform: s >= 1 ? 'scale(0.96)' : 'scale(1)',
-            transformOrigin: `${cx}px ${cy}px`,
-            transition: `opacity 400ms ${EASE_OUT}, transform 400ms ${EASE_OUT}`,
+            transform: `translate(${cx}px, ${cy - 10}px) scale(${s >= 1 ? 0.9 : 1})`,
+            transition: `opacity 450ms ${EASE_OUT}, transform 450ms ${EASE_OUT}`,
           }}
         >
-          <rect x={cx - 140} y={cy - 80} width={280} height={160} rx={14} style={{ fill: c.card, stroke: c.node, strokeWidth: 1.75 }} />
-          <T x={cx} y={cy - 14} size={30}>
-            mint
-          </T>
-          <T x={cx} y={cy + 34} size={24} color={c.muted}>
-            one key, one operator
-          </T>
+          <BankIcon color={c.ink} />
         </g>
-        {[0, 1, 2, 3, 4].map((i) => {
-          const p = ring(cx, cy, 230, i);
+        {pts.map((p, i) => {
+          const bad = quorum && i === faulty;
+          const on = quorum && !bad;
           return (
             <g
               key={`m${i}`}
               style={{
                 opacity: s >= 1 ? 1 : 0,
-                transform: s >= 1 ? `translate(${p.x - cx}px, ${p.y - cy}px)` : 'translate(0px, 0px) scale(0.96)',
-                transformOrigin: `${cx}px ${cy}px`,
-                transition: `transform 800ms ${EASE_IO} ${i * 40}ms, opacity 400ms ${EASE_OUT} ${i * 40}ms`,
+                transform: s >= 1 ? `translate(${p.x}px, ${p.y}px)` : `translate(${cx}px, ${cy}px) scale(0.9)`,
+                transition: `transform 900ms ${EASE_IO} ${i * 50}ms, opacity 400ms ${EASE_OUT} ${i * 50}ms`,
               }}
             >
-              <Member x={cx} y={cy} r={46} label={`m${i + 1}`} />
+              <circle
+                r={48}
+                style={{
+                  fill: bad ? c.badSoft : on ? c.claySoft : c.card,
+                  stroke: bad ? c.bad : on ? c.clayHex : c.node,
+                  strokeWidth: 2,
+                  strokeDasharray: bad ? '5 6' : 'none',
+                  transition: `fill 350ms ${EASE_OUT}, stroke 350ms ${EASE_OUT}`,
+                }}
+              />
+              <PersonIcon color={bad ? c.bad : on ? c.clayHex : c.muted} />
             </g>
           );
         })}
-        <GFade show={s >= 2}>
-          <WalletNode x={w1.x} y={w1.y} r={46} />
-          <WalletNode x={w2.x} y={w2.y} r={46} />
-        </GFade>
+        <g style={{ opacity: s >= 5 ? 1 : 0, transition: `opacity 450ms ${EASE_OUT}` }}>
+          <circle cx={wallet.x} cy={wallet.y} r={52} style={{ fill: c.coolSoft, stroke: c.cool, strokeWidth: 2 }} />
+          <g transform={`translate(${wallet.x} ${wallet.y})`}>
+            <WalletIcon color={c.cool} />
+          </g>
+        </g>
       </Canvas>
-      <At x={1180} y={300} w={640}>
-        <FedRow k={<M size={40}>n</M>} show={s >= 1}>
-          members instead of one mint
-        </FedRow>
-        <FedRow k={<M size={40}>t</M>} show={s >= 1} delay={60}>
-          members sign each token
-        </FedRow>
-        <FedRow k={<M size={40}>c = n − f</M>} show={s >= 1} delay={120}>
-          order every operation
-        </FedRow>
-        <FedRow k={<M size={40}>f = ⌊(n − 1)/3⌋</M>} show={s >= 1} delay={180}>
-          may fail or lie
-        </FedRow>
-        <FedRow k={<span style={{ fontSize: 30, color: c.cool }}>wallets</span>} show={s >= 2}>
-          talk to every member
-        </FedRow>
+      <At x={120} y={880} w={1220}>
+        <div key={FED_CAPTION[s]} style={{ fontSize: 36, animation: REDUCED ? 'none' : `fc-in 450ms ${EASE_OUT} both` }}>
+          {FED_CAPTION[s]}
+        </div>
       </At>
+      <StepList>
+        <StepItem n={1} step={s}>
+          Split into 5 members
+        </StepItem>
+        <StepItem n={2} step={s}>
+          A quorum of 4
+        </StepItem>
+        <StepItem n={3} step={s}>
+          Another quorum
+        </StepItem>
+        <StepItem n={4} step={s}>
+          Any 4 will do
+        </StepItem>
+        <StepItem n={5} step={s}>
+          The wallet asks all
+        </StepItem>
+      </StepList>
     </Shell>
   );
 };
@@ -1479,9 +1540,7 @@ const WhyDkg: Page = () => {
         <Label color={c.clayHex}>Question</Label>
       </Fade>
       <Fade show={on} delay={60}>
-        <div style={{ fontFamily: SERIF, fontSize: 96, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.15, margin: '28px 0 0', maxWidth: 1560 }}>
-          How do we generate keyshares without any one member ever knowing the aggregate key?
-        </div>
+        <div style={{ fontFamily: SERIF, fontSize: 96, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.15, margin: '28px 0 0', maxWidth: 1560 }}>How to generate key shares without any one member ever knowing the aggregate key?</div>
       </Fade>
       <Footer />
     </div>
@@ -1499,11 +1558,9 @@ const Paper: Page = () => (
     <div style={{ fontFamily: SERIF, fontSize: 36, marginTop: 48, display: 'flex', gap: 80 }}>
       <span>Calle</span>
       <span>Sol</span>
-      <span>Astra</span>
     </div>
-    <div style={{ fontSize: 24, color: c.muted, marginTop: 10, display: 'flex', gap: 80 }}>
+    <div style={{ fontSize: 24, color: c.muted, marginTop: 10, display: 'flex', gap: 80, minWidth: '0px', minHeight: '0px', maxWidth: 'none', maxHeight: 'none', flexShrink: '0', flexGrow: '0', flexBasis: 'auto', width: '211.5px', height: '36px', translate: '6.17px 0px' }}>
       <span>Cashu</span>
-      <span>OpenAI</span>
       <span>OpenAI</span>
     </div>
     <div style={{ fontFamily: SERIF, fontSize: 30, fontWeight: 600, marginTop: 64 }}>Abstract</div>
@@ -1604,8 +1661,8 @@ const Built: Page = () => {
       </At>
       <At x={120} y={935} w={1680}>
         <div style={{ fontSize: 30, color: c.muted }}>
-          Agents: <span style={{ color: ACCENT }}>Sol</span> and <span style={{ color: ACCENT }}>Astra</span> (OpenAI),{' '}
-          <span style={{ color: ACCENT }}>Opus</span> (Anthropic)
+          {'Agents: GPT-5.5/5.6 '}<span style={{ color: ACCENT }}>Sol</span>{' (OpenAI'}<span style={{ color: ACCENT }}>{''}</span>{''}{''}
+          <span style={{ color: ACCENT }}>{''}</span>)
         </div>
       </At>
     </Shell>
@@ -7211,11 +7268,10 @@ export default [
   OutlineAll,
   Chapter1,
   Thanks,
-  Paper,
   Decentralize,
+  Paper,
   Built,
   Model,
-  FedParts,
   Section1,
   Bdhke,
   BlsFlow,
@@ -7235,6 +7291,7 @@ export default [
   DkgRounds,
   Recovery,
   Section5,
+  FedParts,
   CustodyQuorum,
   FrostDkg,
   FundingSources,
@@ -7465,6 +7522,9 @@ export {
   FundingSources,
   WireKeys,
   SecretToken,
+  BankIcon,
+  PersonIcon,
+  WalletIcon,
 };
 export type {
   StepRegistration,

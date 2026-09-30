@@ -2,24 +2,29 @@
 
 Original slide, deck `fcv-a-bls` page 2 (main deck slide 08). Same text as `notes/08 - What is a federation/notes.md`.
 
-Setting · 2 steps · script 104 words, about 45 s
+Setting · 5 steps · script 94 words, about 40 s
 
 ## Script
 
-A Cashu mint today is one operator with one key and custody of the reserves.
+A Cashu mint today is one operator. Everyone trusts that one operator with the keys and the funds.
 
-**[1]** A federation replaces the single mint with n members. t of them must sign each token. The members agree on every operation through consensus, and c of them are needed for that. This changes the security assumption. A Byzantine fault tolerant system keeps working correctly as long as at most f members fail or lie, where f is n minus one, divided by three, rounded down. Put differently: more than two thirds of the members must be honest.
+**[1]** A federation splits it into several independent members, here five.
 
-**[2]** Wallets talk to every member directly and combine the responses themselves.
+**[2]** The members only act together. Any four of the five are enough to keep the mint honest: one member can fail or lie, and the rest still agree on what is correct.
+
+**[3]** It does not matter which one is missing.
+
+**[4]** Any four will do.
+
+**[5]** A wallet talks to every member directly and combines their answers itself. It never needs to trust a single one of them.
 
 ## Background
 
-- **Roster**: the fixed list of members, with their URLs and identity keys, agreed at setup.
-- **Threshold (t-of-n)**: any t of the n members can complete an action; t − 1 or fewer cannot.
-- **Byzantine fault tolerance (BFT)**: a system stays correct even if some participants crash or behave arbitrarily, including lying. With n members, up to f = ⌊(n − 1)/3⌋ faulty members can be tolerated; c = n − f must agree. Examples: n = 4 gives f = 1, c = 3; n = 5 gives f = 1, c = 4; n = 7 gives f = 2, c = 5.
-- **⌊x⌋ (floor)**: round down to the nearest integer.
-- **Consensus**: a protocol by which all honest members agree on the same ordered list of operations. The federation uses AlephBFT, a Rust library for asynchronous BFT consensus.
+- **Byzantine fault tolerance (BFT)**: the system stays correct while up to f members crash or behave arbitrarily. With n members, f = ⌊(n − 1)/3⌋; for five members that is one, so four must agree.
+- **Quorum**: the set of members that must agree before the mint changes state. Any quorum of four works; which member is missing does not matter.
+- **Signing threshold**: separately, t members must sign each token; t is at most the quorum size.
+- **Wallet fan-out**: the wallet sends the same request to all members and combines the responses; members also talk to each other to agree on the order of operations.
 
 ## Speaker note
 
-- Your outline says the system "survives as long as the majority remains honest". The BFT bound is stronger: more than two thirds must be honest (n ≥ 3f + 1). The script uses the two-thirds statement.
+- More than two thirds of the members must be honest, not just a majority. The slide shows that with 4 of 5.
