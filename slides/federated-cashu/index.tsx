@@ -4088,6 +4088,111 @@ const FrostDkg: Page = () => {
   );
 };
 
+const FUND_KEY = { x: 330, y: 575 };
+const FUND_ROWS = [
+  { y: 360, title: 'BDK', sub: 'on-chain wallet', status: 'implemented' },
+  { y: 575, title: 'Bark', sub: 'Lightning', status: 'implemented' },
+  { y: 790, title: '…', sub: 'other Schnorr backends', status: 'possible' },
+];
+
+const FundCard = ({ y, title, sub, status, show }: { y: number; title: string; sub: string; status: string; show: boolean }) => {
+  const live = status === 'implemented';
+  return (
+    <Fade show={show} style={{ position: 'absolute', left: 640, top: y - 70, width: 690 }}>
+      <div
+        style={{
+          height: 140,
+          boxSizing: 'border-box',
+          border: `1.75px ${live ? 'solid' : 'dashed'} ${live ? c.cool : c.node}`,
+          background: live ? c.coolSoft : c.card,
+          borderRadius: 'var(--osd-radius)',
+          padding: '0 32px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 28,
+        }}
+      >
+        <span style={{ fontFamily: SERIF, fontSize: 52, width: 130, color: live ? c.ink : c.muted }}>{title}</span>
+        <span style={{ fontSize: 30, color: live ? c.ink : c.muted, flex: 1, lineHeight: 1.25 }}>{sub}</span>
+        <span
+          style={{
+            fontSize: 20,
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            color: live ? c.good : c.dim,
+            border: `1.5px solid ${live ? c.good : c.rule}`,
+            background: live ? c.goodSoft : 'transparent',
+            borderRadius: 999,
+            padding: '4px 14px',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {status}
+        </span>
+      </div>
+    </Fade>
+  );
+};
+
+const FundingSources: Page = () => {
+  const proc = useProcess(4, 2000);
+  const s = proc.step;
+  return (
+    <Shell n="1.5" eyebrow="Custody" title="Anything that can be FROSTed" proc={proc}>
+      <Canvas>
+        {FUND_ROWS.map((r, i) => (
+          <g key={r.y}>
+            <Draw
+              x1={FUND_KEY.x + 92}
+              y1={FUND_KEY.y}
+              x2={636}
+              y2={r.y}
+              show={s >= i + 2}
+              color={i < 2 ? c.cool : c.node}
+              width={2}
+            />
+            <Packet x1={FUND_KEY.x + 92} y1={FUND_KEY.y} x2={636} y2={r.y} run={proc.anim && s === i + 2} color={c.cool} delay={200} />
+          </g>
+        ))}
+        <circle
+          cx={FUND_KEY.x}
+          cy={FUND_KEY.y}
+          r={90}
+          style={{ fill: s >= 1 ? c.claySoft : c.card, stroke: s >= 1 ? c.clayHex : c.node, strokeWidth: 2, transition: `fill 300ms ${EASE_OUT}, stroke 300ms ${EASE_OUT}` }}
+        />
+        <text x={FUND_KEY.x} y={FUND_KEY.y - 4} textAnchor="middle" style={{ fontFamily: MATH, fontStyle: 'italic', fontSize: 56, fill: c.ink }}>
+          P
+        </text>
+        <text x={FUND_KEY.x} y={FUND_KEY.y + 38} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 24, fill: c.muted }}>
+          FROST key
+        </text>
+        <GFade show={s >= 1}>
+          <text x={FUND_KEY.x} y={FUND_KEY.y + 140} textAnchor="middle" style={{ fontFamily: SANS, fontSize: 28, fill: c.clayHex }}>
+            t of n sign
+          </text>
+        </GFade>
+      </Canvas>
+      {FUND_ROWS.map((r, i) => (
+        <FundCard key={r.y} y={r.y} title={r.title} sub={r.sub} status={r.status} show={s >= i + 2} />
+      ))}
+      <StepList>
+        <StepItem n={1} step={s}>
+          One FROST key
+        </StepItem>
+        <StepItem n={2} step={s}>
+          BDK: on-chain
+        </StepItem>
+        <StepItem n={3} step={s}>
+          Bark: Lightning
+        </StepItem>
+        <StepItem n={4} step={s}>
+          Any Schnorr backend
+        </StepItem>
+      </StepList>
+    </Shell>
+  );
+};
+
 const ShareBadge = ({ x, y, label, tone, soft, show, delay }: { x: number; y: number; label: ReactNode; tone: string; soft: string; show: boolean; delay: number }) => (
   <div
     style={{
@@ -6750,6 +6855,7 @@ export default [
   Section5,
   CustodyQuorum,
   FrostDkg,
+  FundingSources,
   Section6,
   Rewrite,
   SigAll,
@@ -6977,6 +7083,8 @@ export {
   TrMiniTree,
   TapTags,
   TapReveal,
+  FundCard,
+  FundingSources,
 };
 export type {
   StepRegistration,
