@@ -998,7 +998,7 @@ const Cover: Page = () => (
       >
         Federated Cashu
       </h1>
-      <div style={{ fontSize: 40, color: c.muted, lineHeight: 1.4 }}>Federations and nutroot</div>
+      <div style={{ fontSize: 40, color: c.muted, lineHeight: 1.4 }}>Federations and nutroot scripts</div>
       <div style={{ fontFamily: MONO, fontSize: 26, color: c.dim, marginTop: 64 }}>calle · github.com/cashubtc/cdk</div>
     </div>
   </div>
@@ -1460,6 +1460,23 @@ const WhyFederation: Page = () => {
       <Fade show={on} delay={60}>
         <div style={{ fontFamily: SERIF, fontSize: 130, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.1, margin: '28px 0 0', maxWidth: 1500 }}>
           Why do we need a federation at all?
+        </div>
+      </Fade>
+      <Footer />
+    </div>
+  );
+};
+
+const WhyDkg: Page = () => {
+  const on = useEntered();
+  return (
+    <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
+      <Fade show={on}>
+        <Label color={c.clayHex}>Question</Label>
+      </Fade>
+      <Fade show={on} delay={60}>
+        <div style={{ fontFamily: SERIF, fontSize: 96, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.15, margin: '28px 0 0', maxWidth: 1560 }}>
+          How do we generate keyshares without any one member ever knowing the aggregate key?
         </div>
       </Fade>
       <Footer />
@@ -6884,8 +6901,8 @@ export default [
   OutlineAll,
   Chapter1,
   Thanks,
-  Decentralize,
   Paper,
+  Decentralize,
   Built,
   Model,
   FedParts,
@@ -6902,6 +6919,7 @@ export default [
   Consensus,
   Swap,
   Section4,
+  WhyDkg,
   Dkg,
   DkgOverview,
   DkgRounds,
