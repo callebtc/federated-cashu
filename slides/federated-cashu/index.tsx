@@ -2135,6 +2135,17 @@ const Multisig: Page = () => (
 // 02 · Threshold issuance
 // ═════════════════════════════════════════════════════════════════════════════
 
+const ShareMember = ({ x, y, show, tone, delay = 0 }: { x: number; y: number; show: boolean; tone: string; delay?: number }) => (
+  <GFade show={show} delay={delay}>
+    <g transform={`translate(${x} ${y + 50})`}>
+      <circle r={22} style={{ fill: c.card, stroke: tone, strokeWidth: 1.75 }} />
+      <g transform="scale(0.62)">
+        <PersonIcon color={tone} />
+      </g>
+    </g>
+  </GFade>
+);
+
 const Shamir: Page = () => {
   const proc = useProcess(4);
   const s = proc.step;
@@ -2175,6 +2186,7 @@ const Shamir: Page = () => {
         </T>
         <g style={{ opacity: s === 3 ? 0.15 : 1, transition: `opacity 500ms ${EASE_OUT}` }}>
           <Dot x={X(1)} y={Y(f(1))} color={s >= 4 ? c.clayHex : c.cool} ring={s >= 4} show={s >= 2} />
+          <ShareMember x={X(1)} y={Y(f(1))} show={s >= 2} tone={s >= 4 ? c.clayHex : c.cool} />
           <T x={X(1)} y={Y(f(1)) - 30} size={32} font="math" show={s >= 2}>
             k₁
           </T>
@@ -2184,11 +2196,13 @@ const Shamir: Page = () => {
         </g>
         <g style={{ opacity: s >= 3 ? 0.15 : 1, transition: `opacity 500ms ${EASE_OUT}` }}>
           <Dot x={X(3)} y={Y(f(3))} color={c.cool} show={s >= 2} delay={100} />
+          <ShareMember x={X(3)} y={Y(f(3))} show={s >= 2} tone={c.cool} delay={100} />
           <T x={X(3)} y={Y(f(3)) - 30} size={32} font="math" show={s >= 2} delay={100}>
             k₃
           </T>
         </g>
         <Dot x={X(2)} y={Y(f(2))} color={s >= 4 ? c.clayHex : c.cool} ring={s >= 4} show={s >= 2} delay={50} />
+        <ShareMember x={X(2)} y={Y(f(2))} show={s >= 2} tone={s >= 4 ? c.clayHex : c.cool} delay={50} />
         <T x={X(2)} y={Y(f(2)) - 30} size={32} font="math" show={s >= 2} delay={50}>
           k₂
         </T>
@@ -7577,6 +7591,7 @@ export {
   PersonIcon,
   WalletIcon,
   EcashIcon,
+  ShareMember,
 };
 export type {
   StepRegistration,
