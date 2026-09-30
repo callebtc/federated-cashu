@@ -3940,8 +3940,14 @@ const Block = ({ i, row, filled, tone = c.node, delay = 0 }: { i: number; row: n
       height: 44,
       borderRadius: 6,
       boxSizing: 'border-box',
-      border: `1.5px solid ${filled ? tone : c.rule}`,
-      background: filled ? (tone === c.clayHex ? c.claySoft : c.panel) : c.card,
+      border: `1.5px ${filled ? 'solid' : 'dashed'} ${filled ? tone : c.line}`,
+      background: filled
+        ? tone === c.clayHex
+          ? 'rgba(217, 119, 87, 0.28)'
+          : tone === c.good
+            ? 'rgba(95, 130, 56, 0.22)'
+            : '#e4e0d4'
+        : 'transparent',
       transform: filled || REDUCED ? 'scale(1)' : 'scale(0.96)',
       transition: `background 300ms ${EASE_OUT} ${filled ? delay : 0}ms, border-color 300ms ${EASE_OUT} ${filled ? delay : 0}ms, transform 300ms ${EASE_OUT} ${filled ? delay : 0}ms`,
     }}
@@ -3975,49 +3981,106 @@ const Journal = ({ row, label, have, extra, extraOn }: { row: number; label: str
   </>
 );
 
+const REC_SLOTS = 13;
+
+const RecMember = ({ y, state }: { y: number; state: 'idle' | 'ok' | 'down' | 'back' }) => {
+  const tone = state === 'down' ? c.bad : state === 'ok' ? c.good : c.node;
+  return (
+    <At x={120} y={y - 30}>
+      <svg width={60} height={60} viewBox="-30 -30 60 60">
+        <circle
+          r={27}
+          style={{
+            fill: state === 'down' ? c.badSoft : c.card,
+            stroke: tone,
+            strokeWidth: 2,
+            strokeDasharray: state === 'down' ? '5 5' : 'none',
+            transition: `stroke 300ms ${EASE_OUT}, fill 300ms ${EASE_OUT}`,
+          }}
+        />
+        <g transform="scale(0.7)">
+          <PersonIcon color={state === 'down' ? c.bad : c.muted} />
+        </g>
+      </svg>
+    </At>
+  );
+};
+
 const Recovery: Page = () => {
-  const proc = useProcess(5);
+  const proc = useProcess(5, 2600);
   const s = proc.step;
   const rows = [380, 520, 660];
-  const digestX = JOURNAL_X + 12 * 58 + 30;
-  const ax = JOURNAL_X + 9 * 58;
+  const bx = (i: number) => JOURNAL_X + i * 58;
+  // When does slot i fill in row r, and with which colour?
+  const fill = (r: number, i: number): { on: boolean; delay: number; tone: string } => {
+    if (i <= 5) return { on: s >= 1, delay: s === 1 ? i * 110 : 0, tone: c.node };
+    if (i <= 9) {
+      if (r !== 1) return { on: s >= 2, delay: s === 2 ? 300 + (i - 6) * 220 : 0, tone: c.node };
+      return { on: s >= 4, delay: s === 4 ? 700 + (i - 6) * 300 : 0, tone: c.clayHex };
+    }
+    if (i === 10) return { on: s >= 5, delay: s === 5 ? 500 : 0, tone: r === 1 ? c.good : c.node };
+    return { on: false, delay: 0, tone: c.node };
+  };
+  const m2: 'idle' | 'ok' | 'down' | 'back' = s === 2 ? 'down' : s === 3 || s === 4 ? 'back' : s >= 5 ? 'ok' : 'idle';
+  const status = [
+    s >= 1 ? 'in sync' : '',
+    ['', 'in sync', 'offline', 'restarted', 'catching up', 'in sync'][s],
+    s >= 1 ? 'in sync' : '',
+  ];
+  const statusTone = (r: number) => (r === 1 && s === 2 ? c.bad : r === 1 && (s === 3 || s === 4) ? c.clayHex : c.good);
   return (
     <Shell n="1.4" eyebrow="Keys and membership" title="Restart, restore and catch-up" proc={proc}>
-      <Journal row={rows[0]} label="m1" have={12} />
-      <Journal row={rows[1]} label="m2" have={s >= 1 ? 6 : 0} extra={6} extraOn={s >= 3} />
-      <Journal row={rows[2]} label="m3" have={12} />
-      <At x={JOURNAL_X + 6 * 58 - 60} y={rows[1] - 62} w={200}>
-        <Fade show={s >= 1}>
-          <span style={{ fontSize: 20, color: c.muted }}>checkpoint</span>
+      {rows.map((y, r) => (
+        <div key={`row${r}`}>
+          {r === 1 ? <RecMember y={y} state={m2} /> : <RecMember y={y} state={s >= 1 ? 'ok' : 'idle'} />}
+          {Array.from({ length: REC_SLOTS }, (_, i) => {
+            const f = fill(r, i);
+            return <Block key={i} i={i} row={y} filled={f.on} tone={f.tone} delay={f.delay} />;
+          })}
+          <At x={bx(REC_SLOTS) + 16} y={y - 16} w={200}>
+            <span key={`${r}-${status[r]}`} style={{ fontSize: 24, color: statusTone(r), animation: REDUCED ? 'none' : `fc-in 400ms ${EASE_OUT} both` }}>
+              {status[r]}
+            </span>
+          </At>
+        </div>
+      ))}
+      {/* m2's row fades while it is down */}
+      <div
+        style={{
+          position: 'absolute',
+          left: JOURNAL_X - 6,
+          top: rows[1] - 28,
+          width: REC_SLOTS * 58 + 2,
+          height: 56,
+          borderRadius: 8,
+          background: c.badSoft,
+          opacity: s === 2 ? 0.6 : 0,
+          transition: `opacity 400ms ${EASE_OUT}`,
+          pointerEvents: 'none',
+        }}
+      />
+      <At x={bx(6) - 70} y={rows[1] - 64} w={200}>
+        <Fade show={s >= 3}>
+          <span style={{ fontSize: 21, color: c.muted }}>checkpoint</span>
         </Fade>
       </At>
       <Canvas>
-        <GFade show={s >= 1}>
-          <line
-            x1={JOURNAL_X + 6 * 58 - 5}
-            y1={rows[1] - 32}
-            x2={JOURNAL_X + 6 * 58 - 5}
-            y2={rows[1] + 32}
-            style={{ stroke: c.ink, strokeWidth: 2 }}
-          />
+        <GFade show={s >= 3}>
+          <line x1={bx(6) - 5} y1={rows[1] - 32} x2={bx(6) - 5} y2={rows[1] + 32} style={{ stroke: c.ink, strokeWidth: 2 }} />
         </GFade>
-        <Arrow x1={ax} y1={rows[0] + 26} x2={ax} y2={rows[1] - 28} show={s >= 2} color={c.clayHex} />
-        <Arrow x1={ax} y1={rows[2] - 26} x2={ax} y2={rows[1] + 28} show={s >= 2} color={c.clayHex} />
-        <Packet x1={ax} y1={rows[0] + 26} x2={ax} y2={rows[1] - 28} run={proc.anim && s === 2} color={c.clayHex} />
-        <Packet x1={ax} y1={rows[2] - 26} x2={ax} y2={rows[1] + 28} run={proc.anim && s === 2} color={c.clayHex} delay={100} />
+        {[6, 7, 8, 9].map((i) => {
+          const fromTop = i % 2 === 0;
+          const x = bx(i) + 24;
+          const y1 = fromTop ? rows[0] + 24 : rows[2] - 24;
+          const y2 = fromTop ? rows[1] - 24 : rows[1] + 24;
+          return (
+            <g key={`p${i}`}>
+              <Packet x1={x} y1={y1} x2={x} y2={y2} run={proc.anim && s === 4} color={c.clayHex} delay={250 + (i - 6) * 300} dur={600} />
+            </g>
+          );
+        })}
       </Canvas>
-      <At x={digestX} y={rows[0] - 14} style={{ fontFamily: MONO, fontSize: 20, color: c.muted }}>
-        state 9f3a…
-      </At>
-      <At x={digestX} y={rows[1] - 14} style={{ fontFamily: MONO, fontSize: 20 }}>
-        <Fade show={s >= 4}>
-          <span style={{ color: c.good }}>state 9f3a… ✓</span>
-        </Fade>
-      </At>
-      <At x={digestX} y={rows[2] - 14} style={{ fontFamily: MONO, fontSize: 20, color: c.muted }}>
-        state 9f3a…
-      </At>
-      <At x={120} y={740} w={1180}>
+      <At x={120} y={760} w={1180}>
         <Fade show={s >= 5}>
           <span
             style={{
@@ -4027,29 +4090,29 @@ const Recovery: Page = () => {
               color: c.good,
               borderRadius: 999,
               padding: '6px 20px',
-              fontSize: 22,
+              fontSize: 24,
             }}
           >
             ready: serving and signing
           </span>
+          <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>Federations are are inherently robust.</Note>
         </Fade>
-        <Note style={{ marginTop: 30, fontSize: 32, color: c.ink }}>Federations are are inherently robust.</Note>
       </At>
       <StepList>
         <StepItem n={1} step={s}>
-          Restore a checkpoint
+          All three in sync
         </StepItem>
         <StepItem n={2} step={s}>
-          Fetch the missing log
+          One member fails
         </StepItem>
         <StepItem n={3} step={s}>
-          Replay it
+          Restart from a checkpoint
         </StepItem>
         <StepItem n={4} step={s}>
-          Match the signed checkpoint
+          Fetch the missing blocks
         </StepItem>
         <StepItem n={5} step={s}>
-          Ready: sign again
+          In sync again
         </StepItem>
       </StepList>
     </Shell>
@@ -7790,6 +7853,7 @@ export {
   ShareMember,
   TxChip,
   SwapTx,
+  RecMember,
 };
 export type {
   StepRegistration,
