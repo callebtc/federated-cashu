@@ -1436,6 +1436,20 @@ const FedParts: Page = () => {
   );
 };
 
+const Decentralize: Page = () => {
+  const on = useEntered();
+  return (
+    <div style={{ ...pageStyle, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+      <Fade show={on}>
+        <div style={{ fontFamily: SERIF, fontSize: 150, fontWeight: 500, letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+          We'll decentralize later!
+        </div>
+      </Fade>
+      <Footer />
+    </div>
+  );
+};
+
 const Paper: Page = () => (
   <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
     <div style={{ marginTop: 40 }}>
@@ -6824,6 +6838,7 @@ export default [
   OutlineAll,
   Chapter1,
   Thanks,
+  Decentralize,
   Paper,
   Built,
   Model,
@@ -6832,7 +6847,6 @@ export default [
   Bdhke,
   BlsFlow,
   Pairing,
-  Multisig,
   Section2,
   Shamir,
   ThresholdSign,
