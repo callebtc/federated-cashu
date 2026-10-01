@@ -7868,7 +7868,6 @@ export default [
   SectionN3,
   PointSecret,
   WireKeys,
-  LeafEncoding,
   NutrootTree,
   Takeaways,
   End,
