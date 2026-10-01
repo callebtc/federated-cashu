@@ -25,6 +25,14 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - name: SPA fallback and root redirect to deck
+        run: |
+          cp dist/index.html dist/404.html
+          cat > dist/index.html <<'EOF'
+          <!doctype html>
+          <meta http-equiv="refresh" content="0; url=s/federated-cashu">
+          <script>location.replace('s/federated-cashu')</script>
+          EOF
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
