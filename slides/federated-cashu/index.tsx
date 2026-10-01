@@ -287,6 +287,7 @@ const Heading = ({ children }: { children: ReactNode }) => (
       margin: '14px 0 0',
     }}
   >
+    {/* @slide-comment id="c-8ef1bb56" ts="2026-10-01T08:56:59.012Z" text="eyJub3RlIjoiY2hhbmdlIHRvIFwiU2NyaXB0cyBpbiBhIE1lcmtsZSB0cmVlXCIifQ" */}
     {children}
   </h2>
 );
@@ -7866,7 +7867,6 @@ export default [
   SectionN2,
   TapTags,
   SectionN3,
-  PointSecret,
   WireKeys,
   NutrootTree,
   Takeaways,
