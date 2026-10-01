@@ -7660,6 +7660,46 @@ const Comparison: Page = () => (
   </Shell>
 );
 
+const TAKEAWAYS: ReactNode[] = [
+  <>BLS: publicly verifiable, blind, threshold signatures.</>,
+  <>AI federated Cashu.</>,
+  <>Any FROST treasury: on-chain, (b)ark, taproot channels?</>,
+  <>Taproot is incredibly cool.</>,
+  <>Nutroot is the future.</>,
+];
+
+const Takeaways: Page = () => {
+  const proc = useProcess(5, 1800);
+  const s = proc.step;
+  return (
+    <Shell eyebrow="Closing" title="Observations" proc={proc}>
+      {TAKEAWAYS.map((t, i) => {
+        const on = s >= i + 1;
+        const last = i === TAKEAWAYS.length - 1;
+        return (
+          <div
+            key={i}
+            style={{
+              position: 'absolute',
+              left: 120,
+              top: 300 + i * 118,
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: 40,
+              opacity: on ? (s === i + 1 || last ? 1 : 0.55) : 0,
+              transform: on || REDUCED ? 'translateX(0px)' : 'translateX(-24px)',
+              transition: `opacity 450ms ${EASE_OUT}, transform 600ms ${EASE_OUT}`,
+            }}
+          >
+            <span style={{ fontFamily: MONO, fontSize: 28, color: c.clayHex, width: 40 }}>{i + 1}</span>
+            <span style={{ fontFamily: SERIF, fontSize: 56, color: last ? c.clayHex : c.ink }}>{t}</span>
+          </div>
+        );
+      })}
+    </Shell>
+  );
+};
+
 const End: Page = () => (
   <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
     <div style={{ fontFamily: SERIF, fontSize: 104, fontWeight: 500, letterSpacing: '-0.02em' }}>Questions</div>
@@ -7830,6 +7870,7 @@ export default [
   WireKeys,
   LeafEncoding,
   NutrootTree,
+  Takeaways,
   End,
 ] satisfies Page[];
 
